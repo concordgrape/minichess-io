@@ -1,4 +1,4 @@
-export type PieceType = "N";
+export type PieceType = "N" | "R" | "B" | "Q";
 
 export interface Pawn { id: string; row: number; col: number; }
 export interface Pos  { row: number; col: number; }
