@@ -1,0 +1,67 @@
+[
+  {
+    "id": "check-easy-01",
+    "title": "Back Rank",
+    "difficulty": "easy",
+    "mateIn": 2,
+    "description": "Force the King into the corner, then deliver the back rank mate.",
+    "board": [
+      [null, "Q",  null, null],
+      [null, null, null, null],
+      [null, null, null, "k"],
+      ["R",  null, null, null]
+    ]
+  },
+  {
+    "id": "check-easy-02",
+    "title": "Corridor",
+    "difficulty": "easy",
+    "mateIn": 2,
+    "description": "The Queen and Rook combine to trap the King on the edge.",
+    "board": [
+      [null, null, null, null],
+      [null, null, null, null],
+      ["k",  null, null, "Q"],
+      [null, null, "R",  null]
+    ]
+  },
+  {
+    "id": "check-medium-01",
+    "title": "The Quiet Move",
+    "difficulty": "medium",
+    "mateIn": 3,
+    "description": "The first move gives no check. The Knight controls key squares before the Queen strikes.",
+    "board": [
+      [null, null, null, null],
+      [null, null, "N",  null],
+      [null, null, null, "Q"],
+      ["k",  null, null, null]
+    ]
+  },
+  {
+    "id": "check-medium-02",
+    "title": "Zugzwang",
+    "difficulty": "medium",
+    "mateIn": 3,
+    "description": "Every King move tightens the net. Watch out for the stalemate trap.",
+    "board": [
+      [null, null, null, null],
+      [null, null, null, null],
+      [null, "R",  null, null],
+      ["k",  null, "Q",  null]
+    ]
+  },
+  {
+    "id": "check-hard-01",
+    "title": "The Net",
+    "difficulty": "hard",
+    "mateIn": 4,
+    "description": "Three white pieces weave a net. The King has nowhere to hide.",
+    "board": [
+      [null, null, null, null],
+      ["B",  null, null, null],
+      [null, null, "R",  null],
+      ["k",  null, null, "Q"]
+    ]
+  }
+]

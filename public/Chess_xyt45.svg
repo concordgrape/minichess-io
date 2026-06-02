@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0"
+     width="45px" height="45px" viewBox="0 0 45 45">
+	<defs>
+		<symbol id="Pat">
+			<rect x="0"  y="0" width="10" height="10" style="stroke:none; fill:#000000;" />
+		</symbol>
+	</defs>
+	<g transform="translate(2.5,2.5)">
+	<rect x="0" y="0" width="40" height="40"  style="fill:#ffffff;"  />
+	<use x="0"   y="0"  xlink:href="#Pat" />
+	<use x="20"  y="0"  xlink:href="#Pat" />
+	<use x="10"  y="10" xlink:href="#Pat" />
+	<use x="30"  y="10" xlink:href="#Pat" />
+	<use x="0"   y="20" xlink:href="#Pat" />
+	<use x="20"  y="20" xlink:href="#Pat" />
+	<use x="10"  y="30" xlink:href="#Pat" />
+	<use x="30"  y="30" xlink:href="#Pat" />
+	</g>
+</svg>
+

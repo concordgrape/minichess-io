@@ -1,0 +1,67 @@
+[
+  {
+    "id": "smothered-easy-01",
+    "title": "The Classic",
+    "difficulty": "easy",
+    "mateIn": 2,
+    "description": "The King's own pawns are his prison. Drive the Queen forward to force the Knight's checkmate.",
+    "board": [
+      [null, null, null, null],
+      [null, null, null, null],
+      ["p",  "k",  "p",  null],
+      ["N",  "Q",  null, null]
+    ]
+  },
+  {
+    "id": "smothered-easy-02",
+    "title": "Corner Trap",
+    "difficulty": "easy",
+    "mateIn": 2,
+    "description": "The King is cornered. Use the Queen to clear the way, then let the Knight finish.",
+    "board": [
+      ["k",  "p",  null, null],
+      ["p",  null, null, null],
+      [null, null, "Q",  null],
+      [null, null, null, "N"]
+    ]
+  },
+  {
+    "id": "smothered-medium-01",
+    "title": "The Offer",
+    "difficulty": "medium",
+    "mateIn": 3,
+    "description": "Sacrifice the Queen to smother the King with its own Rook. The Knight waits to pounce.",
+    "board": [
+      [null, null, null, null],
+      [null, null, null, null],
+      [null, "p",  "k",  "r"],
+      [null, "Q",  "N",  null]
+    ]
+  },
+  {
+    "id": "smothered-medium-02",
+    "title": "Zugzwang Smother",
+    "difficulty": "medium",
+    "mateIn": 3,
+    "description": "Every King move tightens the net. The Knight waits while the Queen herds.",
+    "board": [
+      [null, null, null, null],
+      [null, null, null, null],
+      ["p",  "k",  "p",  null],
+      [null, "N",  null, "Q"]
+    ]
+  },
+  {
+    "id": "smothered-hard-01",
+    "title": "The Windmill",
+    "difficulty": "hard",
+    "mateIn": 4,
+    "description": "Drive the King across the board with a sequence of checks, then smother it with your Knight.",
+    "board": [
+      [null, null, null, null],
+      [null, null, "p",  "k"],
+      [null, null, "p",  null],
+      [null, "Q",  null, "N"]
+    ]
+  }
+]

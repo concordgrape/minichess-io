@@ -1,0 +1,90 @@
+[
+  {
+    "id": "easy-01",
+    "title": "The Hub",
+    "difficulty": "easy",
+    "description": "Everything funnels to one square. The King is always nearby.",
+    "pieces": [
+      { "id": "n1", "type": "n", "row": 0, "col": 0 },
+      { "id": "b1", "type": "b", "row": 0, "col": 3 },
+      { "id": "p1", "type": "p", "row": 1, "col": 2 },
+      { "id": "r1", "type": "r", "row": 2, "col": 0 },
+      { "id": "p2", "type": "p", "row": 2, "col": 1 },
+      { "id": "p3", "type": "p", "row": 3, "col": 0 },
+      { "id": "k1", "type": "k", "row": 3, "col": 1 },
+      { "id": "p4", "type": "p", "row": 3, "col": 2 }
+    ],
+    "solution": [
+      { "from": "n1", "to": "p2", "note": "Knight jumps to hub" },
+      { "from": "b1", "to": "p1", "note": "Bishop steps down-left" },
+      { "from": "b1", "to": "n1", "note": "Bishop slides to hub" },
+      { "from": "r1", "to": "b1", "note": "Rook slides right to hub" },
+      { "from": "p3", "to": "r1", "note": "Pawn captures diagonally" },
+      { "from": "p4", "to": "p3", "note": "Pawn captures diagonally" },
+      { "from": "k1", "to": "p4", "note": "King captures last piece" }
+    ]
+  },
+  {
+    "id": "hard-01",
+    "title": "The Trap",
+    "difficulty": "hard",
+    "description": "The obvious first move is a dead end. Only one order survives.",
+    "pieces": [
+      { "id": "r1", "type": "r", "row": 0, "col": 0 },
+      { "id": "b1", "type": "b", "row": 0, "col": 2 },
+      { "id": "p1", "type": "p", "row": 1, "col": 1 },
+      { "id": "n1", "type": "n", "row": 1, "col": 3 },
+      { "id": "p2", "type": "p", "row": 2, "col": 2 },
+      { "id": "k1", "type": "k", "row": 3, "col": 2 }
+    ],
+    "solution": [
+      { "from": "r1", "to": "p1", "note": "Rook slides down to b2 — don't let Bishop go first!" },
+      { "from": "n1", "to": "r1", "note": "Knight jumps to b2" },
+      { "from": "b1", "to": "n1", "note": "Bishop slides diagonally to b2" },
+      { "from": "p2", "to": "b1", "note": "Pawn captures diagonally to b2" },
+      { "from": "k1", "to": "p2", "note": "King steps up — alone!" }
+    ]
+  },
+  {
+    "id": "medium-01",
+    "title": "The Chain",
+    "difficulty": "medium",
+    "description": "Pieces must pass the baton in sequence. Miss one link and you're stuck.",
+    "pieces": [
+      { "id": "q1", "type": "q", "row": 0, "col": 0 },
+      { "id": "p1", "type": "p", "row": 0, "col": 2 },
+      { "id": "n1", "type": "n", "row": 1, "col": 0 },
+      { "id": "b1", "type": "b", "row": 2, "col": 1 },
+      { "id": "p2", "type": "p", "row": 2, "col": 3 },
+      { "id": "k1", "type": "k", "row": 3, "col": 3 }
+    ],
+    "solution": [
+      { "from": "n1", "to": "b1", "note": "Knight jumps to c3" },
+      { "from": "q1", "to": "n1", "note": "Queen slides down to c3" },
+      { "from": "p1", "to": "q1", "note": "Pawn diagonal to c3" },
+      { "from": "p2", "to": "p1", "note": "Pawn diagonal to c3" },
+      { "from": "k1", "to": "p2", "note": "King steps left — done!" }
+    ]
+  },
+  {
+    "id": "medium-02",
+    "title": "Crossfire",
+    "difficulty": "medium",
+    "description": "Two paths cross at the centre. Choose the right one.",
+    "pieces": [
+      { "id": "r1", "type": "r", "row": 0, "col": 1 },
+      { "id": "b1", "type": "b", "row": 0, "col": 3 },
+      { "id": "p1", "type": "p", "row": 1, "col": 2 },
+      { "id": "n1", "type": "n", "row": 2, "col": 0 },
+      { "id": "p2", "type": "p", "row": 3, "col": 1 },
+      { "id": "k1", "type": "k", "row": 3, "col": 2 }
+    ],
+    "solution": [
+      { "from": "b1", "to": "p1", "note": "Bishop steps to c2" },
+      { "from": "r1", "to": "b1", "note": "Rook slides right to c1" },
+      { "from": "n1", "to": "r1", "note": "Knight jumps to c2" },
+      { "from": "p2", "to": "n1", "note": "Pawn diagonal to c2" },
+      { "from": "k1", "to": "p2", "note": "King steps left — alone!" }
+    ]
+  }
+]

@@ -1,65 +1,97 @@
-import Image from "next/image";
-
 export default function Home() {
+  const beginner = [
+    "  1        ",
+    "  1 2      ",
+    "1 1 1 1    ",
+    "1 2 2 1    ",
+    "1 1 1 1 1 1",
+    "  1     3  ",
+    "  1 1 1 1 1",
+  ];
+
+  const intermediate = [
+    "1 1 1 1 1",
+    "1 3 2 2 1",
+    "  1 3 1  ",
+    "2 1 2 1 1",
+    "1 2 1    ",
+  ];
+
+  const expert = [
+    "1 1 2 2 3 1 3 1 2 2",
+    "  1 1 2 2 3 1 1 2  ",
+    "3 1   1 2 3 3 1    ",
+    "1   4 2 3 4 3 4 2 1",
+    "1 1 3   1 2 1 3    ",
+    "3 1 2 1 4 2 3 4 3 3",
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <h2 className="fw-bold mb-4">MiniChess.io</h2>
+      <h4 className="fw-bold mb-3">Start new game</h4>
+
+      <div className="row g-3 mb-4">
+        {/* Beginner */}
+        <div className="col-12 col-sm-4">
+          <div className="game-card">
+            <span className="game-card-title beginner">Beginner</span>
+            <div className="win95-panel">
+              <div className="win95-header">
+                <span className="counter-display">003</span>
+                <span className="smiley">🙂</span>
+                <span className="counter-display">009</span>
+              </div>
+              <div className="board-display">{beginner.join("\n")}</div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Intermediate */}
+        <div className="col-12 col-sm-4">
+          <div className="game-card">
+            <span className="game-card-title intermediate">Intermediate</span>
+            <div className="win95-panel">
+              <div className="win95-header">
+                <span className="counter-display">032</span>
+                <span className="smiley">🙂</span>
+                <span className="counter-display">016</span>
+              </div>
+              <div className="board-display">{intermediate.join("\n")}</div>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+
+        {/* Expert */}
+        <div className="col-12 col-sm-4">
+          <div className="game-card">
+            <span className="game-card-title expert">Expert</span>
+            <div className="win95-panel">
+              <div className="win95-header">
+                <span className="counter-display">076</span>
+                <span className="smiley">🙂</span>
+                <span className="counter-display">040</span>
+              </div>
+              <div className="board-display">{expert.join("\n")}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h4 className="fw-bold mb-2">Rules</h4>
+      <p className="text-secondary" style={{ maxWidth: 720 }}>
+        Minesweeper rules are very simple. The board is divided into cells, with mines randomly
+        distributed. To win, you need to open all the cells. The number on a cell shows the number
+        of mines adjacent to it. Using this information, you can determine cells that are safe, and
+        cells that contain mines. Cells suspected of being mines can be marked with a flag using the
+        right mouse button.
+      </p>
+      <p className="text-secondary">
+        Read more:{" "}
+        <a href="#" className="me-2">📋 Gameplay</a>
+        <a href="#" className="me-2">📋 Patterns</a>
+        <a href="#">📋 Efficiency</a>
+      </p>
+    </>
   );
 }
