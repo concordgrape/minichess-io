@@ -44,17 +44,20 @@ body {
 
 .sidebar-link::before {
   content: "»";
-  color: #5bc0de;
+  color: currentColor;
   flex-shrink: 0;
-}
-
-[data-bs-theme="light"] .sidebar-link::before {
-  color: #6c757d;
 }
 
 .sidebar-link:hover {
   text-decoration: underline;
 }
+
+/* ── Per-section link colours (double class to beat the theme rule) ── */
+.sidebar-link.sidebar-link--games { color: #1f86b3; }      /* games */
+.sidebar-link.sidebar-link--ranks { color: #a9780f; }      /* leaderboards */
+.sidebar-link.sidebar-link--features { color: #7a45c4; }   /* features */
+.sidebar-link.sidebar-link--community { color: #2e8a51; }  /* community */
+.sidebar-link.sidebar-link--chat { color: #c43e5b; }       /* chat */
 
 .game-card {
   border: 2px solid #dee2e6;

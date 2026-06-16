@@ -7,42 +7,40 @@ import { totalScore } from "./lib/scores";
 const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
   <>
     <div className="mb-3">
-      <Link href="/chess" className="sidebar-link" onClick={onNavigate}>Play Chess</Link>
-      <Link href="/minichess" className="sidebar-link" onClick={onNavigate}>Mini Chess</Link>
-      <Link href="/takes" className="sidebar-link" onClick={onNavigate}>Takes</Link>
-      <Link href="/check" className="sidebar-link" onClick={onNavigate}>Check</Link>
-      <Link href="/smothered" className="sidebar-link" onClick={onNavigate}>Smothered</Link>
-      <Link href="/chess-solitaire" className="sidebar-link" onClick={onNavigate}>Chess Solitaire</Link>
-      <Link href="/solitaire" className="sidebar-link" onClick={onNavigate}>Chain Capture</Link>
-      <Link href="/survival" className="sidebar-link" onClick={onNavigate}>Survival</Link>
-      <Link href="/mate-in-1" className="sidebar-link" onClick={onNavigate}>Mate in 1</Link>
-      <Link href="/mate-in-2" className="sidebar-link" onClick={onNavigate}>Mate in 2</Link>
-      <Link href="/mate-in-3" className="sidebar-link" onClick={onNavigate}>Mate in 3</Link>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>No guessing mode</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Multiplayer</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Ranking</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>My games</a>
+      <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Play Chess</Link>
+      <Link href="/minichess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mini Chess</Link>
+      <Link href="/takes" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Takes</Link>
+      <Link href="/check" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Check</Link>
+      <Link href="/smothered" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Smothered</Link>
+      <Link href="/chess-solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Chess Solitaire</Link>
+      <Link href="/solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Chain Capture</Link>
+      <Link href="/survival" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Survival</Link>
+      <Link href="/mate-in-1" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 1</Link>
+      <Link href="/mate-in-2" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 2</Link>
+      <Link href="/mate-in-3" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 3</Link>
+      <Link href="/endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Endgame Puzzles</Link>
+      <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Queen vs Pawn</Link>
     </div>
     <div className="mb-3">
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Best players</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Season leaders</a>
+      <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Best players</a>
+      <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Season leaders</a>
     </div>
     <div className="mb-3">
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Quests (0)</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Arena</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Equipment</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Marketplace</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Events</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Championship</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Quests (0)</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Arena</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Equipment</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Marketplace</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Events</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Championship</a>
     </div>
     <div className="mb-3">
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Players online (1430)</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>News</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Statistics</a>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>My profile</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>Players online (1430)</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>News</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>Statistics</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>My profile</a>
     </div>
     <div>
-      <a href="#" className="sidebar-link" onClick={onNavigate}>Chat (100+)</a>
+      <a href="#" className="sidebar-link sidebar-link--chat" onClick={onNavigate}>Chat (100+)</a>
     </div>
   </>
 );

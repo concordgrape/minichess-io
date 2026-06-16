@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import { getLegalCaptures, applyCapture, hasAnyCapture } from "./logic";
 import { saveScore } from "../lib/scores";
+import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { SolitairePiece, PuzzleDef, GameStatus, MoveRecord, Difficulty } from "./types";
 
 // Chess.com green theme
@@ -40,6 +41,7 @@ interface Props {
 }
 
 export default function SolitaireGame({ puzzles, todayKey }: Props) {
+  const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
 
@@ -234,7 +236,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
         ))}
       </div>
 
-      <div className="d-flex flex-wrap gap-4 align-items-start">
+      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         {/* Board column */}
         <div>
           {/* Puzzle header */}
@@ -248,7 +250,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
 
           <Board
             size={8}
-            squareSize={64}
+            squareSize={sq}
             pieces={boardPieces}
             squareStyles={squareStyles}
             onSquareClick={handleSquareClick}

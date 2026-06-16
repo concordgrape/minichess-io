@@ -8,9 +8,10 @@ import {
   moveNotation, squareName, SIZE,
 } from "./logic";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 
 const STORAGE_VERSION = "minichess-v1";
-const SQ = 75; // square size px
+const SQ = 75; // max square size px (shrinks to fit on mobile)
 
 const PIECE_NAMES: Record<string, string> = {
   k: "king", q: "queen", r: "rook", n: "knight", b: "bishop", p: "pawn",
@@ -42,6 +43,7 @@ function writeSaved(state: SavedGame) {
 }
 
 export default function MiniChessGame({ position }: { position: DailyPosition }) {
+  const { ref: boardRef, size: sq } = useResponsiveSquare(SQ, SIZE);
   const saved = typeof window !== "undefined" ? loadSaved(position.id) : null;
 
   const [board, setBoard] = useState<BoardType>(() => saved?.board ?? position.board.map((r) => [...r]));
@@ -215,11 +217,11 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start">
+      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         {/* Board column */}
         <div>
           {/* Orientation label */}
-          <div className="d-flex justify-content-between mb-1 px-1" style={{ width: SIZE * SQ }}>
+          <div className="d-flex justify-content-between mb-1 px-1" style={{ width: SIZE * sq }}>
             <span className="small text-muted">
               {aiThinking ? <span>⏳ AI thinking<span className="ms-1" style={{ letterSpacing: 2 }}>…</span></span>
                 : isReview ? <span className="text-warning small">Review mode — <button className="btn btn-sm btn-outline-warning rounded-0 py-0 px-1" onClick={() => setReviewIdx(null)}>Resume</button></span>
@@ -231,7 +233,7 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
 
           <Board
             size={SIZE}
-            squareSize={SQ}
+            squareSize={sq}
             pieces={boardPieces}
             squareStyles={squareStyles}
             onSquareClick={handleSquareClick}
@@ -240,7 +242,7 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
           />
 
           {/* Status bar */}
-          <div className="mt-2 d-flex align-items-center gap-2 flex-wrap" style={{ width: SIZE * SQ }}>
+          <div className="mt-2 d-flex align-items-center gap-2 flex-wrap" style={{ width: SIZE * sq }}>
             {statusMsg && (
               <span className={`fw-bold ${status === "won" ? "text-success" : "text-danger"}`}>
                 {statusMsg}

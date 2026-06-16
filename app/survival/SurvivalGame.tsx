@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { getCaptures, spawnPawns, spawnCount, type Pawn, type Pos } from "./logic";
 // Knight is the fixed piece for Survival
 import { saveScore } from "../lib/scores";
@@ -17,6 +18,7 @@ const STARTING_POS: Pos = { row: 1, col: 1 };
 const INITIAL_PAWNS = 3;
 
 export default function SurvivalGame() {
+  const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [phase, setPhase] = useState<Phase>("playing");
   const [playerPos, setPlayerPos] = useState<Pos>(STARTING_POS);
   const [pawns, setPawns] = useState<Pawn[]>([]); // populated client-side in useEffect
@@ -117,11 +119,11 @@ export default function SurvivalGame() {
   const spawnsNext = spawnCount(score + 1);
 
   return (
-    <div className="d-flex flex-wrap gap-4 align-items-start">
+    <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
       <div>
         <Board
           size={4}
-          squareSize={88}
+          squareSize={sq}
           pieces={boardPieces}
           squareStyles={squareStyles}
           onSquareClick={handleSquareClick}

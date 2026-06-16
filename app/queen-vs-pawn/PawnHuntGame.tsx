@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Chess, type Square, type Move, type PieceSymbol, type Color } from "chess.js";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
-import { saveScore, matePoints } from "../lib/scores";
-import type { MatePuzzle, GameStatus } from "./types";
+import { saveScore, pawnPoints } from "../lib/scores";
+import { pawnCaptured, pawnPromoted } from "./engine";
+import type { PawnPuzzle, GameStatus } from "./types";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
   p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
@@ -24,13 +25,7 @@ function rowColToSq(row: number, col: number): Square {
   return `${String.fromCharCode(97 + col)}${8 - row}` as Square;
 }
 
-export default function MateGame({
-  puzzles,
-  mateIn,
-}: {
-  puzzles: MatePuzzle[];
-  mateIn: number;
-}) {
+export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
   const player: Color = "w";
@@ -41,7 +36,7 @@ export default function MateGame({
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
-  const [movesLeft, setMovesLeft] = useState(mateIn);
+  const [movesLeft, setMovesLeft] = useState(puzzles[0].winIn);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [defending, setDefending] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
@@ -49,29 +44,27 @@ export default function MateGame({
   const [defenseTrigger, setDefenseTrigger] = useState(0);
   const pendingDefense = useRef(false);
 
-  const refresh = useCallback(() => {
-    setBoard([...chess.board()]);
-  }, [chess]);
+  const refresh = useCallback(() => setBoard([...chess.board()]), [chess]);
 
   const load = useCallback((idx: number) => {
     chess.load(puzzles[idx].fen);
     setPuzzleIdx(idx);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
-    setStatus("playing"); setMovesLeft(mateIn);
+    setStatus("playing"); setMovesLeft(puzzles[idx].winIn);
     setLastMove(null); setDefending(false);
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
-  }, [chess, puzzles, mateIn]);
+  }, [chess, puzzles]);
 
   function award() {
-    const pts = matePoints(mateIn, puzzle.difficulty, undoCount);
+    const pts = pawnPoints(puzzle.winIn, puzzle.difficulty, undoCount);
     saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
-    setStatus("solved");
+    setStatus("won");
   }
 
-  // Defender (Black) reply, computed off the main thread.
+  // Black's reply, computed off the main thread.
   useEffect(() => {
     if (!pendingDefense.current) return;
     pendingDefense.current = false;
@@ -85,7 +78,8 @@ export default function MateGame({
         setLastMove({ from: move.from as Square, to: move.to as Square });
       }
       refresh();
-      if (chess.isStalemate()) setStatus("stalemate");
+      if (pawnPromoted(chess)) setStatus("promoted");
+      else if (chess.isStalemate() || chess.isDraw()) setStatus("draw");
       setDefending(false);
       worker.terminate();
     };
@@ -94,19 +88,16 @@ export default function MateGame({
   }, [defenseTrigger]);
 
   function applyMove(from: Square, to: Square) {
-    const piece = chess.get(from);
-    const promotion = piece?.type === "p" && (to[1] === "8" || to[1] === "1") ? "q" : undefined;
-    try { chess.move({ from, to, promotion }); } catch { return; }
+    try { chess.move({ from, to }); } catch { return; }
     const remaining = movesLeft - 1;
     setMovesLeft(remaining);
     setLastMove({ from, to });
     setSelected(null); setLegalMoves([]);
     refresh();
 
-    if (chess.isCheckmate()) { award(); return; }
-    if (chess.isStalemate()) { setStatus("stalemate"); return; }
+    if (pawnCaptured(chess)) { award(); return; }
+    if (chess.isStalemate() || chess.isDraw()) { setStatus("draw"); return; }
     if (remaining <= 0) { setStatus("exceeded"); return; }
-    // Hand off to the defender.
     pendingDefense.current = true;
     setDefenseTrigger((n) => n + 1);
   }
@@ -131,10 +122,9 @@ export default function MateGame({
 
   function undo() {
     if (defending || chess.history().length === 0) return;
-    // Undo the defender's reply (if any) and the player's move.
     if (chess.turn() === player) chess.undo();
     chess.undo();
-    setMovesLeft((m) => Math.min(mateIn, m + 1));
+    setMovesLeft((m) => Math.min(puzzle.winIn, m + 1));
     setUndoCount((n) => n + 1);
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setLastMove(null); setEarnedPoints(null);
@@ -142,13 +132,11 @@ export default function MateGame({
     refresh();
   }
 
-  const inCheck = chess.inCheck();
   const canInteract = status === "playing" && !defending;
   const history = chess.history();
-  const moveNum = mateIn - movesLeft + 1;
-  const potentialPoints = matePoints(mateIn, puzzle.difficulty, undoCount);
+  const moveNum = puzzle.winIn - movesLeft + 1;
+  const potentialPoints = pawnPoints(puzzle.winIn, puzzle.difficulty, undoCount);
 
-  // Build Board props
   const pieces: BoardPiece[] = [];
   board.forEach((rowArr, row) => {
     rowArr.forEach((cell, col) => {
@@ -174,13 +162,6 @@ export default function MateGame({
       const pos = sqToRowCol(sq);
       squareStyles.push({ ...pos, ...(chess.get(sq) ? { ring: true } : { dot: true }) });
     });
-  }
-  if (inCheck) {
-    for (const row of chess.board())
-      for (const cell of row)
-        if (cell?.type === "k" && cell.color === chess.turn()) {
-          squareStyles.push({ ...sqToRowCol(cell.square as Square), bg: "#ff6b6b" });
-        }
   }
 
   return (
@@ -210,26 +191,26 @@ export default function MateGame({
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (
               <span className="text-muted small">
-                {defending ? "Black is defending…" : `Move ${moveNum} of ${mateIn} — your turn`}
-                {inCheck && !defending && " · Check!"}
+                {defending ? "Black is pushing…" : `Move ${moveNum} of ${puzzle.winIn} — win the pawn`}
               </span>
             )}
-            {status === "solved" && (
+            {status === "won" && (
               <span className="fw-bold text-success">
-                ✓ Checkmate! Puzzle solved.
+                ✓ Pawn captured! Puzzle solved.
                 {earnedPoints !== null && <span className="ms-2 badge text-bg-warning rounded-0">+{earnedPoints} pts</span>}
               </span>
             )}
-            {status === "stalemate" && <span className="fw-bold text-danger">✗ Stalemate — try again.</span>}
+            {status === "promoted" && <span className="fw-bold text-danger">✗ The pawn promoted — try again.</span>}
+            {status === "draw" && <span className="fw-bold text-danger">✗ Stalemate — try again.</span>}
             {status === "exceeded" && <span className="fw-bold text-danger">✗ Out of moves — try again.</span>}
-            {status !== "solved" && (
+            {status !== "won" && (
               <span className="badge text-bg-warning rounded-0 ms-auto me-1"
                 style={{ opacity: status === "playing" ? 1 : 0.4 }}>
                 ★ {potentialPoints} pts
               </span>
             )}
             <div className="d-flex gap-2">
-              {history.length > 0 && status !== "solved" && !defending && (
+              {history.length > 0 && status !== "won" && !defending && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
               <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load(puzzleIdx)}>Reset</button>
@@ -240,16 +221,16 @@ export default function MateGame({
         <div style={{ maxWidth: 240 }}>
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
-              Mate in {mateIn}
+              Win in {puzzle.winIn}
             </span>
             <strong>{puzzle.title}</strong>
           </div>
           <p className="text-muted small mb-3">{puzzle.description}</p>
           <div className="d-flex gap-1 mb-3">
-            {Array.from({ length: mateIn }, (_, i) => (
+            {Array.from({ length: puzzle.winIn }, (_, i) => (
               <div key={i} style={{
                 width: 18, height: 18, borderRadius: "50%",
-                backgroundColor: i < mateIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
+                backgroundColor: i < puzzle.winIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
                 border: "1px solid #888",
               }} />
             ))}
@@ -257,10 +238,10 @@ export default function MateGame({
           <div className="small">
             <div className="fw-semibold mb-1">Rules</div>
             <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
-              <li>You play White.</li>
-              <li>Deliver checkmate in {mateIn} move{mateIn > 1 ? "s" : ""}.</li>
-              <li>Black always plays its best defense.</li>
-              <li>Stalemate counts as a loss.</li>
+              <li>You play White (king and queen).</li>
+              <li>Capture the Black pawn within {puzzle.winIn} move{puzzle.winIn > 1 ? "s" : ""}.</li>
+              <li>Black races to promote — if it queens, you lose.</li>
+              <li>Use checks to win a tempo and round up the pawn.</li>
             </ul>
           </div>
           {history.length > 0 && (

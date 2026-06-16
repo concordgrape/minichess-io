@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { Piece, Puzzle, GameStatus } from "./types";
 import { getLegalCaptures, hasAnyCapture, applyCapture } from "./logic";
 import { saveScore, takesPoints } from "../lib/scores";
@@ -20,6 +21,7 @@ function pieceImage(type: string) {
 interface MoveRecord { attacker: Piece; target: Piece; piecesBefore: Piece[]; }
 
 export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
+  const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
 
@@ -127,11 +129,11 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
         ))}
       </div>
 
-      <div className="d-flex flex-wrap gap-4 align-items-start">
+      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         <div>
           <Board
             size={4}
-            squareSize={88}
+            squareSize={sq}
             pieces={boardPieces}
             squareStyles={squareStyles}
             onSquareClick={handleSquareClick}

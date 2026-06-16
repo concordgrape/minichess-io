@@ -1,0 +1,26 @@
+[
+  {
+    "id": "qp-pin",
+    "title": "Pin the Pawn",
+    "difficulty": "medium",
+    "fen": "8/8/8/8/Q7/K7/1p6/k7 w - - 0 1",
+    "winIn": 2,
+    "description": "The pawn is one step from queening. Pin it to the king along the long diagonal so it can't promote, then round it up."
+  },
+  {
+    "id": "qp-mirror",
+    "title": "Other Corner",
+    "difficulty": "medium",
+    "fen": "8/8/8/8/7Q/7K/6p1/7k w - - 0 1",
+    "winIn": 2,
+    "description": "Same idea, mirrored. Drop the queen onto the diagonal to freeze the pawn, then capture it."
+  },
+  {
+    "id": "qp-long-diagonal",
+    "title": "Long Diagonal",
+    "difficulty": "hard",
+    "fen": "8/2Q5/8/8/8/K7/1p6/k7 w - - 0 1",
+    "winIn": 2,
+    "description": "The queen is far away. Find the one square on the long diagonal that pins the pawn against the cornered king."
+  }
+]

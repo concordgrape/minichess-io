@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Chess, type Square, type Move, type PieceSymbol, type Color } from "chess.js";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
   p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
@@ -43,6 +44,7 @@ export default function ChessBoard() {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState(2);
   const [turnTrigger, setTurnTrigger] = useState(0);
+  const { ref: rootRef, size: squareSize } = useResponsiveSquare(64, 8);
 
   const refresh = useCallback(() => {
     setBoard([...chess.board()]);
@@ -154,7 +156,7 @@ export default function ChessBoard() {
   if (checkedKingPos) squareStyles.push({ ...checkedKingPos, bg: "#ff6b6b" });
 
   return (
-    <div className="d-flex gap-4 flex-wrap">
+    <div className="d-flex gap-4 flex-wrap" ref={rootRef}>
       <div>
         {/* Difficulty */}
         <div className="d-flex align-items-center gap-2 mb-2">
@@ -173,7 +175,7 @@ export default function ChessBoard() {
 
         <Board
           size={8}
-          squareSize={64}
+          squareSize={squareSize}
           pieces={pieces}
           squareStyles={squareStyles}
           onSquareClick={handleSquareClick}

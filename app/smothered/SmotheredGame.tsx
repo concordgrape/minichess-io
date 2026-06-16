@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square } from "./types";
 import { saveScore, smotheredPoints } from "../lib/scores";
+import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import {
   cloneBoard, findKing, isCheckmate, isStalemate, isInCheck,
   knightDeliversMate, knightCanMateNextMove,
@@ -56,6 +57,7 @@ function writeSaved(state: SavedState) {
 }
 
 export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
+  const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
 
@@ -290,12 +292,12 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
         ))}
       </div>
 
-      <div className="d-flex flex-wrap gap-4 align-items-start">
+      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         {/* Board + status bar */}
         <div>
           <Board
             size={4}
-            squareSize={88}
+            squareSize={sq}
             pieces={boardPieces}
             squareStyles={squareStyles}
             onSquareClick={handleSquareClick}

@@ -8,6 +8,7 @@ import {
   blackBestMove, applyKingMove, applyWhiteMove, getWhitePieceMoves,
 } from "./logic";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 
 const STORAGE_VERSION = "check-v1";
 
@@ -54,6 +55,7 @@ function writeSaved(state: SavedState) {
 }
 
 export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
+  const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
 
@@ -228,11 +230,11 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
         ))}
       </div>
 
-      <div className="d-flex flex-wrap gap-4 align-items-start">
+      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         <div>
           <Board
             size={4}
-            squareSize={88}
+            squareSize={sq}
             pieces={boardPieces}
             squareStyles={squareStyles}
             onSquareClick={handleSquareClick}

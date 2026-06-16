@@ -56,6 +56,18 @@ export function smotheredPoints(
   return Math.max(base + moveBonus - penalty, Math.round((base + moveBonus) * 0.2));
 }
 
+/** Calculate points for a Queen-vs-pawn puzzle. */
+export function pawnPoints(
+  winIn: number,
+  difficulty: "easy" | "medium" | "hard",
+  undoCount: number
+): number {
+  const base = { easy: 120, medium: 220, hard: 360 }[difficulty];
+  const moveBonus = (winIn - 1) * 50;
+  const penalty = undoCount * 20;
+  return Math.max(base + moveBonus - penalty, Math.round((base + moveBonus) * 0.2));
+}
+
 /** Calculate points for a Mate-in-N puzzle. */
 export function matePoints(
   mateIn: number,
