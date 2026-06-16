@@ -11,5 +11,11 @@ export default async function SmotheredPage() {
     "utf-8"
   );
   const puzzles: Puzzle[] = JSON.parse(file);
-  return <SmotheredGame puzzles={puzzles} />;
+  return (
+    <div>
+      <h1 className="h4 mb-1">Smothered</h1>
+      <p className="text-muted mb-4">Trap the king with its own pieces and deliver a smothered mate.</p>
+      <SmotheredGame puzzles={puzzles} />
+    </div>
+  );
 }

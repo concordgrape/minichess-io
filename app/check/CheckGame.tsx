@@ -220,16 +220,6 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-2 mb-3">
-        {puzzles.map((p, i) => (
-          <button key={p.id} onClick={() => reset(i)}
-            className={`btn btn-sm rounded-0 ${i === puzzleIdx ? "btn-dark" : "btn-outline-secondary"}`}>
-            <span className={`badge bg-${DIFFICULTY_COLOR[p.difficulty]} me-1`} style={{ fontSize: 9 }}>{p.difficulty}</span>
-            {p.title}
-          </button>
-        ))}
-      </div>
-
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         <div>
           <Board
@@ -273,6 +263,18 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
         </div>
 
         <div style={{ maxWidth: 240 }}>
+          {puzzles.length > 1 && (
+            <select
+              className="form-select form-select-sm rounded-0 w-100 mb-3"
+              value={puzzleIdx}
+              onChange={(e) => reset(Number(e.target.value))}
+              aria-label="Select puzzle"
+            >
+              {puzzles.map((p, i) => (
+                <option key={p.id} value={i}>{p.title} — {p.difficulty}</option>
+              ))}
+            </select>
+          )}
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Mate in {puzzle.mateIn}

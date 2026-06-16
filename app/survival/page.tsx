@@ -3,5 +3,11 @@ import SurvivalGame from "./SurvivalGame";
 export const metadata = { title: "MiniChess.io — Survival" };
 
 export default function SurvivalPage() {
-  return <SurvivalGame />;
+  return (
+    <div>
+      <h1 className="h4 mb-1">Survival</h1>
+      <p className="text-muted mb-4">Capture pawns with your knight for as long as you can.</p>
+      <SurvivalGame />
+    </div>
+  );
 }

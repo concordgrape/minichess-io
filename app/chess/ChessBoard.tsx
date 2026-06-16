@@ -158,21 +158,6 @@ export default function ChessBoard() {
   return (
     <div className="d-flex gap-4 flex-wrap" ref={rootRef}>
       <div>
-        {/* Difficulty */}
-        <div className="d-flex align-items-center gap-2 mb-2">
-          <label className="text-muted small mb-0" style={{ whiteSpace: "nowrap" }}>Difficulty:</label>
-          <select
-            className="form-select form-select-sm rounded-0"
-            style={{ width: "auto" }}
-            value={difficulty}
-            onChange={(e) => changeDifficulty(Number(e.target.value))}
-          >
-            {DIFFICULTIES.map((d, i) => (
-              <option key={i} value={i}>{d.label} ({d.rating} ELO)</option>
-            ))}
-          </select>
-        </div>
-
         <Board
           size={8}
           squareSize={squareSize}
@@ -204,8 +189,21 @@ export default function ChessBoard() {
         </div>
       </div>
 
-      {/* Move history */}
-      <div style={{ minWidth: 200, maxHeight: 512, overflowY: "auto" }}>
+      {/* Right panel: difficulty + move history */}
+      <div style={{ minWidth: 200 }}>
+        <div className="d-flex align-items-center gap-2 mb-2">
+          <label className="text-muted small mb-0">Difficulty:</label>
+          <select
+            className="form-select form-select-sm rounded-0 w-100"
+            value={difficulty}
+            onChange={(e) => changeDifficulty(Number(e.target.value))}
+          >
+            {DIFFICULTIES.map((d, i) => (
+              <option key={i} value={i}>{d.label} ({d.rating} ELO)</option>
+            ))}
+          </select>
+        </div>
+        <div style={{ maxHeight: 480, overflowY: "auto" }}>
         <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "monospace", fontSize: 13 }}>
           <colgroup><col style={{ width: 36 }} /><col style={{ width: 80 }} /><col style={{ width: 80 }} /></colgroup>
           <thead className="table-light sticky-top"><tr><th>#</th><th>White</th><th>Black</th></tr></thead>
@@ -220,6 +218,7 @@ export default function ChessBoard() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

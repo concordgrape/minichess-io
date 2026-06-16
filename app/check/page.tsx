@@ -11,5 +11,11 @@ export default async function CheckPage() {
     "utf-8"
   );
   const puzzles: Puzzle[] = JSON.parse(file);
-  return <CheckGame puzzles={puzzles} />;
+  return (
+    <div>
+      <h1 className="h4 mb-1">Check</h1>
+      <p className="text-muted mb-4">Deliver checkmate on the mini board within the move limit.</p>
+      <CheckGame puzzles={puzzles} />
+    </div>
+  );
 }

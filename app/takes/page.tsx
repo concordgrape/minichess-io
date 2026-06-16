@@ -12,5 +12,11 @@ export default async function TakesPage() {
   );
   const puzzles: Puzzle[] = JSON.parse(file);
 
-  return <TakesGame puzzles={puzzles} />;
+  return (
+    <div>
+      <h1 className="h4 mb-1">Takes</h1>
+      <p className="text-muted mb-4">Capture every piece — find the right order to clear the board.</p>
+      <TakesGame puzzles={puzzles} />
+    </div>
+  );
 }

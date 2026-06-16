@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { totalScore } from "./lib/scores";
 
-const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
+const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
+  const [endgamesOpen, setEndgamesOpen] = useState(false);
+  return (
   <>
     <div className="mb-3">
       <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Play Chess</Link>
@@ -18,8 +20,24 @@ const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
       <Link href="/mate-in-1" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 1</Link>
       <Link href="/mate-in-2" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 2</Link>
       <Link href="/mate-in-3" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 3</Link>
-      <Link href="/endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Endgame Puzzles</Link>
-      <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Queen vs Pawn</Link>
+
+      {/* Endgame puzzles dropdown */}
+      <button
+        type="button"
+        className="sidebar-link sidebar-link--games sidebar-group"
+        aria-expanded={endgamesOpen}
+        onClick={() => setEndgamesOpen((o) => !o)}
+      >
+        Endgame Puzzles <span className="ms-auto">{endgamesOpen ? "▾" : "▸"}</span>
+      </button>
+      {endgamesOpen && (
+        <div style={{ paddingLeft: 14 }}>
+          <Link href="/king-and-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>King and Pawn</Link>
+          <Link href="/rook-endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Rook Endgame</Link>
+          <Link href="/zugzwang" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Zugzwang</Link>
+          <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Queen vs Pawn</Link>
+        </div>
+      )}
     </div>
     <div className="mb-3">
       <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Best players</a>
@@ -43,7 +61,8 @@ const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
       <a href="#" className="sidebar-link sidebar-link--chat" onClick={onNavigate}>Chat (100+)</a>
     </div>
   </>
-);
+  );
+};
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(true);

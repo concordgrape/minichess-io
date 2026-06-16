@@ -11,5 +11,11 @@ export default async function SolitairePage() {
     "utf-8"
   );
   const puzzles: Puzzle[] = JSON.parse(file);
-  return <SolitaireGame puzzles={puzzles} />;
+  return (
+    <div>
+      <h1 className="h4 mb-1">Chain Capture</h1>
+      <p className="text-muted mb-4">Clear the board in one unbroken chain of captures.</p>
+      <SolitaireGame puzzles={puzzles} />
+    </div>
+  );
 }

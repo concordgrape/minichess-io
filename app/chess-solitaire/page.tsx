@@ -15,5 +15,11 @@ export default async function ChessSolitairePage() {
   // Today's key in YYYY-MM-DD — used to identify the daily puzzle
   const todayKey = new Date().toISOString().split("T")[0];
 
-  return <SolitaireGame puzzles={puzzles} todayKey={todayKey} />;
+  return (
+    <div>
+      <h1 className="h4 mb-1">Chess Solitaire</h1>
+      <p className="text-muted mb-4">Capture every piece, one legal move at a time.</p>
+      <SolitaireGame puzzles={puzzles} todayKey={todayKey} />
+    </div>
+  );
 }

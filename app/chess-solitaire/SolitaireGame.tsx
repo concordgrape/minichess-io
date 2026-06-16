@@ -213,41 +213,9 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
 
   return (
     <div>
-      {/* Puzzle tabs */}
-      <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
-        {dailyIdx >= 0 && (
-          <button
-            onClick={() => resetPuzzle(dailyIdx)}
-            className={`btn btn-sm rounded-0 ${puzzleIdx === dailyIdx ? "btn-warning" : "btn-outline-warning"}`}
-          >
-            ★ Daily
-          </button>
-        )}
-        {puzzles.map((p, i) => (
-          <button
-            key={p.id}
-            onClick={() => resetPuzzle(i)}
-            className={`btn btn-sm rounded-0 ${i === puzzleIdx ? "btn-dark" : "btn-outline-secondary"} ${completed.has(p.id) ? "opacity-50" : ""}`}
-            title={completed.has(p.id) ? "Completed ✓" : p.title}
-          >
-            <span className={`badge bg-${DIFF_COLOR[p.difficulty]} me-1`} style={{ fontSize: 9 }}>{DIFF_LABEL[p.difficulty]}</span>
-            {completed.has(p.id) ? "✓ " : ""}{p.title}
-          </button>
-        ))}
-      </div>
-
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         {/* Board column */}
         <div>
-          {/* Puzzle header */}
-          <div className="d-flex align-items-center gap-2 mb-2">
-            <span className={`badge bg-${DIFF_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 12, padding: "4px 8px" }}>
-              {DIFF_LABEL[puzzle.difficulty]}
-            </span>
-            <span className="fw-semibold">{puzzle.title}</span>
-            {puzzle.dailyDate && <span className="badge bg-warning text-dark rounded-0 ms-1">★ Daily</span>}
-          </div>
-
           <Board
             size={8}
             squareSize={sq}
@@ -300,7 +268,26 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
         </div>
 
         {/* Info panel */}
-        <div style={{ minWidth: 220 }}>
+        <div style={{ maxWidth: 240 }}>
+          <select
+            className="form-select form-select-sm rounded-0 w-100 mb-3"
+            value={puzzleIdx}
+            onChange={(e) => resetPuzzle(Number(e.target.value))}
+            aria-label="Select puzzle"
+          >
+            {puzzles.map((p, i) => (
+              <option key={p.id} value={i}>
+                {i === dailyIdx ? "★ " : ""}{completed.has(p.id) ? "✓ " : ""}{p.title} — {DIFF_LABEL[p.difficulty]}
+              </option>
+            ))}
+          </select>
+          <div className="mb-3 d-flex align-items-center gap-2 flex-wrap">
+            <span className={`badge bg-${DIFF_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 12, padding: "4px 8px" }}>
+              {DIFF_LABEL[puzzle.difficulty]}
+            </span>
+            <strong>{puzzle.title}</strong>
+            {puzzle.dailyDate && <span className="badge bg-warning text-dark rounded-0">★ Daily</span>}
+          </div>
           {puzzle.description && (
             <p className="text-muted small mb-3">{puzzle.description}</p>
           )}

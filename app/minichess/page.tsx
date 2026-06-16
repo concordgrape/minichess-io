@@ -11,5 +11,11 @@ export default async function MiniChessPage() {
     "utf-8"
   );
   const position: DailyPosition = JSON.parse(file);
-  return <MiniChessGame position={position} />;
+  return (
+    <div>
+      <h1 className="h4 mb-1">Mini Chess</h1>
+      <p className="text-muted mb-4">Play the daily 5×5 mini chess position against the engine.</p>
+      <MiniChessGame position={position} />
+    </div>
+  );
 }
