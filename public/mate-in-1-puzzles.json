@@ -1,0 +1,44 @@
+[
+  {
+    "id": "m1-back-rank",
+    "title": "Back Rank",
+    "difficulty": "easy",
+    "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1",
+    "description": "The Black king is trapped behind its own pawns. Swing the rook to the back rank."
+  },
+  {
+    "id": "m1-queen-eighth",
+    "title": "Queen's Visit",
+    "difficulty": "easy",
+    "fen": "6k1/5ppp/8/8/8/8/8/3Q2K1 w - - 0 1",
+    "description": "The pawns that shelter the king also imprison it. Find the queen check on the eighth rank."
+  },
+  {
+    "id": "m1-smothered",
+    "title": "Smothered",
+    "difficulty": "easy",
+    "fen": "6rk/6pp/7N/8/8/8/8/6K1 w - - 0 1",
+    "description": "The king is boxed in by its own rook and pawns. Only the knight can reach it."
+  },
+  {
+    "id": "m1-kq-box",
+    "title": "Queen and King",
+    "difficulty": "medium",
+    "fen": "7k/8/6K1/5Q2/8/8/8/8 w - - 0 1",
+    "description": "Your king guards the escape squares. Deliver the queen check that ends it."
+  },
+  {
+    "id": "m1-supported-queen",
+    "title": "Supported Queen",
+    "difficulty": "medium",
+    "fen": "7k/5Q2/6K1/8/8/8/8/8 w - - 0 1",
+    "description": "Step the queen right next to the king — your own king defends her."
+  },
+  {
+    "id": "m1-rook-king",
+    "title": "Rook and King",
+    "difficulty": "medium",
+    "fen": "7k/8/6K1/8/8/8/8/R7 w - - 0 1",
+    "description": "The classic rook checkmate. Your king covers the escape; the rook delivers the blow."
+  }
+]

@@ -1,19 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { totalScore } from "./lib/scores";
 
 const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
   <>
     <div className="mb-3">
-      <a href="/chess" className="sidebar-link" onClick={onNavigate}>Play Chess</a>
-      <a href="/minichess" className="sidebar-link" onClick={onNavigate}>Mini Chess</a>
-      <a href="/takes" className="sidebar-link" onClick={onNavigate}>Takes</a>
-      <a href="/check" className="sidebar-link" onClick={onNavigate}>Check</a>
-      <a href="/smothered" className="sidebar-link" onClick={onNavigate}>Smothered</a>
-      <a href="/chess-solitaire" className="sidebar-link" onClick={onNavigate}>Chess Solitaire</a>
-      <a href="/solitaire" className="sidebar-link" onClick={onNavigate}>Chain Capture</a>
-      <a href="/survival" className="sidebar-link" onClick={onNavigate}>Survival</a>
+      <Link href="/chess" className="sidebar-link" onClick={onNavigate}>Play Chess</Link>
+      <Link href="/minichess" className="sidebar-link" onClick={onNavigate}>Mini Chess</Link>
+      <Link href="/takes" className="sidebar-link" onClick={onNavigate}>Takes</Link>
+      <Link href="/check" className="sidebar-link" onClick={onNavigate}>Check</Link>
+      <Link href="/smothered" className="sidebar-link" onClick={onNavigate}>Smothered</Link>
+      <Link href="/chess-solitaire" className="sidebar-link" onClick={onNavigate}>Chess Solitaire</Link>
+      <Link href="/solitaire" className="sidebar-link" onClick={onNavigate}>Chain Capture</Link>
+      <Link href="/survival" className="sidebar-link" onClick={onNavigate}>Survival</Link>
+      <Link href="/mate-in-1" className="sidebar-link" onClick={onNavigate}>Mate in 1</Link>
+      <Link href="/mate-in-2" className="sidebar-link" onClick={onNavigate}>Mate in 2</Link>
+      <Link href="/mate-in-3" className="sidebar-link" onClick={onNavigate}>Mate in 3</Link>
       <a href="#" className="sidebar-link" onClick={onNavigate}>No guessing mode</a>
       <a href="#" className="sidebar-link" onClick={onNavigate}>Multiplayer</a>
       <a href="#" className="sidebar-link" onClick={onNavigate}>Ranking</a>
@@ -100,7 +104,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               >
                 ☰
               </button>
-              <a className="navbar-brand d-flex align-items-center fw-bold mb-0" href="/">
+              <Link className="navbar-brand d-flex align-items-center fw-bold mb-0" href="/">
                 <span
                   className="me-2 bg-secondary d-inline-flex align-items-center justify-content-center text-white"
                   style={{ width: 32, height: 32, fontSize: 14 }}
@@ -108,7 +112,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   ♟
                 </span>
                 MiniChess.io
-              </a>
+              </Link>
             </div>
 
             {/* Right: action buttons */}

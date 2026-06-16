@@ -1,0 +1,44 @@
+[
+  {
+    "id": "m2-rook-roller",
+    "title": "Rook Roller",
+    "difficulty": "easy",
+    "fen": "7k/6R1/8/8/8/8/8/R6K w - - 0 1",
+    "description": "Two rooks form a ladder. Cut off one rank, then deliver mate on the next."
+  },
+  {
+    "id": "m2-queen-hunt",
+    "title": "Queen Hunt",
+    "difficulty": "medium",
+    "fen": "7k/8/5K2/8/1Q6/8/8/8 w - - 0 1",
+    "description": "Bring the queen close to confine the king, then your king does the rest."
+  },
+  {
+    "id": "m2-rook-squeeze",
+    "title": "Rook Squeeze",
+    "difficulty": "medium",
+    "fen": "7k/8/5K2/8/8/8/8/R7 w - - 0 1",
+    "description": "Take the opposition with your king, then drop the rook for checkmate."
+  },
+  {
+    "id": "m2-queen-corner",
+    "title": "Cornered",
+    "difficulty": "medium",
+    "fen": "7k/8/4K3/8/8/8/8/Q7 w - - 0 1",
+    "description": "Drive the king to the edge. The queen needs the king's support to finish."
+  },
+  {
+    "id": "m2-rook-ladder",
+    "title": "Edge of the Board",
+    "difficulty": "hard",
+    "fen": "7k/8/4K3/8/8/8/8/R7 w - - 0 1",
+    "description": "The rook and king must coordinate precisely to net the king in two."
+  },
+  {
+    "id": "m2-corner-rook",
+    "title": "Trapped in the Corner",
+    "difficulty": "hard",
+    "fen": "k7/8/2K5/8/8/8/8/1R6 w - - 0 1",
+    "description": "The king sits in the corner. Find the waiting move, then the rook strikes."
+  }
+]

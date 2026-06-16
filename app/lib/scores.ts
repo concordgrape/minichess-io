@@ -56,6 +56,18 @@ export function smotheredPoints(
   return Math.max(base + moveBonus - penalty, Math.round((base + moveBonus) * 0.2));
 }
 
+/** Calculate points for a Mate-in-N puzzle. */
+export function matePoints(
+  mateIn: number,
+  difficulty: "easy" | "medium" | "hard",
+  undoCount: number
+): number {
+  const base = { easy: 100, medium: 200, hard: 350 }[difficulty];
+  const moveBonus = (mateIn - 1) * 50;
+  const penalty = undoCount * 20;
+  return Math.max(base + moveBonus - penalty, Math.round((base + moveBonus) * 0.2));
+}
+
 /** Calculate points for a Check puzzle. */
 export function checkPoints(
   mateIn: number,
