@@ -36,7 +36,7 @@ export default function NotFound() {
 
         <h1 className="h3 fw-bold mb-2">This move is off the board</h1>
         <p className="text-muted mb-4">
-          The page you&apos;re looking for isn&apos;t in our opening book — it may have been
+          The page you&apos;re looking for isn&apos;t in our opening book, it may have been
           moved, captured, or never existed.
         </p>
 
@@ -47,15 +47,6 @@ export default function NotFound() {
           <Link href="/chess" className="btn btn-outline-secondary rounded-0 px-4">
             Play Chess
           </Link>
-        </div>
-
-        <div className="mt-4 small text-muted">
-          Or try a puzzle:{" "}
-          <Link href="/mate-in-1" className="link-info text-decoration-none">Mate in 1</Link>
-          {" · "}
-          <Link href="/mate-in-2" className="link-info text-decoration-none">Mate in 2</Link>
-          {" · "}
-          <Link href="/king-and-pawn" className="link-info text-decoration-none">King &amp; Pawn</Link>
         </div>
       </div>
     </div>

@@ -6,11 +6,26 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInAnonymously,
   updateProfile,
   signOut,
   type User,
 } from "firebase/auth";
 import { auth, googleProvider, firebaseEnabled } from "./lib/firebase";
+import AuthModal, { type AuthMode } from "./AuthModal";
+
+/** Deterministic guest display name seeded by the user's UID, e.g. "playerKxqwza". */
+export function guestName(uid: string): string {
+  let h = 0;
+  for (let i = 0; i < uid.length; i++) h = (h * 31 + uid.charCodeAt(i)) >>> 0;
+  const chars = "abcdefghijklmnopqrstuvwxyz";
+  let s = "";
+  for (let i = 0; i < 6; i++) {
+    h = (h * 1103515245 + 12345) >>> 0;
+    s += chars[h % 26];
+  }
+  return "player" + s;
+}
 
 interface AuthContextValue {
   user: User | null;
@@ -19,7 +34,10 @@ interface AuthContextValue {
   signUp: (username: string, email: string, password: string) => Promise<void>;
   logIn: (email: string, password: string) => Promise<void>;
   logInWithGoogle: () => Promise<void>;
+  logInAnon: () => Promise<void>;
   logOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+  openAuth: (mode: AuthMode) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -33,6 +51,8 @@ export function useAuth(): AuthContextValue {
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [, setTick] = useState(0);
+  const [authMode, setAuthMode] = useState<AuthMode | null>(null);
 
   useEffect(() => {
     if (!auth) {
@@ -65,16 +85,45 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     await signInWithPopup(auth, googleProvider);
   }
 
+  async function logInAnon() {
+    if (!auth) throw new Error("Authentication isn't configured.");
+    const cred = await signInAnonymously(auth);
+    // Give guests a stable, UID-seeded display name.
+    await updateProfile(cred.user, { displayName: guestName(cred.user.uid) });
+    await cred.user.reload();
+    setUser(auth.currentUser);
+  }
+
   async function logOut() {
     if (!auth) return;
     await signOut(auth);
   }
 
+  // Re-read the current user (e.g. after a displayName change) and force consumers to update.
+  async function refreshUser() {
+    if (!auth?.currentUser) return;
+    await auth.currentUser.reload();
+    setUser(auth.currentUser);
+    setTick((t) => t + 1);
+  }
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, enabled: firebaseEnabled, signUp, logIn, logInWithGoogle, logOut }}
+      value={{
+        user,
+        loading,
+        enabled: firebaseEnabled,
+        signUp,
+        logIn,
+        logInWithGoogle,
+        logInAnon,
+        logOut,
+        refreshUser,
+        openAuth: setAuthMode,
+      }}
     >
       {children}
+      {authMode && <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />}
     </AuthContext.Provider>
   );
 }

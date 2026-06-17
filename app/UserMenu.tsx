@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import type { User } from "firebase/auth";
 import { useAuth } from "./AuthProvider";
 
@@ -74,12 +75,12 @@ export default function UserMenu({ user }: { user: User }) {
           className="dropdown-menu show rounded-0 shadow position-absolute end-0 mt-1"
           style={{ display: "block", minWidth: 200, zIndex: 1055 }}
         >
-          <a className="dropdown-item d-flex align-items-center gap-2 py-2" href="#" onClick={() => setOpen(false)}>
+          <Link className="dropdown-item d-flex align-items-center gap-2 py-2" href="/profile" onClick={() => setOpen(false)}>
             <GearIcon /> Settings
-          </a>
-          <a className="dropdown-item d-flex align-items-center gap-2 py-2" href="#" onClick={() => setOpen(false)}>
+          </Link>
+          <Link className="dropdown-item d-flex align-items-center gap-2 py-2" href="/profile" onClick={() => setOpen(false)}>
             <WrenchIcon /> Account
-          </a>
+          </Link>
           <hr className="dropdown-divider my-1" />
           <button
             className="dropdown-item d-flex align-items-center gap-2 py-2"

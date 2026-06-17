@@ -35,7 +35,7 @@ export default function AuthModal({
   onClose: () => void;
 }) {
   const isSignup = mode === "signup";
-  const { signUp, logIn, logInWithGoogle, enabled } = useAuth();
+  const { signUp, logIn, logInWithGoogle, logInAnon, enabled } = useAuth();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -90,6 +90,23 @@ export default function AuthModal({
     setBusy(true);
     try {
       await logInWithGoogle();
+      onClose();
+    } catch (err) {
+      setError(friendlyError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleGuest() {
+    setError(null);
+    if (!enabled) {
+      setError("Authentication isn't configured yet.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await logInAnon();
       onClose();
     } catch (err) {
       setError(friendlyError(err));
@@ -232,8 +249,14 @@ export default function AuthModal({
             </div>
           )}
 
+          <div className="text-center mt-3">
+            <button type="button" className="btn btn-link btn-sm text-decoration-none text-muted" onClick={handleGuest} disabled={busy}>
+              or continue as a guest
+            </button>
+          </div>
+
           {/* Footer */}
-          <div className="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+          <div className="d-flex justify-content-end gap-2 mt-3 pt-3 border-top">
             <button type="button" className="btn btn-outline-secondary rounded-0" onClick={onClose} disabled={busy}>
               Close
             </button>

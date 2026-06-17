@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { totalScore } from "./lib/scores";
-import AuthModal, { type AuthMode } from "./AuthModal";
 import UserMenu from "./UserMenu";
 import { useAuth } from "./AuthProvider";
 
@@ -71,8 +70,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [score, setScore] = useState(0);
-  const [authMode, setAuthMode] = useState<AuthMode | null>(null);
-  const { user } = useAuth();
+  const { user, openAuth } = useAuth();
 
   useEffect(() => {
     setScore(totalScore());
@@ -143,8 +141,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 <UserMenu user={user} />
               ) : (
                 <>
-                  <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => setAuthMode("signup")}>Sign up</button>
-                  <button className="btn btn-info text-white rounded-0" onClick={() => setAuthMode("login")}>Log in</button>
+                  <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => openAuth("signup")}>Sign up</button>
+                  <button className="btn btn-info text-white rounded-0" onClick={() => openAuth("login")}>Log in</button>
                 </>
               )}
               <button
@@ -223,7 +221,6 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {authMode && <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />}
     </>
   );
 }
