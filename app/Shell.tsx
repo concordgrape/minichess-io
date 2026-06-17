@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { totalScore } from "./lib/scores";
 import AuthModal, { type AuthMode } from "./AuthModal";
+import UserMenu from "./UserMenu";
+import { useAuth } from "./AuthProvider";
 
 const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
   const [endgamesOpen, setEndgamesOpen] = useState(false);
@@ -70,6 +72,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [score, setScore] = useState(0);
   const [authMode, setAuthMode] = useState<AuthMode | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     setScore(totalScore());
@@ -136,8 +139,14 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
             {/* Right: action buttons */}
             <div className="d-flex align-items-center gap-2">
-              <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => setAuthMode("signup")}>Sign up</button>
-              <button className="btn btn-info text-white rounded-0" onClick={() => setAuthMode("login")}>Log in</button>
+              {user ? (
+                <UserMenu user={user} />
+              ) : (
+                <>
+                  <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => setAuthMode("signup")}>Sign up</button>
+                  <button className="btn btn-info text-white rounded-0" onClick={() => setAuthMode("login")}>Log in</button>
+                </>
+              )}
               <button
                 className="btn btn-outline-secondary rounded-0 d-inline-flex align-items-center justify-content-center"
                 onClick={() => setDark((d) => !d)}
