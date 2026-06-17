@@ -70,6 +70,16 @@ button.sidebar-link {
   cursor: pointer;
 }
 
+/* Homepage game grid tiles */
+.game-tile {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  cursor: pointer;
+}
+.game-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
 .game-card {
   border: 2px solid #dee2e6;
   border-radius: 0;
