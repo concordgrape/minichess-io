@@ -11,11 +11,8 @@ export interface SolitairePiece {
 }
 
 export interface PuzzleDef {
-  id: string;
-  title: string;
+  id: number;
   difficulty: Difficulty;
-  description?: string;
-  dailyDate?: string;
   pieces: { type: PieceType; color: PieceColor; row: number; col: number }[];
 }
 

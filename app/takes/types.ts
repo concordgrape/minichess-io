@@ -8,10 +8,8 @@ export interface Piece {
 }
 
 export interface Puzzle {
-  id: string;
-  title: string;
+  id: number;
   difficulty: "easy" | "medium" | "hard";
-  description: string;
   pieces: Piece[];
 }
 

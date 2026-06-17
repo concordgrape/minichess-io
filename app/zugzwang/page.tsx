@@ -18,7 +18,7 @@ export default async function ZugzwangPage() {
     <div>
       <h1 className="h4 mb-1">Zugzwang</h1>
       <p className="text-muted mb-4">Find the quiet waiting move that forces Black into a losing reply, then mate.</p>
-      <MateGame puzzles={puzzles} mateIn={2} />
+      <MateGame puzzles={puzzles} mateIn={2} slug="zugzwang" />
     </div>
   );
 }

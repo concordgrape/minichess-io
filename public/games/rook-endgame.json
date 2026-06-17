@@ -1,9 +1,7 @@
 [
   {
-    "id": "end-rook",
-    "title": "Rook Endgame",
+    "id": 1,
     "difficulty": "medium",
-    "fen": "7k/8/5K2/8/8/8/8/2R5 w - - 0 1",
-    "description": "King and rook versus king. Use the rook to cut off the back rank while your king takes the opposition."
+    "fen": "7k/8/5K2/8/8/8/8/2R5 w - - 0 1"
   }
 ]

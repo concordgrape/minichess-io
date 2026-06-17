@@ -11,11 +11,8 @@ export interface Square {
 export type Board = (PieceCode | null)[][];
 
 export interface Puzzle {
-  id: string;
-  title: string;
+  id: number;
   difficulty: "easy" | "medium" | "hard";
-  mateIn: number;
-  description: string;
   board: Board;
 }
 

@@ -37,10 +37,9 @@ function makePieces(defs: PuzzleDef["pieces"]): SolitairePiece[] {
 
 interface Props {
   puzzles: PuzzleDef[];
-  todayKey: string; // YYYY-MM-DD
 }
 
-export default function SolitaireGame({ puzzles, todayKey }: Props) {
+export default function SolitaireGame({ puzzles }: Props) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
@@ -53,7 +52,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
   const [lastMove, setLastMove] = useState<{ from: { row: number; col: number }; to: { row: number; col: number } } | null>(null);
   const [flash, setFlash] = useState<{ row: number; col: number } | null>(null); // capture flash
   const [hintId, setHintId] = useState<string | null>(null);
-  const [completed, setCompleted] = useState<Set<string>>(() => {
+  const [completed, setCompleted] = useState<Set<number>>(() => {
     try { return new Set(JSON.parse(localStorage.getItem("sol_completed") ?? "[]")); }
     catch { return new Set(); }
   });
@@ -62,8 +61,6 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const dailyPuzzle = puzzles.find((p) => p.dailyDate === todayKey);
-  const dailyIdx = dailyPuzzle ? puzzles.indexOf(dailyPuzzle) : -1;
 
   const resetPuzzle = useCallback((idx: number) => {
     const p = puzzles[idx];
@@ -101,7 +98,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
       const pts = calcPoints(puzzle.difficulty, pieces.length, undoCount);
       const updated = markCompleted(puzzle.id, pts);
       setEarnedPoints(pts);
-      saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+      saveScore({ puzzleId: `chess-solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setCompleted(updated);
     } else if (!hasAnyCapture(next)) {
       setPieces(next);
@@ -111,7 +108,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
     }
   }
 
-  function markCompleted(id: string, pts: number): Set<string> {
+  function markCompleted(id: number, pts: number): Set<number> {
     const updated = new Set(completed).add(id);
     try { localStorage.setItem("sol_completed", JSON.stringify([...updated])); } catch {}
     return updated;
@@ -277,7 +274,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
           >
             {puzzles.map((p, i) => (
               <option key={p.id} value={i}>
-                {i === dailyIdx ? "★ " : ""}{completed.has(p.id) ? "✓ " : ""}{p.title} — {DIFF_LABEL[p.difficulty]}
+                {completed.has(p.id) ? "✓ " : ""}Puzzle {p.id} — {DIFF_LABEL[p.difficulty]}
               </option>
             ))}
           </select>
@@ -285,12 +282,8 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
             <span className={`badge bg-${DIFF_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 12, padding: "4px 8px" }}>
               {DIFF_LABEL[puzzle.difficulty]}
             </span>
-            <strong>{puzzle.title}</strong>
-            {puzzle.dailyDate && <span className="badge bg-warning text-dark rounded-0">★ Daily</span>}
+            <strong>Puzzle #{puzzle.id}</strong>
           </div>
-          {puzzle.description && (
-            <p className="text-muted small mb-3">{puzzle.description}</p>
-          )}
 
           {/* Progress pips */}
           <div className="mb-3">
@@ -315,7 +308,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
             <div className="small">
               <div className="fw-semibold mb-1">Moves</div>
               <div style={{ maxHeight: 300, overflowY: "auto" }}>
-                <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "monospace", fontSize: 11 }}>
+                <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "", fontSize: 11 }}>
                   <thead><tr><th>#</th><th>Piece</th><th>Captures</th></tr></thead>
                   <tbody>
                     {history.map((m, i) => (
@@ -369,7 +362,7 @@ export default function SolitaireGame({ puzzles, todayKey }: Props) {
           >
             <div style={{ fontSize: 48 }}>♛</div>
             <h4 className="fw-bold text-success mt-2">Puzzle Solved!</h4>
-            <p className="text-muted mb-1">{puzzle.title}</p>
+            <p className="text-muted mb-1">Puzzle #{puzzle.id}</p>
             <p className="small text-muted mb-3">Completed in {totalMoves} move{totalMoves !== 1 ? "s" : ""}</p>
             {earnedPoints !== null && (
               <div className="badge text-bg-warning rounded-0 fs-6 mb-3">+{earnedPoints} pts</div>

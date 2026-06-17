@@ -13,6 +13,9 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 
 const STORAGE_VERSION = "smothered-v1";
 
+// mate-in-N is hardcoded by difficulty (puzzle JSON only carries id/difficulty/board).
+const MATE_BY_DIFF: Record<"easy" | "medium" | "hard", number> = { easy: 2, medium: 3, hard: 4 };
+
 const PIECE_NAMES: Record<string, string> = {
   k: "king", p: "pawn", r: "rook",
   Q: "queen", R: "rook", B: "bishop", N: "knight", K: "king", P: "pawn",
@@ -31,7 +34,7 @@ interface HistoryEntry {
 }
 
 interface SavedState {
-  puzzleId: string;
+  puzzleId: number;
   board: BoardType;
   history: HistoryEntry[];
   status: GameStatus;
@@ -39,9 +42,9 @@ interface SavedState {
   undoCount: number;
 }
 
-function storageKey(puzzleId: string) { return `${STORAGE_VERSION}-${puzzleId}`; }
+function storageKey(puzzleId: number) { return `${STORAGE_VERSION}-${puzzleId}`; }
 
-function loadSaved(puzzleId: string): SavedState | null {
+function loadSaved(puzzleId: number): SavedState | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(storageKey(puzzleId));
@@ -60,6 +63,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
+  const mateIn = MATE_BY_DIFF[puzzle.difficulty];
 
   const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
 
@@ -67,7 +71,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalSquares, setLegalSquares] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>(() => saved?.status ?? "playing");
-  const [movesLeft, setMovesLeft] = useState(() => saved?.movesLeft ?? puzzle.mateIn);
+  const [movesLeft, setMovesLeft] = useState(() => saved?.movesLeft ?? mateIn);
   const [history, setHistory] = useState<HistoryEntry[]>(() => saved?.history ?? []);
   const [kingThinking, setKingThinking] = useState(false);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
@@ -92,7 +96,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
     setBoard(sv?.board ?? p.board.map((r) => [...r]));
     setSelected(null); setLegalSquares([]);
     setStatus(sv?.status ?? "playing");
-    setMovesLeft(sv?.movesLeft ?? p.mateIn);
+    setMovesLeft(sv?.movesLeft ?? MATE_BY_DIFF[p.difficulty]);
     setHistory(sv?.history ?? []);
     setKingThinking(false);
     setLastMove(null);
@@ -118,8 +122,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
         // Check terminal after black moves
         if (isCheckmate(next)) {
           if (knightDeliversMate(next)) {
-            const pts = smotheredPoints(puzzle.mateIn, puzzle.difficulty, undoCount);
-            saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+            const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
+            saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
             setEarnedPoints(pts);
             setStatus("won");
           } else {
@@ -160,8 +164,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
     // Immediate terminal check (before black moves)
     if (isCheckmate(next)) {
       if (knightDeliversMate(next)) {
-        const pts = smotheredPoints(puzzle.mateIn, puzzle.difficulty, undoCount);
-        saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+        const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
+        saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
         setEarnedPoints(pts);
         setBoard(next); setStatus("won");
       } else {
@@ -222,8 +226,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
   const king = findKing(board);
   const kingInCheck = isInCheck(board);
   const canInteract = status === "playing" && !kingThinking;
-  const moveNum = puzzle.mateIn - movesLeft + 1;
-  const potentialPoints = smotheredPoints(puzzle.mateIn, puzzle.difficulty, undoCount);
+  const moveNum = mateIn - movesLeft + 1;
+  const potentialPoints = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
   const knightPulse = canInteract && knightCanMateNextMove(board);
 
   // Build BoardPieces
@@ -299,7 +303,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
               <span className="text-muted small">
                 {kingThinking
                   ? "King is thinking…"
-                  : `Move ${moveNum} of ${puzzle.mateIn} — your turn`}
+                  : `Move ${moveNum} of ${mateIn} — your turn`}
                 {kingInCheck && !kingThinking && (
                   <span className="ms-1 fw-semibold" style={{ color: "#ff9900" }}>· Check!</span>
                 )}
@@ -344,7 +348,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
                 const p = puzzles[puzzleIdx];
                 setBoard(p.board.map((r) => [...r]));
                 setSelected(null); setLegalSquares([]);
-                setStatus("playing"); setMovesLeft(p.mateIn);
+                setStatus("playing"); setMovesLeft(MATE_BY_DIFF[p.difficulty]);
                 setHistory([]); setKingThinking(false);
                 setLastMove(null); setUndoCount(0); setEarnedPoints(null);
                 setPendingBlack(null); setWrongPieceFlash(false);
@@ -364,24 +368,23 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
               aria-label="Select puzzle"
             >
               {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>{p.title} — {p.difficulty}</option>
+                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
               ))}
             </select>
           )}
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
-              Mate in {puzzle.mateIn}
+              Mate in {mateIn}
             </span>
-            <strong>{puzzle.title}</strong>
+            <strong>Puzzle #{puzzle.id}</strong>
           </div>
-          <p className="text-muted small mb-3">{puzzle.description}</p>
 
           {/* Move progress dots */}
           <div className="d-flex gap-1 mb-3">
-            {Array.from({ length: puzzle.mateIn }, (_, i) => (
+            {Array.from({ length: mateIn }, (_, i) => (
               <div key={i} style={{
                 width: 18, height: 18, borderRadius: "50%",
-                backgroundColor: i < puzzle.mateIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
+                backgroundColor: i < mateIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
                 border: "1px solid #888",
               }} />
             ))}
@@ -392,7 +395,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
             <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
               <li>You play White.</li>
               <li>The black King's own pieces trap it.</li>
-              <li>Deliver checkmate in {puzzle.mateIn} move{puzzle.mateIn > 1 ? "s" : ""}.</li>
+              <li>Deliver checkmate in {mateIn} move{mateIn > 1 ? "s" : ""}.</li>
               <li className="fw-semibold" style={{ color: "var(--bs-body-color)" }}>
                 The Knight must deliver the final blow.
               </li>
@@ -403,7 +406,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
           {history.length > 0 && (
             <div className="small">
               <div className="fw-semibold mb-1">Moves</div>
-              <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "monospace", fontSize: 12 }}>
+              <table className="table table-sm table-bordered mb-0" style={{ fontSize: 12 }}>
                 <thead><tr><th>#</th><th>White</th><th>Black</th></tr></thead>
                 <tbody>
                   {history.map((h, i) => {

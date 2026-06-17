@@ -1,127 +1,410 @@
 [
   {
-    "id": "sol-easy-01",
-    "title": "The Convergence",
+    "id": 1,
     "difficulty": "easy",
-    "description": "Four hunters, one target. The Queen opens the way.",
     "pieces": [
-      { "type": "P", "color": "w", "row": 3, "col": 4 },
-      { "type": "N", "color": "b", "row": 5, "col": 3 },
-      { "type": "B", "color": "w", "row": 5, "col": 2 },
-      { "type": "R", "color": "b", "row": 7, "col": 4 },
-      { "type": "Q", "color": "w", "row": 0, "col": 7 }
+      {
+        "type": "P",
+        "color": "w",
+        "row": 3,
+        "col": 4
+      },
+      {
+        "type": "N",
+        "color": "b",
+        "row": 5,
+        "col": 3
+      },
+      {
+        "type": "B",
+        "color": "w",
+        "row": 5,
+        "col": 2
+      },
+      {
+        "type": "R",
+        "color": "b",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "type": "Q",
+        "color": "w",
+        "row": 0,
+        "col": 7
+      }
     ]
   },
   {
-    "id": "sol-easy-02",
-    "title": "The Cross",
+    "id": 2,
     "difficulty": "easy",
-    "description": "Three pieces surround the Rook. Choose your order.",
     "pieces": [
-      { "type": "R", "color": "w", "row": 4, "col": 0 },
-      { "type": "B", "color": "b", "row": 2, "col": 2 },
-      { "type": "Q", "color": "w", "row": 0, "col": 0 },
-      { "type": "N", "color": "b", "row": 6, "col": 1 }
+      {
+        "type": "R",
+        "color": "w",
+        "row": 4,
+        "col": 0
+      },
+      {
+        "type": "B",
+        "color": "b",
+        "row": 2,
+        "col": 2
+      },
+      {
+        "type": "Q",
+        "color": "w",
+        "row": 0,
+        "col": 0
+      },
+      {
+        "type": "N",
+        "color": "b",
+        "row": 6,
+        "col": 1
+      }
     ]
   },
   {
-    "id": "sol-easy-03",
-    "title": "Daily Puzzle",
+    "id": 3,
     "difficulty": "easy",
-    "dailyDate": "2026-06-01",
-    "description": "Today's featured puzzle. Pieces fall like dominoes.",
     "pieces": [
-      { "type": "R", "color": "w", "row": 7, "col": 0 },
-      { "type": "P", "color": "b", "row": 5, "col": 0 },
-      { "type": "Q", "color": "w", "row": 5, "col": 4 },
-      { "type": "B", "color": "b", "row": 3, "col": 2 },
-      { "type": "N", "color": "w", "row": 1, "col": 1 }
+      {
+        "type": "R",
+        "color": "w",
+        "row": 7,
+        "col": 0
+      },
+      {
+        "type": "P",
+        "color": "b",
+        "row": 5,
+        "col": 0
+      },
+      {
+        "type": "Q",
+        "color": "w",
+        "row": 5,
+        "col": 4
+      },
+      {
+        "type": "B",
+        "color": "b",
+        "row": 3,
+        "col": 2
+      },
+      {
+        "type": "N",
+        "color": "w",
+        "row": 1,
+        "col": 1
+      }
     ]
   },
   {
-    "id": "sol-medium-01",
-    "title": "Spider Web",
+    "id": 4,
     "difficulty": "medium",
-    "description": "Eight pieces trapped in a web. Find the thread that unravels it.",
     "pieces": [
-      { "type": "N", "color": "b", "row": 1, "col": 1 },
-      { "type": "P", "color": "w", "row": 1, "col": 5 },
-      { "type": "R", "color": "w", "row": 2, "col": 2 },
-      { "type": "B", "color": "b", "row": 2, "col": 6 },
-      { "type": "N", "color": "w", "row": 3, "col": 3 },
-      { "type": "Q", "color": "b", "row": 3, "col": 7 },
-      { "type": "P", "color": "b", "row": 4, "col": 0 },
-      { "type": "N", "color": "b", "row": 4, "col": 4 },
-      { "type": "B", "color": "w", "row": 5, "col": 1 },
-      { "type": "R", "color": "b", "row": 5, "col": 5 },
-      { "type": "N", "color": "w", "row": 6, "col": 2 },
-      { "type": "P", "color": "w", "row": 6, "col": 6 },
-      { "type": "K", "color": "b", "row": 7, "col": 3 }
+      {
+        "type": "N",
+        "color": "b",
+        "row": 1,
+        "col": 1
+      },
+      {
+        "type": "P",
+        "color": "w",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "type": "R",
+        "color": "w",
+        "row": 2,
+        "col": 2
+      },
+      {
+        "type": "B",
+        "color": "b",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "type": "N",
+        "color": "w",
+        "row": 3,
+        "col": 3
+      },
+      {
+        "type": "Q",
+        "color": "b",
+        "row": 3,
+        "col": 7
+      },
+      {
+        "type": "P",
+        "color": "b",
+        "row": 4,
+        "col": 0
+      },
+      {
+        "type": "N",
+        "color": "b",
+        "row": 4,
+        "col": 4
+      },
+      {
+        "type": "B",
+        "color": "w",
+        "row": 5,
+        "col": 1
+      },
+      {
+        "type": "R",
+        "color": "b",
+        "row": 5,
+        "col": 5
+      },
+      {
+        "type": "N",
+        "color": "w",
+        "row": 6,
+        "col": 2
+      },
+      {
+        "type": "P",
+        "color": "w",
+        "row": 6,
+        "col": 6
+      },
+      {
+        "type": "K",
+        "color": "b",
+        "row": 7,
+        "col": 3
+      }
     ]
   },
   {
-    "id": "sol-medium-02",
-    "title": "The Gauntlet",
+    "id": 5,
     "difficulty": "medium",
-    "description": "Nine pieces across the board. Two Queens tear it apart — if you find the right sequence.",
     "pieces": [
-      { "type": "Q", "color": "w", "row": 1, "col": 5 },
-      { "type": "Q", "color": "b", "row": 3, "col": 4 },
-      { "type": "R", "color": "w", "row": 7, "col": 7 },
-      { "type": "N", "color": "b", "row": 4, "col": 5 },
-      { "type": "B", "color": "w", "row": 6, "col": 1 },
-      { "type": "B", "color": "b", "row": 4, "col": 3 },
-      { "type": "P", "color": "w", "row": 6, "col": 2 },
-      { "type": "P", "color": "b", "row": 0, "col": 7 },
-      { "type": "K", "color": "b", "row": 3, "col": 7 }
+      {
+        "type": "Q",
+        "color": "w",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "type": "Q",
+        "color": "b",
+        "row": 3,
+        "col": 4
+      },
+      {
+        "type": "R",
+        "color": "w",
+        "row": 7,
+        "col": 7
+      },
+      {
+        "type": "N",
+        "color": "b",
+        "row": 4,
+        "col": 5
+      },
+      {
+        "type": "B",
+        "color": "w",
+        "row": 6,
+        "col": 1
+      },
+      {
+        "type": "B",
+        "color": "b",
+        "row": 4,
+        "col": 3
+      },
+      {
+        "type": "P",
+        "color": "w",
+        "row": 6,
+        "col": 2
+      },
+      {
+        "type": "P",
+        "color": "b",
+        "row": 0,
+        "col": 7
+      },
+      {
+        "type": "K",
+        "color": "b",
+        "row": 3,
+        "col": 7
+      }
     ]
   },
   {
-    "id": "sol-hard-01",
-    "title": "The Maze",
+    "id": 6,
     "difficulty": "hard",
-    "description": "Seven pieces, seven solutions. Most attempts dead-end — only a handful clear the board.",
     "pieces": [
-      { "type": "Q", "color": "w", "row": 7, "col": 5 },
-      { "type": "R", "color": "b", "row": 0, "col": 2 },
-      { "type": "N", "color": "w", "row": 3, "col": 4 },
-      { "type": "B", "color": "b", "row": 6, "col": 3 },
-      { "type": "P", "color": "w", "row": 0, "col": 0 },
-      { "type": "P", "color": "b", "row": 6, "col": 6 },
-      { "type": "K", "color": "b", "row": 5, "col": 3 }
+      {
+        "type": "Q",
+        "color": "w",
+        "row": 7,
+        "col": 5
+      },
+      {
+        "type": "R",
+        "color": "b",
+        "row": 0,
+        "col": 2
+      },
+      {
+        "type": "N",
+        "color": "w",
+        "row": 3,
+        "col": 4
+      },
+      {
+        "type": "B",
+        "color": "b",
+        "row": 6,
+        "col": 3
+      },
+      {
+        "type": "P",
+        "color": "w",
+        "row": 0,
+        "col": 0
+      },
+      {
+        "type": "P",
+        "color": "b",
+        "row": 6,
+        "col": 6
+      },
+      {
+        "type": "K",
+        "color": "b",
+        "row": 5,
+        "col": 3
+      }
     ]
   },
   {
-    "id": "sol-hard-02",
-    "title": "Narrow Gate",
+    "id": 7,
     "difficulty": "hard",
-    "description": "Only two paths clear this board. The first move is critical.",
     "pieces": [
-      { "type": "Q", "color": "w", "row": 2, "col": 0 },
-      { "type": "R", "color": "b", "row": 2, "col": 4 },
-      { "type": "N", "color": "w", "row": 7, "col": 5 },
-      { "type": "B", "color": "b", "row": 1, "col": 7 },
-      { "type": "P", "color": "w", "row": 1, "col": 6 },
-      { "type": "P", "color": "b", "row": 5, "col": 4 },
-      { "type": "K", "color": "b", "row": 1, "col": 4 }
+      {
+        "type": "Q",
+        "color": "w",
+        "row": 2,
+        "col": 0
+      },
+      {
+        "type": "R",
+        "color": "b",
+        "row": 2,
+        "col": 4
+      },
+      {
+        "type": "N",
+        "color": "w",
+        "row": 7,
+        "col": 5
+      },
+      {
+        "type": "B",
+        "color": "b",
+        "row": 1,
+        "col": 7
+      },
+      {
+        "type": "P",
+        "color": "w",
+        "row": 1,
+        "col": 6
+      },
+      {
+        "type": "P",
+        "color": "b",
+        "row": 5,
+        "col": 4
+      },
+      {
+        "type": "K",
+        "color": "b",
+        "row": 1,
+        "col": 4
+      }
     ]
   },
   {
-    "id": "sol-expert-01",
-    "title": "Full Board",
+    "id": 8,
     "difficulty": "expert",
-    "description": "Ten pieces across the full board. Every type in play — only 4 paths survive.",
     "pieces": [
-      { "type": "Q", "color": "w", "row": 7, "col": 3 },
-      { "type": "K", "color": "b", "row": 0, "col": 4 },
-      { "type": "R", "color": "w", "row": 7, "col": 7 },
-      { "type": "R", "color": "b", "row": 0, "col": 0 },
-      { "type": "N", "color": "w", "row": 5, "col": 5 },
-      { "type": "N", "color": "b", "row": 2, "col": 2 },
-      { "type": "B", "color": "w", "row": 6, "col": 0 },
-      { "type": "B", "color": "b", "row": 1, "col": 7 },
-      { "type": "P", "color": "w", "row": 4, "col": 2 },
-      { "type": "P", "color": "b", "row": 3, "col": 5 }
+      {
+        "type": "Q",
+        "color": "w",
+        "row": 7,
+        "col": 3
+      },
+      {
+        "type": "K",
+        "color": "b",
+        "row": 0,
+        "col": 4
+      },
+      {
+        "type": "R",
+        "color": "w",
+        "row": 7,
+        "col": 7
+      },
+      {
+        "type": "R",
+        "color": "b",
+        "row": 0,
+        "col": 0
+      },
+      {
+        "type": "N",
+        "color": "w",
+        "row": 5,
+        "col": 5
+      },
+      {
+        "type": "N",
+        "color": "b",
+        "row": 2,
+        "col": 2
+      },
+      {
+        "type": "B",
+        "color": "w",
+        "row": 6,
+        "col": 0
+      },
+      {
+        "type": "B",
+        "color": "b",
+        "row": 1,
+        "col": 7
+      },
+      {
+        "type": "P",
+        "color": "w",
+        "row": 4,
+        "col": 2
+      },
+      {
+        "type": "P",
+        "color": "b",
+        "row": 3,
+        "col": 5
+      }
     ]
   }
 ]

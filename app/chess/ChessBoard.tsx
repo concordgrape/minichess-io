@@ -204,7 +204,7 @@ export default function ChessBoard() {
           </select>
         </div>
         <div style={{ maxHeight: 480, overflowY: "auto" }}>
-        <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "monospace", fontSize: 13 }}>
+        <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "", fontSize: 13 }}>
           <colgroup><col style={{ width: 36 }} /><col style={{ width: 80 }} /><col style={{ width: 80 }} /></colgroup>
           <thead className="table-light sticky-top"><tr><th>#</th><th>White</th><th>Black</th></tr></thead>
           <tbody>

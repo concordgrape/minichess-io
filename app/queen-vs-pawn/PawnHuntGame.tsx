@@ -25,7 +25,7 @@ function rowColToSq(row: number, col: number): Square {
   return `${String.fromCharCode(97 + col)}${8 - row}` as Square;
 }
 
-export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
+export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzzle[]; winIn?: number }) {
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
   const player: Color = "w";
@@ -36,7 +36,7 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
-  const [movesLeft, setMovesLeft] = useState(puzzles[0].winIn);
+  const [movesLeft, setMovesLeft] = useState(winIn);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [defending, setDefending] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
@@ -51,15 +51,15 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
     setPuzzleIdx(idx);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
-    setStatus("playing"); setMovesLeft(puzzles[idx].winIn);
+    setStatus("playing"); setMovesLeft(winIn);
     setLastMove(null); setDefending(false);
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
   }, [chess, puzzles]);
 
   function award() {
-    const pts = pawnPoints(puzzle.winIn, puzzle.difficulty, undoCount);
-    saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+    const pts = pawnPoints(winIn, puzzle.difficulty, undoCount);
+    saveScore({ puzzleId: `queen-vs-pawn-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("won");
   }
@@ -124,7 +124,7 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
     if (defending || chess.history().length === 0) return;
     if (chess.turn() === player) chess.undo();
     chess.undo();
-    setMovesLeft((m) => Math.min(puzzle.winIn, m + 1));
+    setMovesLeft((m) => Math.min(winIn, m + 1));
     setUndoCount((n) => n + 1);
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setLastMove(null); setEarnedPoints(null);
@@ -134,8 +134,8 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
 
   const canInteract = status === "playing" && !defending;
   const history = chess.history();
-  const moveNum = puzzle.winIn - movesLeft + 1;
-  const potentialPoints = pawnPoints(puzzle.winIn, puzzle.difficulty, undoCount);
+  const moveNum = winIn - movesLeft + 1;
+  const potentialPoints = pawnPoints(winIn, puzzle.difficulty, undoCount);
 
   const pieces: BoardPiece[] = [];
   board.forEach((rowArr, row) => {
@@ -181,7 +181,7 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (
               <span className="text-muted small">
-                {defending ? "Black is pushing…" : `Move ${moveNum} of ${puzzle.winIn} — win the pawn`}
+                {defending ? "Black is pushing…" : `Move ${moveNum} of ${winIn} — win the pawn`}
               </span>
             )}
             {status === "won" && (
@@ -217,22 +217,21 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
               aria-label="Select puzzle"
             >
               {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>{p.title} — {p.difficulty}</option>
+                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
               ))}
             </select>
           )}
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
-              Win in {puzzle.winIn}
+              Win in {winIn}
             </span>
-            <strong>{puzzle.title}</strong>
+            <strong>Puzzle #{puzzle.id}</strong>
           </div>
-          <p className="text-muted small mb-3">{puzzle.description}</p>
           <div className="d-flex gap-1 mb-3">
-            {Array.from({ length: puzzle.winIn }, (_, i) => (
+            {Array.from({ length: winIn }, (_, i) => (
               <div key={i} style={{
                 width: 18, height: 18, borderRadius: "50%",
-                backgroundColor: i < puzzle.winIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
+                backgroundColor: i < winIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
                 border: "1px solid #888",
               }} />
             ))}
@@ -241,7 +240,7 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
             <div className="fw-semibold mb-1">Rules</div>
             <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
               <li>You play White (king and queen).</li>
-              <li>Capture the Black pawn within {puzzle.winIn} move{puzzle.winIn > 1 ? "s" : ""}.</li>
+              <li>Capture the Black pawn within {winIn} move{winIn > 1 ? "s" : ""}.</li>
               <li>Black races to promote — if it queens, you lose.</li>
               <li>Use checks to win a tempo and round up the pawn.</li>
             </ul>
@@ -249,7 +248,7 @@ export default function PawnHuntGame({ puzzles }: { puzzles: PawnPuzzle[] }) {
           {history.length > 0 && (
             <div className="small mt-2">
               <div className="fw-semibold mb-1">Moves</div>
-              <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "monospace", fontSize: 12 }}>
+              <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "", fontSize: 12 }}>
                 <thead><tr><th>#</th><th>White</th><th>Black</th></tr></thead>
                 <tbody>
                   {Array.from({ length: Math.ceil(history.length / 2) }, (_, i) => (

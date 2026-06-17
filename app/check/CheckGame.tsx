@@ -12,6 +12,9 @@ import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 
 const STORAGE_VERSION = "check-v1";
 
+// mate-in-N is hardcoded by difficulty (puzzle JSON only carries id/difficulty/board).
+const MATE_BY_DIFF: Record<"easy" | "medium" | "hard", number> = { easy: 2, medium: 3, hard: 4 };
+
 const PIECE_NAMES: Record<string, string> = {
   k: "king", p: "pawn", R: "rook", B: "bishop", N: "knight", Q: "queen", K: "king", P: "pawn",
 };
@@ -29,7 +32,7 @@ interface HistoryEntry {
 }
 
 interface SavedState {
-  puzzleId: string;
+  puzzleId: number;
   board: BoardType;
   history: HistoryEntry[];
   status: GameStatus;
@@ -37,9 +40,9 @@ interface SavedState {
   undoCount: number;
 }
 
-function storageKey(puzzleId: string) { return `${STORAGE_VERSION}-${puzzleId}`; }
+function storageKey(puzzleId: number) { return `${STORAGE_VERSION}-${puzzleId}`; }
 
-function loadSaved(puzzleId: string): SavedState | null {
+function loadSaved(puzzleId: number): SavedState | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(storageKey(puzzleId));
@@ -58,6 +61,7 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
+  const mateIn = MATE_BY_DIFF[puzzle.difficulty];
 
   const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
 
@@ -65,7 +69,7 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalSquares, setLegalSquares] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>(() => saved?.status ?? "playing");
-  const [movesLeft, setMovesLeft] = useState(() => saved?.movesLeft ?? puzzle.mateIn);
+  const [movesLeft, setMovesLeft] = useState(() => saved?.movesLeft ?? mateIn);
   const [history, setHistory] = useState<HistoryEntry[]>(() => saved?.history ?? []);
   const [kingThinking, setKingThinking] = useState(false);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
@@ -89,7 +93,7 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
     setBoard(saved?.board ?? p.board.map((r) => [...r]));
     setSelected(null); setLegalSquares([]);
     setStatus(saved?.status ?? "playing");
-    setMovesLeft(saved?.movesLeft ?? p.mateIn);
+    setMovesLeft(saved?.movesLeft ?? MATE_BY_DIFF[p.difficulty]);
     setHistory(saved?.history ?? []);
     setKingThinking(false);
     setLastMove(null);
@@ -113,8 +117,8 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
         });
         if (isCheckmate(next)) {
           setStatus("checkmate");
-          const pts = checkPoints(puzzle.mateIn, puzzle.difficulty, undoCount);
-          saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+          const pts = checkPoints(mateIn, puzzle.difficulty, undoCount);
+          saveScore({ puzzleId: `check-${puzzle.id}`, points: pts, earnedAt: Date.now() });
           setEarnedPoints(pts);
         } else if (isStalemate(next)) { setStatus("stalemate"); }
       }
@@ -125,8 +129,8 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
   }, [pendingBlack]);
 
   function awardCheckmate(b: BoardType) {
-    const pts = checkPoints(puzzle.mateIn, puzzle.difficulty, undoCount);
-    saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+    const pts = checkPoints(mateIn, puzzle.difficulty, undoCount);
+    saveScore({ puzzleId: `check-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setBoard(b); setStatus("checkmate");
   }
@@ -186,8 +190,8 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
 
   const king = findKing(board);
   const kingInCheck = isInCheck(board);
-  const moveNum = puzzle.mateIn - movesLeft + 1;
-  const potentialPoints = checkPoints(puzzle.mateIn, puzzle.difficulty, undoCount);
+  const moveNum = mateIn - movesLeft + 1;
+  const potentialPoints = checkPoints(mateIn, puzzle.difficulty, undoCount);
   const canInteract = status === "playing" && !kingThinking;
 
   // Build Board props
@@ -235,7 +239,7 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (
               <span className="text-muted small">
-                {kingThinking ? "King is thinking…" : `Move ${moveNum} of ${puzzle.mateIn} — your turn`}
+                {kingThinking ? "King is thinking…" : `Move ${moveNum} of ${mateIn} — your turn`}
                 {kingInCheck && !kingThinking && " · Check!"}
               </span>
             )}
@@ -271,22 +275,21 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
               aria-label="Select puzzle"
             >
               {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>{p.title} — {p.difficulty}</option>
+                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
               ))}
             </select>
           )}
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
-              Mate in {puzzle.mateIn}
+              Mate in {mateIn}
             </span>
-            <strong>{puzzle.title}</strong>
+            <strong>Puzzle #{puzzle.id}</strong>
           </div>
-          <p className="text-muted small mb-3">{puzzle.description}</p>
           <div className="d-flex gap-1 mb-3">
-            {Array.from({ length: puzzle.mateIn }, (_, i) => (
+            {Array.from({ length: mateIn }, (_, i) => (
               <div key={i} style={{
                 width: 18, height: 18, borderRadius: "50%",
-                backgroundColor: i < puzzle.mateIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
+                backgroundColor: i < mateIn - movesLeft ? "var(--bs-success)" : "var(--bs-secondary-bg, #444)",
                 border: "1px solid #888",
               }} />
             ))}
@@ -295,7 +298,7 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
             <div className="fw-semibold mb-1">Rules</div>
             <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
               <li>You play White.</li>
-              <li>Deliver checkmate in exactly {puzzle.mateIn} move{puzzle.mateIn > 1 ? "s" : ""}.</li>
+              <li>Deliver checkmate in exactly {mateIn} move{mateIn > 1 ? "s" : ""}.</li>
               <li>The black King plays its best move automatically.</li>
               <li>Stalemate counts as a loss.</li>
             </ul>
@@ -303,7 +306,7 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
           {history.length > 0 && (
             <div className="small mt-2">
               <div className="fw-semibold mb-1">Moves</div>
-              <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "monospace", fontSize: 12 }}>
+              <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "", fontSize: 12 }}>
                 <thead><tr><th>#</th><th>White</th><th>Black</th></tr></thead>
                 <tbody>
                   {history.map((h, i) => {

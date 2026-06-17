@@ -18,7 +18,7 @@ export default async function MateIn2Page() {
     <div>
       <h1 className="h4 mb-1">Mate in 2</h1>
       <p className="text-muted mb-4">Force checkmate in two moves against Black&apos;s best defense.</p>
-      <MateGame puzzles={puzzles} mateIn={2} />
+      <MateGame puzzles={puzzles} mateIn={2} slug="mate-in-2" />
     </div>
   );
 }

@@ -27,9 +27,12 @@ function rowColToSq(row: number, col: number): Square {
 export default function MateGame({
   puzzles,
   mateIn,
+  slug,
 }: {
   puzzles: MatePuzzle[];
   mateIn: number;
+  /** Route slug used to namespace saved scores (e.g. "mate-in-2"). */
+  slug: string;
 }) {
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
@@ -66,7 +69,7 @@ export default function MateGame({
 
   function award() {
     const pts = matePoints(mateIn, puzzle.difficulty, undoCount);
-    saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+    saveScore({ puzzleId: `${slug}-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("solved");
   }
@@ -236,7 +239,7 @@ export default function MateGame({
               aria-label="Select puzzle"
             >
               {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>{p.title} — {p.difficulty}</option>
+                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
               ))}
             </select>
           )}
@@ -244,9 +247,8 @@ export default function MateGame({
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Mate in {mateIn}
             </span>
-            <strong>{puzzle.title}</strong>
+            <strong>Puzzle #{puzzle.id}</strong>
           </div>
-          <p className="text-muted small mb-3">{puzzle.description}</p>
           <div className="d-flex gap-1 mb-3">
             {Array.from({ length: mateIn }, (_, i) => (
               <div key={i} style={{
@@ -268,7 +270,7 @@ export default function MateGame({
           {history.length > 0 && (
             <div className="small mt-2">
               <div className="fw-semibold mb-1">Moves</div>
-              <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "monospace", fontSize: 12 }}>
+              <table className="table table-sm table-bordered mb-0" style={{ fontFamily: "", fontSize: 12 }}>
                 <thead><tr><th>#</th><th>White</th><th>Black</th></tr></thead>
                 <tbody>
                   {Array.from({ length: Math.ceil(history.length / 2) }, (_, i) => (

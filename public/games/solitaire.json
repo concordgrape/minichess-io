@@ -1,67 +1,172 @@
 [
   {
-    "id": "solitaire-easy-01",
-    "title": "First Steps",
+    "id": 1,
     "difficulty": "easy",
-    "description": "Slide the Rook, become the Pawn, leap as the Knight, finish as the Bishop. One clear path.",
     "board": [
-      ["r", null, null, "p"],
-      [null, null, "n", null],
-      [null, null, null, null],
-      [null, null, null, "b"]
+      [
+        "r",
+        null,
+        null,
+        "p"
+      ],
+      [
+        null,
+        null,
+        "n",
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        "b"
+      ]
     ],
-    "start": { "row": 0, "col": 0 }
+    "start": {
+      "row": 0,
+      "col": 0
+    }
   },
   {
-    "id": "solitaire-easy-02",
-    "title": "The Chain",
+    "id": 2,
     "difficulty": "easy",
-    "description": "Start as a Rook and follow the chain. Two paths exist — find either one.",
     "board": [
-      [null, "p", null, "r"],
-      ["n", null, null, null],
-      [null, null, "p", null],
-      [null, "b", null, null]
+      [
+        null,
+        "p",
+        null,
+        "r"
+      ],
+      [
+        "n",
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        "p",
+        null
+      ],
+      [
+        null,
+        "b",
+        null,
+        null
+      ]
     ],
-    "start": { "row": 0, "col": 3 }
+    "start": {
+      "row": 0,
+      "col": 3
+    }
   },
   {
-    "id": "solitaire-medium-01",
-    "title": "Two Roads",
+    "id": 3,
     "difficulty": "medium",
-    "description": "The Queen has two opening captures. One is a dead end. Choose wisely.",
     "board": [
-      [null, "n", null, null],
-      [null, "r", null, null],
-      [null, null, "p", null],
-      [null, "b", null, "q"]
+      [
+        null,
+        "n",
+        null,
+        null
+      ],
+      [
+        null,
+        "r",
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        "p",
+        null
+      ],
+      [
+        null,
+        "b",
+        null,
+        "q"
+      ]
     ],
-    "start": { "row": 3, "col": 3 }
+    "start": {
+      "row": 3,
+      "col": 3
+    }
   },
   {
-    "id": "solitaire-medium-02",
-    "title": "Knight's Leap",
+    "id": 4,
     "difficulty": "medium",
-    "description": "The Knight can jump two ways. One path leads nowhere — the other clears the board.",
     "board": [
-      [null, null, "k", null],
-      [null, null, "r", null],
-      [null, "b", null, null],
-      [null, null, null, "n"]
+      [
+        null,
+        null,
+        "k",
+        null
+      ],
+      [
+        null,
+        null,
+        "r",
+        null
+      ],
+      [
+        null,
+        "b",
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        "n"
+      ]
     ],
-    "start": { "row": 3, "col": 3 }
+    "start": {
+      "row": 3,
+      "col": 3
+    }
   },
   {
-    "id": "solitaire-hard-01",
-    "title": "Royal Succession",
+    "id": 5,
     "difficulty": "hard",
-    "description": "Start as the King and climb the chain. The Queen opens two routes — both reach the end.",
     "board": [
-      [null, "b", null, null],
-      [null, null, "n", null],
-      [null, null, null, null],
-      [null, "r", "q", "k"]
+      [
+        null,
+        "b",
+        null,
+        null
+      ],
+      [
+        null,
+        null,
+        "n",
+        null
+      ],
+      [
+        null,
+        null,
+        null,
+        null
+      ],
+      [
+        null,
+        "r",
+        "q",
+        "k"
+      ]
     ],
-    "start": { "row": 3, "col": 3 }
+    "start": {
+      "row": 3,
+      "col": 3
+    }
   }
 ]

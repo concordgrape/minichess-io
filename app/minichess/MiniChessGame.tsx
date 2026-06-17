@@ -25,9 +25,9 @@ function pieceImage(code: string): string {
   return `/piece-${PIECE_NAMES[code.toLowerCase()]}-${color}.svg`;
 }
 
-function storageKey(positionId: string) { return `${STORAGE_VERSION}-${positionId}`; }
+function storageKey(positionId: number) { return `${STORAGE_VERSION}-${positionId}`; }
 
-function loadSaved(positionId: string): SavedGame | null {
+function loadSaved(positionId: number): SavedGame | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(storageKey(positionId));

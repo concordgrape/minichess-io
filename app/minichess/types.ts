@@ -15,8 +15,7 @@ export interface Move {
 }
 
 export interface DailyPosition {
-  id: string;
-  date: string;
+  id: number;
   board: Board;
 }
 
@@ -37,7 +36,7 @@ export interface MoveRecord {
 }
 
 export interface SavedGame {
-  positionId: string;
+  positionId: number;
   board: Board;
   history: MoveRecord[];
   turn: Turn;

@@ -30,7 +30,6 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
   const [targets, setTargets] = useState<Piece[]>([]);
   const [history, setHistory] = useState<MoveRecord[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
-  const [showHint, setShowHint] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
 
@@ -39,7 +38,7 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
     setPieces(p.pieces.map((x) => ({ ...x })));
     setSelected(null); setTargets([]);
     setHistory([]); setStatus("playing");
-    setShowHint(false); setUndoCount(0); setEarnedPoints(null);
+    setUndoCount(0); setEarnedPoints(null);
     setPuzzleIdx(idx);
   }, [puzzles]);
 
@@ -60,7 +59,7 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
       setPieces(next); setSelected(null); setTargets([]);
       setStatus("won");
       const pts = takesPoints(puzzle.difficulty, undoCount);
-      saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+      saveScore({ puzzleId: `takes-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
       return;
     }
@@ -165,15 +164,14 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
               aria-label="Select puzzle"
             >
               {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>{p.title} — {p.difficulty}</option>
+                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
               ))}
             </select>
           )}
-          <div className="mb-2">
+          <div className="mb-3">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
-            <strong>{puzzle.title}</strong>
+            <strong>Puzzle #{puzzle.id}</strong>
           </div>
-          <p className="text-muted small mb-3">{puzzle.description}</p>
           <div className="mb-3 small">
             <div className="fw-semibold mb-1">Rules</div>
             <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
@@ -194,10 +192,6 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
               </ol>
             </div>
           )}
-          <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => setShowHint((s) => !s)}>
-            {showHint ? "Hide hint" : "Show hint"}
-          </button>
-          {showHint && <div className="mt-2 small text-muted p-2 border rounded-0">{puzzle.description}</div>}
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ export default async function RookEndgamePage() {
     <div>
       <h1 className="h4 mb-1">Rook Endgame</h1>
       <p className="text-muted mb-4">Cut off the king with the rook and bring your king up to deliver mate.</p>
-      <MateGame puzzles={puzzles} mateIn={2} />
+      <MateGame puzzles={puzzles} mateIn={2} slug="rook-endgame" />
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default async function MateIn1Page() {
     <div>
       <h1 className="h4 mb-1">Mate in 1</h1>
       <p className="text-muted mb-4">Find the single move that delivers checkmate.</p>
-      <MateGame puzzles={puzzles} mateIn={1} />
+      <MateGame puzzles={puzzles} mateIn={1} slug="mate-in-1" />
     </div>
   );
 }

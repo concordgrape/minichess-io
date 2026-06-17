@@ -18,7 +18,7 @@ export default async function KingAndPawnPage() {
     <div>
       <h1 className="h4 mb-1">King and Pawn</h1>
       <p className="text-muted mb-4">Promote the pawn with your king&apos;s support, then deliver checkmate.</p>
-      <MateGame puzzles={puzzles} mateIn={2} />
+      <MateGame puzzles={puzzles} mateIn={2} slug="king-and-pawn" />
     </div>
   );
 }

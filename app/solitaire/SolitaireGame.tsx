@@ -33,7 +33,7 @@ function solitairePoints(
 }
 
 interface SavedState {
-  puzzleId: string;
+  puzzleId: number;
   board: BoardType;
   pos: Square;
   history: HistoryEntry[];
@@ -41,9 +41,9 @@ interface SavedState {
   undoCount: number;
 }
 
-function storageKey(puzzleId: string) { return `${STORAGE_VERSION}-${puzzleId}`; }
+function storageKey(puzzleId: number) { return `${STORAGE_VERSION}-${puzzleId}`; }
 
-function loadSaved(puzzleId: string): SavedState | null {
+function loadSaved(puzzleId: number): SavedState | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(storageKey(puzzleId));
@@ -134,7 +134,7 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
       setLegalCaptures([]);
       setStatus("won");
       const pts = solitairePoints(puzzle.difficulty, pieceCount(puzzle.board.map((r) => [...r])), undoCount);
-      saveScore({ puzzleId: puzzle.id, points: pts, earnedAt: Date.now() });
+      saveScore({ puzzleId: `solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
       return;
     }
@@ -294,15 +294,14 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
               aria-label="Select puzzle"
             >
               {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>{p.title} — {p.difficulty}</option>
+                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
               ))}
             </select>
           )}
           <div className="mb-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
-            <strong>{puzzle.title}</strong>
+            <strong>Puzzle #{puzzle.id}</strong>
           </div>
-          <p className="text-muted small mb-3">{puzzle.description}</p>
 
           {/* Progress pips */}
           <div className="d-flex gap-1 mb-3 flex-wrap">
