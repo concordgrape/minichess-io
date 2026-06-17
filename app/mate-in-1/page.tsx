@@ -10,7 +10,7 @@ export const metadata = {
 
 export default async function MateIn1Page() {
   const file = await readFile(
-    path.join(process.cwd(), "public", "mate-in-1-puzzles.json"),
+    path.join(process.cwd(), "public", "games", "mate-in-1.json"),
     "utf-8"
   );
   const puzzles: MatePuzzle[] = JSON.parse(file);

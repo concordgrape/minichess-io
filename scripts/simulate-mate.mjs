@@ -52,9 +52,9 @@ function bestDefense(chess, horizon) {
 
 let failures = 0;
 for (const [file, n] of [
-  ["public/mate-in-1-puzzles.json", 1],
-  ["public/mate-in-2-puzzles.json", 2],
-  ["public/mate-in-3-puzzles.json", 3],
+  ["public/games/mate-in-1.json", 1],
+  ["public/games/mate-in-2.json", 2],
+  ["public/games/mate-in-3.json", 3],
 ]) {
   const puzzles = JSON.parse(readFileSync(file, "utf-8"));
   for (const p of puzzles) {

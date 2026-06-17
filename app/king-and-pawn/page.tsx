@@ -1,3 +1,5 @@
+import { readFile } from "fs/promises";
+import path from "path";
 import MateGame from "../mate/MateGame";
 import type { MatePuzzle } from "../mate/types";
 
@@ -6,17 +8,12 @@ export const metadata = {
   description: "Solve a king and pawn endgame: promote the pawn with the king's support and deliver checkmate. Free online chess endgame puzzle.",
 };
 
-const puzzles: MatePuzzle[] = [
-  {
-    id: "end-king-pawn",
-    title: "King and Pawn",
-    difficulty: "medium",
-    fen: "8/5KPk/8/8/8/8/8/8 w - - 0 1",
-    description: "The classic king-and-pawn endgame. Promote the pawn — your king guards the queening square — then mate.",
-  },
-];
-
-export default function KingAndPawnPage() {
+export default async function KingAndPawnPage() {
+  const file = await readFile(
+    path.join(process.cwd(), "public", "games", "king-and-pawn.json"),
+    "utf-8"
+  );
+  const puzzles: MatePuzzle[] = JSON.parse(file);
   return (
     <div>
       <h1 className="h4 mb-1">King and Pawn</h1>

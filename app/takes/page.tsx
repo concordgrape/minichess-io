@@ -7,7 +7,7 @@ export const metadata = { title: "MiniChess.io — Takes" };
 
 export default async function TakesPage() {
   const file = await readFile(
-    path.join(process.cwd(), "public", "takes-puzzles.json"),
+    path.join(process.cwd(), "public", "games", "takes.json"),
     "utf-8"
   );
   const puzzles: Puzzle[] = JSON.parse(file);

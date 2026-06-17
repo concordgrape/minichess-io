@@ -10,7 +10,7 @@ export const metadata = {
 
 export default async function QueenPawnPage() {
   const file = await readFile(
-    path.join(process.cwd(), "public", "queen-pawn-puzzles.json"),
+    path.join(process.cwd(), "public", "games", "queen-vs-pawn.json"),
     "utf-8"
   );
   const puzzles: PawnPuzzle[] = JSON.parse(file);

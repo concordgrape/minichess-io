@@ -1,3 +1,5 @@
+import { readFile } from "fs/promises";
+import path from "path";
 import MateGame from "../mate/MateGame";
 import type { MatePuzzle } from "../mate/types";
 
@@ -6,17 +8,12 @@ export const metadata = {
   description: "Solve a zugzwang chess puzzle: find the quiet waiting move that leaves the opponent with no good reply, then checkmate. Free online endgame puzzle.",
 };
 
-const puzzles: MatePuzzle[] = [
-  {
-    id: "end-zugzwang",
-    title: "Zugzwang",
-    difficulty: "hard",
-    fen: "7k/8/5K2/8/8/8/8/5Q2 w - - 0 1",
-    description: "No check works yet. Make a quiet king move — Black is in zugzwang and must step into the mating net.",
-  },
-];
-
-export default function ZugzwangPage() {
+export default async function ZugzwangPage() {
+  const file = await readFile(
+    path.join(process.cwd(), "public", "games", "zugzwang.json"),
+    "utf-8"
+  );
+  const puzzles: MatePuzzle[] = JSON.parse(file);
   return (
     <div>
       <h1 className="h4 mb-1">Zugzwang</h1>

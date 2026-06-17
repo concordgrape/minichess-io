@@ -1,0 +1,9 @@
+[
+  {
+    "id": "end-king-pawn",
+    "title": "King and Pawn",
+    "difficulty": "medium",
+    "fen": "8/5KPk/8/8/8/8/8/8 w - - 0 1",
+    "description": "The classic king-and-pawn endgame. Promote the pawn — your king guards the queening square — then mate."
+  }
+]
