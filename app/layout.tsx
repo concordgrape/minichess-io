@@ -7,7 +7,7 @@ import Shell from "./Shell";
 const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "MiniChess.io",
+  title: "Chessful",
   description: "Play chess puzzles and mini games online",
 };
 

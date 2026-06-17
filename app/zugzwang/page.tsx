@@ -4,7 +4,7 @@ import MateGame from "../mate/MateGame";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "Zugzwang Endgame Puzzle — MiniChess.io",
+  title: "Zugzwang Endgame Puzzle — Chessful",
   description: "Solve a zugzwang chess puzzle: find the quiet waiting move that leaves the opponent with no good reply, then checkmate. Free online endgame puzzle.",
 };
 

@@ -4,7 +4,7 @@ import MateGame from "../mate/MateGame";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "Mate in 1 Puzzles — MiniChess.io",
+  title: "Mate in 1 Puzzles — Chessful",
   description: "Solve mate in 1 chess puzzles. Find the one move that delivers checkmate. Free online chess puzzles for all levels.",
 };
 

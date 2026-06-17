@@ -3,7 +3,7 @@ import path from "path";
 import CheckGame from "./CheckGame";
 import type { Puzzle } from "./types";
 
-export const metadata = { title: "MiniChess.io — Check" };
+export const metadata = { title: "Chessful — Check" };
 
 export default async function CheckPage() {
   const file = await readFile(

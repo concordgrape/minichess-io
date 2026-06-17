@@ -4,7 +4,7 @@ import MateGame from "../mate/MateGame";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "King and Pawn Endgame Puzzle — MiniChess.io",
+  title: "King and Pawn Endgame Puzzle — Chessful",
   description: "Solve a king and pawn endgame: promote the pawn with the king's support and deliver checkmate. Free online chess endgame puzzle.",
 };
 

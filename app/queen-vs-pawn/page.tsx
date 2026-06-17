@@ -4,7 +4,7 @@ import PawnHuntGame from "./PawnHuntGame";
 import type { PawnPuzzle } from "./types";
 
 export const metadata = {
-  title: "Queen vs Pawn Puzzles — MiniChess.io",
+  title: "Queen vs Pawn Puzzles — Chessful",
   description: "Stop a passed pawn from queening. Use the queen to pin and capture the pawn before it promotes. Free online chess endgame puzzles.",
 };
 

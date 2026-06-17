@@ -3,7 +3,7 @@ import path from "path";
 import SolitaireGame from "./SolitaireGame";
 import type { PuzzleDef } from "./types";
 
-export const metadata = { title: "MiniChess.io — Chess Solitaire" };
+export const metadata = { title: "Chessful — Chess Solitaire" };
 
 export default async function ChessSolitairePage() {
   const file = await readFile(
