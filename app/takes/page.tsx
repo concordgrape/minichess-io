@@ -3,7 +3,7 @@ import path from "path";
 import TakesGame from "./TakesGame";
 import type { Puzzle } from "./types";
 
-export const metadata = { title: "Chessful — Takes" };
+export const metadata = { title: "DailyCheckmate — Takes" };
 
 export default async function TakesPage() {
   const file = await readFile(

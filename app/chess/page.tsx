@@ -1,6 +1,6 @@
 import ChessBoard from "./ChessBoard";
 
-export const metadata = { title: "Chessful — Play Chess" };
+export const metadata = { title: "DailyCheckmate — Play Chess" };
 
 export default function ChessPage() {
   return (

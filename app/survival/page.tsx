@@ -1,6 +1,6 @@
 import SurvivalGame from "./SurvivalGame";
 
-export const metadata = { title: "Chessful — Survival" };
+export const metadata = { title: "DailyCheckmate — Survival" };
 
 export default function SurvivalPage() {
   return (

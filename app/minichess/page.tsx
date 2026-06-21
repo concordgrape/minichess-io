@@ -3,7 +3,7 @@ import path from "path";
 import MiniChessGame from "./MiniChessGame";
 import type { DailyPosition } from "./types";
 
-export const metadata = { title: "Chessful — Mini Chess" };
+export const metadata = { title: "DailyCheckmate — Mini Chess" };
 
 export default async function MiniChessPage() {
   const file = await readFile(

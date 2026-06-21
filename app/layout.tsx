@@ -8,7 +8,7 @@ import AuthProvider from "./AuthProvider";
 const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Chessful",
+  title: "DailyCheckmate",
   description: "Play chess puzzles and mini games online",
 };
 

@@ -3,7 +3,7 @@ import path from "path";
 import SmotheredGame from "./SmotheredGame";
 import type { Puzzle } from "./types";
 
-export const metadata = { title: "Chessful — Smothered" };
+export const metadata = { title: "DailyCheckmate — Smothered" };
 
 export default async function SmotheredPage() {
   const file = await readFile(

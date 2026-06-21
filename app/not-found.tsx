@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "404 — Page Not Found | Chessful",
+  title: "404 — Page Not Found | DailyCheckmate",
   description: "This page is off the board. Head back home or jump into a chess puzzle.",
 };
 

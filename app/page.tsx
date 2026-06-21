@@ -32,7 +32,7 @@ const GAMES: GameTile[] = [
 export default function Home() {
   return (
     <div>
-      <h1 className="fw-bold mb-1">Chessful</h1>
+      <h1 className="fw-bold mb-1">DailyCheckmate</h1>
       <p className="text-muted mb-4">Pick a game or puzzle to play.</p>
 
       <div className="row g-3">

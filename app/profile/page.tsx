@@ -1,6 +1,6 @@
 import Account from "./Account";
 
-export const metadata = { title: "Account — Chessful" };
+export const metadata = { title: "Account — DailyCheckmate" };
 
 export default function ProfilePage() {
   return (

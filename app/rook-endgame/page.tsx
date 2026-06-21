@@ -4,7 +4,7 @@ import MateGame from "../mate/MateGame";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "Rook Endgame Puzzle — Chessful",
+  title: "Rook Endgame Puzzle — DailyCheckmate",
   description: "Solve a king and rook versus king endgame: cut off the king with the rook and checkmate. Free online chess endgame puzzle.",
 };
 

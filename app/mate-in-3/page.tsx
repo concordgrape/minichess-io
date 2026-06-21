@@ -4,7 +4,7 @@ import MateGame from "../mate/MateGame";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "Mate in 3 Puzzles — Chessful",
+  title: "Mate in 3 Puzzles — DailyCheckmate",
   description: "Solve mate in 3 chess puzzles. Calculate a forced checkmate in three moves against the best defense. Free online chess puzzles.",
 };
 

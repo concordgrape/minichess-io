@@ -131,7 +131,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 >
                   ♟
                 </span>
-                Chessful
+                DailyCheckmate
               </Link>
             </div>
 
