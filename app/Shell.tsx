@@ -42,7 +42,7 @@ const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
       )}
     </div>
     <div className="mb-3">
-      <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Best players</a>
+      <Link href="/leaderboard" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Leaderboard</Link>
       <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Season leaders</a>
     </div>
     <div className="mb-3">

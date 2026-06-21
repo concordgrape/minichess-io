@@ -42,6 +42,7 @@ export interface GameFormula {
 }
 
 export interface LeaderboardEntry {
+  rank: number;
   uid: string;
   displayName: string;
   score: number;

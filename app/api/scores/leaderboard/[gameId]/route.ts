@@ -1,7 +1,10 @@
 import { NextRequest } from "next/server";
+import { unstable_cache } from "next/cache";
 import { getAdminDb } from "@/app/lib/firebase-admin";
 import { GAME_FORMULAS } from "@/app/lib/scoring/formulas";
 import type { GameId, Difficulty } from "@/app/lib/scoring/types";
+
+export const revalidate = 3600; // cache responses for 1 hour
 
 /** GET /api/scores/leaderboard/:gameId?difficulty=easy&limit=25
  *
@@ -24,47 +27,57 @@ export async function GET(
 
   const db = getAdminDb();
 
+  const fetchByDiff = unstable_cache(
+    async (gId: string, diff: string, lim: number) => {
+      const snap = await db
+        .collection("bestScoresByDiff")
+        .where("gameId", "==", gId)
+        .where("difficulty", "==", diff)
+        .orderBy("score", "desc")
+        .limit(lim)
+        .get();
+      return snap.docs.map((d, i) => ({
+        rank: i + 1, uid: d.data().uid as string,
+        displayName: d.data().displayName as string,
+        score: d.data().score as number,
+        normalizedScore: d.data().normalizedScore as number,
+        difficulty: d.data().difficulty as string,
+        updatedAt: (d.data().updatedAt?.toDate?.()?.toISOString() as string) ?? null,
+      }));
+    },
+    [`lb-diff-${gameId}-${difficulty}-${limit}`],
+    { revalidate: 3600 }
+  );
+
+  const fetchAll = unstable_cache(
+    async (gId: string, lim: number) => {
+      const snap = await db
+        .collection("bestScores")
+        .where("gameId", "==", gId)
+        .orderBy("normalizedScore", "desc")
+        .limit(lim)
+        .get();
+      return snap.docs.map((d, i) => ({
+        rank: i + 1, uid: d.data().uid as string,
+        displayName: d.data().displayName as string,
+        score: d.data().score as number,
+        normalizedScore: d.data().normalizedScore as number,
+        difficulty: d.data().difficulty as string,
+        updatedAt: (d.data().updatedAt?.toDate?.()?.toISOString() as string) ?? null,
+      }));
+    },
+    [`lb-all-${gameId}-${limit}`],
+    { revalidate: 3600 }
+  );
+
   if (difficulty) {
-    // Per-difficulty leaderboard: top raw scores for this game+difficulty
     if (!["easy", "medium", "hard"].includes(difficulty)) {
       return Response.json({ error: "invalid_difficulty" }, { status: 400 });
     }
-    const snap = await db
-      .collection("bestScoresByDiff")
-      .where("gameId", "==", gameId)
-      .where("difficulty", "==", difficulty)
-      .orderBy("score", "desc")
-      .limit(limit)
-      .get();
-
-    const entries = snap.docs.map((d, i) => ({
-      rank: i + 1,
-      uid: d.data().uid,
-      displayName: d.data().displayName,
-      score: d.data().score,
-      normalizedScore: d.data().normalizedScore,
-      difficulty: d.data().difficulty,
-      updatedAt: d.data().updatedAt?.toDate?.()?.toISOString() ?? null,
-    }));
+    const entries = await fetchByDiff(gameId, difficulty, limit);
     return Response.json({ gameId, difficulty, entries });
   }
 
-  // Overall leaderboard: top normalizedScores across all difficulties
-  const snap = await db
-    .collection("bestScores")
-    .where("gameId", "==", gameId)
-    .orderBy("normalizedScore", "desc")
-    .limit(limit)
-    .get();
-
-  const entries = snap.docs.map((d, i) => ({
-    rank: i + 1,
-    uid: d.data().uid,
-    displayName: d.data().displayName,
-    score: d.data().score,
-    normalizedScore: d.data().normalizedScore,
-    difficulty: d.data().difficulty,
-    updatedAt: d.data().updatedAt?.toDate?.()?.toISOString() ?? null,
-  }));
+  const entries = await fetchAll(gameId, limit);
   return Response.json({ gameId, entries });
 }
