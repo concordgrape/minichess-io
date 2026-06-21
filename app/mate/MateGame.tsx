@@ -5,6 +5,7 @@ import { Chess, type Square, type Move, type PieceSymbol, type Color } from "che
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, matePoints } from "../lib/scores";
+import { useGameSession } from "../lib/useGameSession";
 import type { MatePuzzle, GameStatus } from "./types";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
@@ -39,6 +40,11 @@ export default function MateGame({
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
+  // Server-side session for score submission (signed-in users only)
+  const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle.id);
+  const startTimeRef = useRef<number>(Date.now());
+  const attemptCountRef = useRef(1);
+
   const [chess] = useState(() => new Chess(puzzles[0].fen));
   const [board, setBoard] = useState(() => chess.board());
   const [selected, setSelected] = useState<Square | null>(null);
@@ -65,6 +71,10 @@ export default function MateGame({
     setLastMove(null); setDefending(false);
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
+    startTimeRef.current = Date.now();
+    // reset attempt counter on new puzzle; increment on same-puzzle reset
+    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
+    else attemptCountRef.current += 1;
   }, [chess, puzzles, mateIn]);
 
   function award() {
@@ -72,6 +82,12 @@ export default function MateGame({
     saveScore({ puzzleId: `${slug}-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("solved");
+    // Submit raw data for server-side scoring (signed-in users only)
+    submitScore({
+      timeSeconds: Math.round((Date.now() - startTimeRef.current) / 1000),
+      undoCount,
+      totalAttempts: attemptCountRef.current,
+    });
   }
 
   // Defender (Black) reply, computed off the main thread.
