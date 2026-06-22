@@ -37,7 +37,7 @@ export async function GET() {
 
   // 5. Auth SDK init
   try {
-    await getAdminAuth();
+    getAdminAuth();
     results.firebase_auth = { ok: true };
   } catch (e) {
     results.firebase_auth = { ok: false, error: String(e) };
