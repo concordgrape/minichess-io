@@ -17,13 +17,19 @@ export async function POST(request: NextRequest) {
     let uid: string;
     let displayName: string;
     try {
-      const auth = await getAdminAuth();
-      const decoded = await auth.verifyIdToken(authHeader.slice(7));
+      const adminAuth = await getAdminAuth();
+      const decoded = await adminAuth.verifyIdToken(authHeader.slice(7));
       uid = decoded.uid;
       displayName = decoded.name ?? decoded.email ?? `user_${decoded.uid.slice(0, 6)}`;
     } catch (e) {
-      console.error("[submit] token verify failed:", e);
-      return Response.json({ saved: false, reason: "unauthenticated" }, { status: 401 });
+      const msg = e instanceof Error ? e.message : String(e);
+      // Distinguish a bad/expired token from an admin SDK init failure
+      const isAuthError = msg.includes("Firebase ID token") || msg.includes("auth/") || msg.includes("invalid-argument");
+      console.error("[submit] auth error:", msg);
+      if (isAuthError) {
+        return Response.json({ saved: false, reason: "unauthenticated" }, { status: 401 });
+      }
+      return Response.json({ saved: false, reason: "auth_init_failed", detail: msg }, { status: 500 });
     }
 
     // ── Parse body ────────────────────────────────────────────────────────────

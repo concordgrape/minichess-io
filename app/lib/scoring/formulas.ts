@@ -12,8 +12,6 @@
  * Max possible globalScore = 12 games × 1000 = 12 000.
  */
 
-import { readFile } from "fs/promises";
-import path from "path";
 import type { GameId, Difficulty, GameFormula, PuzzleRawData, ScoreResult } from "./types";
 
 const DIFF: Record<Difficulty, number> = { easy: 1.0, medium: 1.6, hard: 2.8 };
@@ -228,11 +226,13 @@ export async function getPuzzleDifficulty(
   gameId: GameId,
   puzzleId: number
 ): Promise<Difficulty | null> {
-  const filePath = path.join(process.cwd(), "public", "games", `${gameId}.json`);
-  const raw = await readFile(filePath, "utf-8");
-  const data: { id: number; difficulty: Difficulty } | Array<{ id: number; difficulty: Difficulty }> = JSON.parse(raw);
-  const puzzles = Array.isArray(data) ? data : [data];
-  return puzzles.find((p) => p.id === puzzleId)?.difficulty ?? null;
+  const { getAdminDb } = await import("../firebase-admin");
+  const snap = await getAdminDb()
+    .collection("games").doc(gameId)
+    .collection("puzzles").doc(String(puzzleId))
+    .get();
+  if (!snap.exists) return null;
+  return (snap.data()?.difficulty as Difficulty) ?? null;
 }
 
 export function computeScore(
