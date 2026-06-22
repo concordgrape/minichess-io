@@ -9,6 +9,7 @@ import { saveScore, matePoints } from "../lib/scores";
 // import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
+import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import type { MatePuzzle, GameStatus } from "./types";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
@@ -39,6 +40,9 @@ export default function MateGame({
   slug: string;
 }) {
   const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const { markInProgress, markCompleted, getStatus } = usePuzzleProgress(slug);
+  // Track puzzle progress
+  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
@@ -51,6 +55,7 @@ export default function MateGame({
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
+  useEffect(() => { if (status === "solved") markCompleted(puzzle.id); }, [status, puzzle.id]);
   const [movesLeft, setMovesLeft] = useState(mateIn);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [defending, setDefending] = useState(false);
@@ -251,6 +256,7 @@ export default function MateGame({
             <PuzzleSelectDropdown
               gameId={slug}
               currentId={puzzle.id}
+              getStatus={getStatus}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as MatePuzzle;
                 setPuzzle(p);

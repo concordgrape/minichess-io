@@ -5,6 +5,7 @@ import Link from "next/link";
 import { totalScore } from "./lib/scores";
 import UserMenu from "./UserMenu";
 import { useAuth } from "./AuthProvider";
+import Footer from "./components/Footer";
 
 const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
   const [endgamesOpen, setEndgamesOpen] = useState(false);
@@ -220,6 +221,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
+      <Footer />
 
     </>
   );

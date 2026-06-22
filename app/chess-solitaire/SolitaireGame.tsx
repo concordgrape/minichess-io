@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
+import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { getLegalCaptures, applyCapture, hasAnyCapture } from "./logic";
 import { saveScore } from "../lib/scores";
 // import { useGameSession } from "../lib/useGameSession";
@@ -46,12 +47,16 @@ interface Props {
 export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
   const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const { markInProgress, markCompleted: recordCompleted, getStatus } = usePuzzleProgress("chess-solitaire");
+  // Track puzzle progress
+  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
 
   const [pieces, setPieces] = useState<SolitairePiece[]>(() => makePieces(puzzle.pieces));
   const [selected, setSelected] = useState<SolitairePiece | null>(null);
   const [captures, setCaptures] = useState<SolitairePiece[]>([]);
   const [history, setHistory] = useState<MoveRecord[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
+  useEffect(() => { if (status === "solved") recordCompleted(puzzle.id); }, [status, puzzle.id]);
   const [lastMove, setLastMove] = useState<{ from: { row: number; col: number }; to: { row: number; col: number } } | null>(null);
   const [flash, setFlash] = useState<{ row: number; col: number } | null>(null); // capture flash
   const [hintId, setHintId] = useState<string | null>(null);
@@ -274,6 +279,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
             <PuzzleSelectDropdown
               gameId="chess-solitaire"
               currentId={puzzle.id}
+              getStatus={getStatus}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as PuzzleDef;
                 setPuzzle(p);

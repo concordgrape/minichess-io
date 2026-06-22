@@ -27,6 +27,18 @@
 import * as admin from "firebase-admin";
 import { Timestamp } from "firebase-admin/firestore";
 import * as path from "path";
+import * as fs from "fs";
+
+// Load .env.local if present (for local dev without a keyfile)
+const envPath = path.resolve(__dirname, "../.env.local");
+if (fs.existsSync(envPath)) {
+  for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
+    const eq = line.indexOf("=");
+    if (eq < 1 || line.startsWith("#")) continue;
+    const key = line.slice(0, eq).trim();
+    if (!process.env[key]) process.env[key] = line.slice(eq + 1).trim();
+  }
+}
 import {
   Difficulty,
   PuzzleBank,
@@ -65,11 +77,17 @@ const GAME_BANKS: Record<string, PuzzleBank<object>> = {
 
 // ─── Firebase init ────────────────────────────────────────────────────────────
 
-const keyPath =
-  process.env.GOOGLE_APPLICATION_CREDENTIALS ||
-  path.resolve(__dirname, "./serviceAccountKey.json");
+function getCredential() {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    return admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY));
+  }
+  const keyPath =
+    process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+    path.resolve(__dirname, "./serviceAccountKey.json");
+  return admin.credential.cert(keyPath);
+}
 
-admin.initializeApp({ credential: admin.credential.cert(keyPath) });
+admin.initializeApp({ credential: getCredential() });
 const db = admin.firestore();
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -122,31 +140,11 @@ function dateToId(date: Date): number {
   return parseInt(estStr.replace(/-/g, ""), 10);
 }
 
-/**
- * Find the latest scheduled releaseDate in games/{gameId}/puzzles.
- * Returns tomorrow (midnight EST) if the collection is empty.
- */
-async function getNextReleaseDate(gameId: string): Promise<Date> {
-  const snap = await db
-    .collection("games")
-    .doc(gameId)
-    .collection("puzzles")
-    .orderBy("releaseDate", "desc")
-    .limit(1)
-    .get();
-
-  const nowEST = new Date(
+/** Midnight EST today as UTC. */
+function todayEST(): Date {
+  return new Date(
     new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE }) + "T05:00:00.000Z"
   );
-  const tomorrow = addDays(nowEST, 1);
-
-  if (snap.empty) return tomorrow;
-
-  const latest: Timestamp = snap.docs[0].data().releaseDate;
-  const latestDate = new Date(latest.toDate().toLocaleDateString("en-CA", { timeZone: TIMEZONE }) + "T05:00:00.000Z");
-
-  // If latest is in the future, schedule one day after it; otherwise start from tomorrow
-  return latestDate >= nowEST ? addDays(latestDate, 1) : tomorrow;
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -171,15 +169,30 @@ async function main() {
   console.log(`  Count   : ${count}`);
   console.log(`  Dry run : ${dryRun}\n`);
 
-  let startDate = await getNextReleaseDate(game);
-  console.log(`  Starting from: ${startDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}\n`);
+  // Find the oldest existing puzzle so we can extend backwards from it
+  const existingSnap = await col.orderBy("releaseDate", "asc").limit(1).get();
+  let oldest: Date;
+  if (!existingSnap.empty) {
+    const oldestTs = existingSnap.docs[0].data().releaseDate;
+    const oldestDate: Date = oldestTs?.toDate?.() ?? new Date(oldestTs);
+    // Anchor the new batch so game #count lands the day before the oldest existing game
+    oldest = addDays(oldestDate, -count);
+    console.log(`  Existing oldest : ${oldestDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}`);
+    console.log(`  Inserting before it, from ${oldest.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}\n`);
+  } else {
+    // No existing games — game #count = today, game #1 = (count-1) days ago
+    const today = todayEST();
+    oldest = addDays(today, -(count - 1));
+    console.log(`  Game #1  : ${oldest.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}`);
+    console.log(`  Game #${count} : ${today.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}\n`);
+  }
 
   let created = 0;
   let skipped = 0;
   let failed = 0;
 
   for (let i = 0; i < count; i++) {
-    const releaseDate = addDays(startDate, i);
+    const releaseDate = addDays(oldest, i);
     const id = dateToId(releaseDate);
     const docRef = col.doc(String(id));
 
@@ -198,11 +211,18 @@ async function main() {
       const { difficulty: actual, data } = selectFromBank(bank, difficulty);
 
       if (!dryRun) {
+        // Firestore doesn't allow nested arrays — serialize any array-of-arrays to JSON strings
+        const serialized = Object.fromEntries(
+          Object.entries(data as Record<string, unknown>).map(([k, v]) => [
+            k,
+            Array.isArray(v) && v.some(Array.isArray) ? JSON.stringify(v) : v,
+          ])
+        );
         await docRef.set({
           id,
           difficulty: actual,
           gameType: game,
-          ...data,
+          ...serialized,
           releaseDate: Timestamp.fromDate(releaseDate),
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           status: "scheduled",
@@ -211,11 +231,11 @@ async function main() {
       }
 
       const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-      console.log(`  ✅ ${dateStr} (id ${id}) — ${actual}${dryRun ? " [dry run]" : ""}`);
+      console.log(`  ✅ #${i + 1} ${dateStr} (id ${id}) — ${actual}${dryRun ? " [dry run]" : ""}`);
       created++;
     } catch (err) {
       const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-      console.error(`  ❌ ${dateStr} (id ${id}) — failed:`, err);
+      console.error(`  ❌ #${i + 1} ${dateStr} (id ${id}) — failed:`, err);
       failed++;
     }
   }

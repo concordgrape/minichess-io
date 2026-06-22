@@ -9,6 +9,7 @@ import { saveScore, pawnPoints } from "../lib/scores";
 // import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
+import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { pawnCaptured, pawnPromoted } from "./engine";
 import type { PawnPuzzle, GameStatus } from "./types";
 
@@ -31,6 +32,9 @@ function rowColToSq(row: number, col: number): Square {
 
 export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puzzle: PawnPuzzle; winIn?: number }) {
   const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("queen-vs-pawn");
+  // Track puzzle progress
+  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
@@ -39,6 +43,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
+  useEffect(() => { if (status === "won") markCompleted(puzzle.id); }, [status, puzzle.id]);
   const [movesLeft, setMovesLeft] = useState(winIn);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [defending, setDefending] = useState(false);
@@ -223,6 +228,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
             <PuzzleSelectDropdown
               gameId="queen-vs-pawn"
               currentId={puzzle.id}
+              getStatus={getStatus}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as PawnPuzzle;
                 setPuzzle(p);

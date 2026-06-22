@@ -14,6 +14,7 @@ import {
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
+import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 
 const STORAGE_VERSION = "smothered-v1";
 
@@ -66,6 +67,9 @@ function writeSaved(state: SavedState) {
 export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("smothered");
+  // Track puzzle progress
+  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
 
   // const { submitScore } = useGameSession("smothered", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
@@ -369,6 +373,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
             <PuzzleSelectDropdown
               gameId="smothered"
               currentId={puzzle.id}
+              getStatus={getStatus}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as Puzzle;
                 try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}

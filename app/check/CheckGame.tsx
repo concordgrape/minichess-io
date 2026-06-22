@@ -12,6 +12,7 @@ import {
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
+import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 
 const STORAGE_VERSION = "check-v1";
@@ -64,6 +65,9 @@ function writeSaved(state: SavedState) {
 export default function CheckGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("check");
+  // Track puzzle progress
+  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
 
   // const { submitScore } = useGameSession("check", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
@@ -286,6 +290,7 @@ export default function CheckGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
             <PuzzleSelectDropdown
               gameId="check"
               currentId={puzzle.id}
+              getStatus={getStatus}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as Puzzle;
                 try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}

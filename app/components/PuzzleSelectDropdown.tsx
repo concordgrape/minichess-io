@@ -12,6 +12,7 @@ interface Props {
   gameId: string;
   currentId: number;
   onPuzzleLoaded: (data: Record<string, unknown>) => void;
+  getStatus?: (id: number) => "completed" | "inProgress" | null;
 }
 
 const DIFF_COLOR: Record<string, string> = {
@@ -30,7 +31,26 @@ function formatDate(ts: number | null): string {
   });
 }
 
-export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded }: Props) {
+function StatusDot({ status }: { status: "completed" | "inProgress" | null }) {
+  if (status === "completed") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+        <circle cx="7" cy="7" r="6.5" fill="#198754" />
+        <path d="M3.5 7l2.5 2.5 4.5-4.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (status === "inProgress") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+        <circle cx="7" cy="7" r="6.5" fill="#0d6efd" />
+      </svg>
+    );
+  }
+  return <span style={{ width: 14, flexShrink: 0 }} />;
+}
+
+export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded, getStatus }: Props) {
   const [open, setOpen] = useState(false);
   const [puzzles, setPuzzles] = useState<PuzzleMeta[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,7 +61,7 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
     if (!open || puzzles.length > 0) return;
     setLoading(true);
     fetch(`/api/puzzles/${gameId}`)
-      .then((r) => r.json())
+      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
       .then((data) => { if (Array.isArray(data)) setPuzzles(data); })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -101,14 +121,14 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
               backgroundColor: "var(--bs-body-bg)",
               border: "1px solid var(--bs-border-color)",
               width: 320,
-              maxHeight: "70vh",
+              maxHeight: 500,
               display: "flex",
               flexDirection: "column",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+            <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom" style={{ flexShrink: 0 }}>
               <span className="fw-semibold small">Past Puzzles</span>
               <button
                 className="btn-close"
@@ -118,7 +138,7 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
             </div>
 
             {/* List */}
-            <div style={{ overflowY: "auto", overscrollBehavior: "contain" }}>
+            <div style={{ overflowY: "auto", overscrollBehavior: "contain", flex: 1 }}>
               {loading && (
                 <div className="text-center text-muted small py-4">Loading…</div>
               )}
@@ -128,14 +148,13 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
               {puzzles.map((p) => {
                 const isCurrent = p.id === currentId;
                 const isLoading = loadingId === p.id;
+                const status = getStatus?.(p.id) ?? null;
                 return (
                   <button
                     key={p.id}
-                    className={`w-100 border-0 border-bottom text-start px-3 py-2 d-flex align-items-center justify-content-between gap-2 ${isCurrent ? "fw-semibold" : ""}`}
+                    className={`w-100 border-0 border-bottom text-start px-3 py-2 d-flex align-items-center gap-2 ${isCurrent ? "fw-semibold" : ""}`}
                     style={{
-                      backgroundColor: isCurrent
-                        ? "var(--bs-secondary-bg)"
-                        : "transparent",
+                      backgroundColor: isCurrent ? "var(--bs-secondary-bg)" : "transparent",
                       cursor: isCurrent ? "default" : "pointer",
                       fontSize: 13,
                       color: "var(--bs-body-color)",
@@ -143,20 +162,18 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
                     onClick={() => selectPuzzle(p.id)}
                     disabled={isLoading}
                   >
-                    <span className="d-flex align-items-center gap-2">
-                      {isCurrent && (
-                        <span className="text-muted" style={{ fontSize: 11 }}>▶</span>
-                      )}
-                      <span>{formatDate(p.releaseDate)}</span>
-                    </span>
-                    <span className="d-flex align-items-center gap-2">
-                      {isLoading && (
-                        <span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }} />
-                      )}
+                    <StatusDot status={status} />
+                    <span className="flex-grow-1">Game #{p.id}</span>
+                    {isCurrent && (
+                      <span className="text-muted" style={{ fontSize: 11 }}>▶</span>
+                    )}
+                    {isLoading ? (
+                      <span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }} />
+                    ) : (
                       <span className={`badge text-bg-${DIFF_COLOR[p.difficulty] ?? "secondary"} rounded-0`} style={{ fontSize: 10 }}>
                         {p.difficulty}
                       </span>
-                    </span>
+                    )}
                   </button>
                 );
               })}

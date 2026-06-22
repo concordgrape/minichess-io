@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { Piece, Puzzle, GameStatus } from "./types";
 import { getLegalCaptures, hasAnyCapture, applyCapture } from "./logic";
@@ -10,6 +10,7 @@ import { useGamePhase } from "../lib/GameStartContext";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
+import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 
 const PIECE_NAMES: Record<string, string> = {
   p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
@@ -27,6 +28,9 @@ interface MoveRecord { attacker: Piece; target: Piece; piecesBefore: Piece[]; }
 export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("takes");
+  // Track puzzle progress
+  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
 
   // const { submitScore } = useGameSession("takes", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
@@ -36,6 +40,7 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
   const [targets, setTargets] = useState<Piece[]>([]);
   const [history, setHistory] = useState<MoveRecord[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
+  useEffect(() => { if (status === "won") markCompleted(puzzle.id); }, [status, puzzle.id]);
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
 
@@ -171,6 +176,7 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
             <PuzzleSelectDropdown
               gameId="takes"
               currentId={puzzle.id}
+              getStatus={getStatus}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as Puzzle;
                 setPuzzle(p);
