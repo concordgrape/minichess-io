@@ -5,7 +5,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { updateProfile, sendPasswordResetEmail } from "firebase/auth";
 import { useAuth } from "../AuthProvider";
 import { auth, db } from "../lib/firebase";
-import type { GameId, UserScoresResponse, UserGameBest } from "../lib/scoring/types";
+import type { GameId, UserScoresResponse, Difficulty } from "../lib/scoring/types";
 
 const COUNTRIES = [
   "Argentina", "Australia", "Austria", "Belgium", "Brazil", "Bulgaria", "Canada",
@@ -422,7 +422,11 @@ function GameBadgesPanel({ completionCounts, isGuest }: { completionCounts: Reco
   );
 }
 
+const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard"];
+
 function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresResponse | null; scoresError?: boolean; isGuest: boolean }) {
+  const [expanded, setExpanded] = useState<Set<GameId>>(new Set());
+
   if (isGuest) {
     return (
       <p className="text-muted small">Sign in to track your scores across all puzzles.</p>
@@ -438,18 +442,24 @@ function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresRespo
   }
 
   const allGames = Object.keys(GAME_LABELS) as GameId[];
-  const playedCount = allGames.filter((g) => scores.gamesBest[g]).length;
-  const MAX_GLOBAL = playedCount * 1000 || 1;
+
+  function toggleExpanded(gameId: GameId) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(gameId)) next.delete(gameId);
+      else next.add(gameId);
+      return next;
+    });
+  }
 
   return (
     <div>
-      {/* Per-game table */}
       <div className="table-responsive">
         <table className="table table-sm table-bordered mb-0 rounded-0">
           <thead className="table-light">
             <tr>
               <th>Game</th>
-              <th>Difficulty</th>
+              <th>Best difficulty</th>
               <th className="text-end">Score</th>
               <th className="text-end">Normalized</th>
             </tr>
@@ -457,32 +467,85 @@ function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresRespo
           <tbody>
             {allGames.map((gameId) => {
               const best = scores.gamesBest[gameId];
+              const diffCounts = scores.difficultyCompletions?.[gameId] ?? {};
+              const playedDiffs = DIFFICULTIES.filter((d) => (diffCounts[d] ?? 0) > 0);
+              const isExpanded = expanded.has(gameId);
+              const maxCount = Math.max(...playedDiffs.map((d) => diffCounts[d] ?? 0), 1);
+
               return (
-                <tr key={gameId}>
-                  <td>{GAME_LABELS[gameId]}</td>
-                  <td>
-                    {best ? (
-                      <span className={`badge bg-${DIFF_COLOR[best.difficulty] ?? "secondary"} rounded-0`}>
-                        {best.difficulty}
-                      </span>
-                    ) : (
-                      <span className="text-muted">—</span>
-                    )}
-                  </td>
-                  <td className="text-end fw-semibold">
-                    {best ? best.score.toLocaleString() : <span className="text-muted">—</span>}
-                  </td>
-                  <td className="text-end">
-                    {best ? (
-                      <>
-                        <span className="text-info fw-semibold">{best.normalizedScore}</span>
-                        <span className="text-muted"> / 1000</span>
-                      </>
-                    ) : (
-                      <span className="text-muted">—</span>
-                    )}
-                  </td>
-                </tr>
+                <>
+                  <tr
+                    key={gameId}
+                    style={playedDiffs.length > 1 ? { cursor: "pointer" } : undefined}
+                    onClick={playedDiffs.length > 1 ? () => toggleExpanded(gameId) : undefined}
+                  >
+                    <td>
+                      {playedDiffs.length > 1 && (
+                        <span className="me-1 text-muted" style={{ fontSize: "0.7em" }}>
+                          {isExpanded ? "▼" : "▶"}
+                        </span>
+                      )}
+                      {GAME_LABELS[gameId]}
+                    </td>
+                    <td>
+                      {best ? (
+                        <span className={`badge bg-${DIFF_COLOR[best.difficulty] ?? "secondary"} rounded-0`}>
+                          {best.difficulty}
+                        </span>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
+                    </td>
+                    <td className="text-end fw-semibold">
+                      {best ? best.score.toLocaleString() : <span className="text-muted">—</span>}
+                    </td>
+                    <td className="text-end">
+                      {best ? (
+                        <>
+                          <span className="text-info fw-semibold">{best.normalizedScore}</span>
+                          <span className="text-muted"> / 1000</span>
+                        </>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
+                    </td>
+                  </tr>
+                  {isExpanded && playedDiffs.length > 1 && (
+                    <tr key={`${gameId}-breakdown`} className="table-light">
+                      <td colSpan={4} className="py-2 px-3">
+                        <div className="d-flex flex-column gap-1" style={{ fontSize: "0.82em" }}>
+                          {DIFFICULTIES.map((diff) => {
+                            const count = diffCounts[diff] ?? 0;
+                            if (count === 0) return null;
+                            const pct = Math.round((count / maxCount) * 100);
+                            return (
+                              <div key={diff} className="d-flex align-items-center gap-2">
+                                <span
+                                  className={`badge bg-${DIFF_COLOR[diff]} rounded-0`}
+                                  style={{ width: "4.5rem", textAlign: "center" }}
+                                >
+                                  {diff}
+                                </span>
+                                <div
+                                  className="flex-grow-1 rounded-0"
+                                  style={{ height: 8, background: "var(--bs-secondary-bg)" }}
+                                >
+                                  <div
+                                    className={`bg-${DIFF_COLOR[diff]} h-100`}
+                                    style={{ width: `${pct}%`, transition: "width 0.3s ease" }}
+                                  />
+                                </div>
+                                <span className="text-muted" style={{ minWidth: "2.5rem", textAlign: "right" }}>
+                                  {count} {count === 1 ? "solve" : "solves"}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               );
             })}
           </tbody>

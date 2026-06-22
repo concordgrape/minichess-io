@@ -159,11 +159,17 @@ export async function POST(request: NextRequest) {
           const gamesBest: Record<string, unknown> = userData.gamesBest ?? {};
           const currentGlobalScore: number = userData.globalScore ?? 0;
           const prevNorm: number = (gamesBest[gameId] as { normalizedScore?: number } | undefined)?.normalizedScore ?? 0;
+          const diffComp = (userData.difficultyCompletions ?? {}) as Record<string, Record<string, number>>;
+          const gameDiff = diffComp[gameId] ?? {};
           tx.set(userRef, {
             globalScore: Math.max(0, currentGlobalScore - prevNorm + normalizedScore),
             gamesBest: {
               ...gamesBest,
               [gameId]: { score, normalizedScore, difficulty, puzzleId, updatedAt: completedAt.toISOString() },
+            },
+            difficultyCompletions: {
+              ...diffComp,
+              [gameId]: { ...gameDiff, [difficulty]: (gameDiff[difficulty] ?? 0) + 1 },
             },
           }, { merge: true });
         }

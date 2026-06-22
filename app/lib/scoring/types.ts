@@ -63,4 +63,5 @@ export interface UserGameBest {
 export interface UserScoresResponse {
   globalScore: number;
   gamesBest: Partial<Record<GameId, UserGameBest>>;
+  difficultyCompletions: Partial<Record<GameId, Partial<Record<Difficulty, number>>>>;
 }

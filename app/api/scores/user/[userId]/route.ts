@@ -24,6 +24,7 @@ export async function GET(
     const response: UserScoresResponse = {
       globalScore: data.globalScore ?? 0,
       gamesBest: data.gamesBest ?? {},
+      difficultyCompletions: data.difficultyCompletions ?? {},
     };
 
     return Response.json(response);
