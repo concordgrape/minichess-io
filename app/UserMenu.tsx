@@ -76,9 +76,6 @@ export default function UserMenu({ user }: { user: User }) {
           style={{ display: "block", minWidth: 200, zIndex: 1055 }}
         >
           <Link className="dropdown-item d-flex align-items-center gap-2 py-2" href="/profile" onClick={() => setOpen(false)}>
-            <GearIcon /> Settings
-          </Link>
-          <Link className="dropdown-item d-flex align-items-center gap-2 py-2" href="/profile" onClick={() => setOpen(false)}>
             <WrenchIcon /> Account
           </Link>
           <hr className="dropdown-divider my-1" />

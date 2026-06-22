@@ -30,7 +30,7 @@ export default function Account() {
   const [publicInfo, setPublicInfo] = useState("");
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
-  const [scores, setScores] = useState<UserScoresResponse | null>(null);
+  const [scores, setScores] = useState<UserScoresResponse | null | "error">(null);
 
   useEffect(() => {
     if (!user) return;
@@ -54,9 +54,13 @@ export default function Account() {
 
     // Load leaderboard scores from the API
     fetch(`/api/scores/user/${user.uid}`)
-      .then((r) => r.ok ? r.json() : null)
-      .then((data: UserScoresResponse | null) => { if (data) setScores(data); })
-      .catch(() => {});
+      .then((r) => {
+        if (r.status === 404) return { globalScore: 0, gamesBest: {} } as UserScoresResponse;
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json() as Promise<UserScoresResponse>;
+      })
+      .then((data) => setScores(data))
+      .catch(() => setScores("error"));
   }, [user]);
 
   if (loading) return <p className="text-muted">Loading…</p>;
@@ -175,7 +179,7 @@ export default function Account() {
       {/* ── Scores ──────────────────────────────────────────────────────────── */}
       <hr className="my-4" />
       <h2 className="h5 fw-bold mb-3">Scores</h2>
-      <ScoresPanel scores={scores} isGuest={isGuest} />
+      <ScoresPanel scores={scores === "error" ? null : scores} scoresError={scores === "error"} isGuest={isGuest} />
     </form>
   );
 }
@@ -200,24 +204,24 @@ const DIFF_COLOR: Record<string, string> = {
   easy: "success", medium: "warning", hard: "danger",
 };
 
-function ScoresPanel({ scores, isGuest }: { scores: UserScoresResponse | null; isGuest: boolean }) {
+function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresResponse | null; scoresError?: boolean; isGuest: boolean }) {
   if (isGuest) {
     return (
       <p className="text-muted small">Sign in to track your scores across all puzzles.</p>
     );
   }
 
+  if (scoresError) {
+    return <p className="text-muted small">Couldn&apos;t load scores. Please refresh the page.</p>;
+  }
+
   if (!scores) {
     return <p className="text-muted small">Loading scores…</p>;
   }
 
-  const entries = Object.entries(scores.gamesBest) as [GameId, UserGameBest][];
-
-  if (entries.length === 0) {
-    return <p className="text-muted small">No scores yet — complete a puzzle while signed in to appear here.</p>;
-  }
-
-  const MAX_GLOBAL = entries.length * 1000;
+  const allGames = Object.keys(GAME_LABELS) as GameId[];
+  const playedCount = allGames.filter((g) => scores.gamesBest[g]).length;
+  const MAX_GLOBAL = playedCount * 1000 || 1;
 
   return (
     <div>
@@ -234,7 +238,7 @@ function ScoresPanel({ scores, isGuest }: { scores: UserScoresResponse | null; i
               style={{ width: `${Math.min(100, (scores.globalScore / MAX_GLOBAL) * 100).toFixed(1)}%` }}
             />
           </div>
-          <div className="text-muted small mt-1">{entries.length} of {Object.keys(GAME_LABELS).length} games played</div>
+          <div className="text-muted small mt-1">{playedCount} of {allGames.length} games played</div>
         </div>
       </div>
 
@@ -250,23 +254,36 @@ function ScoresPanel({ scores, isGuest }: { scores: UserScoresResponse | null; i
             </tr>
           </thead>
           <tbody>
-            {entries
-              .sort((a, b) => b[1].normalizedScore - a[1].normalizedScore)
-              .map(([gameId, best]) => (
+            {allGames.map((gameId) => {
+              const best = scores.gamesBest[gameId];
+              return (
                 <tr key={gameId}>
-                  <td>{GAME_LABELS[gameId] ?? gameId}</td>
+                  <td>{GAME_LABELS[gameId]}</td>
                   <td>
-                    <span className={`badge bg-${DIFF_COLOR[best.difficulty] ?? "secondary"} rounded-0`}>
-                      {best.difficulty}
-                    </span>
+                    {best ? (
+                      <span className={`badge bg-${DIFF_COLOR[best.difficulty] ?? "secondary"} rounded-0`}>
+                        {best.difficulty}
+                      </span>
+                    ) : (
+                      <span className="text-muted">—</span>
+                    )}
                   </td>
-                  <td className="text-end fw-semibold">{best.score.toLocaleString()}</td>
+                  <td className="text-end fw-semibold">
+                    {best ? best.score.toLocaleString() : <span className="text-muted">—</span>}
+                  </td>
                   <td className="text-end">
-                    <span className="text-info fw-semibold">{best.normalizedScore}</span>
-                    <span className="text-muted"> / 1000</span>
+                    {best ? (
+                      <>
+                        <span className="text-info fw-semibold">{best.normalizedScore}</span>
+                        <span className="text-muted"> / 1000</span>
+                      </>
+                    ) : (
+                      <span className="text-muted">—</span>
+                    )}
                   </td>
                 </tr>
-              ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

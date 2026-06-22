@@ -12,18 +12,23 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
-  const { userId } = await params;
-  const snap = await getAdminDb().collection("users").doc(userId).get();
+  try {
+    const { userId } = await params;
+    const snap = await getAdminDb().collection("users").doc(userId).get();
 
-  if (!snap.exists) {
-    return Response.json({ error: "user_not_found" }, { status: 404 });
+    if (!snap.exists) {
+      return Response.json({ error: "user_not_found" }, { status: 404 });
+    }
+
+    const data = snap.data()!;
+    const response: UserScoresResponse = {
+      globalScore: data.globalScore ?? 0,
+      gamesBest: data.gamesBest ?? {},
+    };
+
+    return Response.json(response);
+  } catch (err) {
+    console.error("[scores/user] error:", err);
+    return Response.json({ error: "internal_error" }, { status: 500 });
   }
-
-  const data = snap.data()!;
-  const response: UserScoresResponse = {
-    globalScore: data.globalScore ?? 0,
-    gamesBest: data.gamesBest ?? {},
-  };
-
-  return Response.json(response);
 }
