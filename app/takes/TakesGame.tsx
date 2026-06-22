@@ -5,7 +5,7 @@ import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { Piece, Puzzle, GameStatus } from "./types";
 import { getLegalCaptures, hasAnyCapture, applyCapture } from "./logic";
 import { saveScore, takesPoints } from "../lib/scores";
-// import { useGameSession } from "../lib/useGameSession";
+import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
@@ -32,7 +32,7 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
   // Track puzzle progress
   useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
 
-  // const { submitScore } = useGameSession("takes", puzzle.id);
+  const { submitScore } = useGameSession("takes", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
 
   const [pieces, setPieces] = useState<Piece[]>(() => puzzle.pieces.map((p) => ({ ...p })));
@@ -73,8 +73,7 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
       const pts = takesPoints(puzzle.difficulty, undoCount);
       saveScore({ puzzleId: `takes-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
-      // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-      // markComplete();
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
       return;
     }
     const king = next.find((p) => p.type === "k")!;

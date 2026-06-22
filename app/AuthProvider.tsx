@@ -11,8 +11,28 @@ import {
   signOut,
   type User,
 } from "firebase/auth";
-import { auth, googleProvider, firebaseEnabled } from "./lib/firebase";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db, googleProvider, firebaseEnabled } from "./lib/firebase";
 import AuthModal, { type AuthMode } from "./AuthModal";
+
+async function detectCountry(): Promise<string | null> {
+  try {
+    const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.country_name as string) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function saveCountryIfMissing(uid: string, country: string) {
+  if (!db) return;
+  const ref = doc(db, "users", uid);
+  const snap = await getDoc(ref);
+  if (snap.exists() && snap.data()?.country) return;
+  await setDoc(ref, { country, updatedAt: serverTimestamp() }, { merge: true });
+}
 
 /** Deterministic guest display name seeded by the user's UID, e.g. "playerKxqwza". */
 export function guestName(uid: string): string {
@@ -69,10 +89,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   async function signUp(username: string, email: string, password: string) {
     if (!auth) throw new Error("Authentication isn't configured.");
     const cred = await createUserWithEmailAndPassword(auth, email, password);
-    // Username becomes the account's display name.
     await updateProfile(cred.user, { displayName: username });
     await cred.user.reload();
     setUser(auth.currentUser);
+    detectCountry().then((country) => {
+      if (country) saveCountryIfMissing(cred.user.uid, country);
+    });
   }
 
   async function logIn(email: string, password: string) {
@@ -82,7 +104,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   async function logInWithGoogle() {
     if (!auth) throw new Error("Authentication isn't configured.");
-    await signInWithPopup(auth, googleProvider);
+    const cred = await signInWithPopup(auth, googleProvider);
+    detectCountry().then((country) => {
+      if (country) saveCountryIfMissing(cred.user.uid, country);
+    });
   }
 
   async function logInAnon() {

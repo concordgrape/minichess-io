@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square } from "./types";
 import { saveScore, smotheredPoints } from "../lib/scores";
-// import { useGameSession } from "../lib/useGameSession";
+import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import {
@@ -71,7 +71,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
   // Track puzzle progress
   useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
 
-  // const { submitScore } = useGameSession("smothered", puzzle.id);
+  const { submitScore } = useGameSession("smothered", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
   const mateIn = MATE_BY_DIFF[puzzle.difficulty];
 
@@ -135,8 +135,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
             const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
             saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
             setEarnedPoints(pts);
-            // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-            // markComplete();
+            submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
             setStatus("won");
           } else {
             setStatus("lost-wrong-piece");
@@ -179,8 +178,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
         const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
         saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
         setEarnedPoints(pts);
-        // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-        // markComplete();
+        submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
         setBoard(next); setStatus("won");
       } else {
         setBoard(next); setStatus("lost-wrong-piece");

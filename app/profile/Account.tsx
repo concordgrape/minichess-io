@@ -225,23 +225,6 @@ function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresRespo
 
   return (
     <div>
-      {/* Global score summary */}
-      <div className="d-flex align-items-center gap-3 mb-4 p-3 border rounded-0" style={{ background: "var(--bs-body-bg)" }}>
-        <div>
-          <div className="text-muted small text-uppercase" style={{ letterSpacing: 1 }}>Global Score</div>
-          <div className="fw-bold" style={{ fontSize: "1.6rem" }}>{scores.globalScore.toLocaleString()}</div>
-        </div>
-        <div className="flex-grow-1">
-          <div className="progress rounded-0" style={{ height: 8 }}>
-            <div
-              className="progress-bar bg-info"
-              style={{ width: `${Math.min(100, (scores.globalScore / MAX_GLOBAL) * 100).toFixed(1)}%` }}
-            />
-          </div>
-          <div className="text-muted small mt-1">{playedCount} of {allGames.length} games played</div>
-        </div>
-      </div>
-
       {/* Per-game table */}
       <div className="table-responsive">
         <table className="table table-sm table-bordered mb-0 rounded-0">

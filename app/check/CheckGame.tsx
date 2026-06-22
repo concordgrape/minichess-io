@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square } from "./types";
 import { saveScore, checkPoints } from "../lib/scores";
-// import { useGameSession } from "../lib/useGameSession";
+import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import {
   cloneBoard, findKing, isCheckmate, isStalemate, isInCheck,
@@ -69,7 +69,7 @@ export default function CheckGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
   // Track puzzle progress
   useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
 
-  // const { submitScore } = useGameSession("check", puzzle.id);
+  const { submitScore } = useGameSession("check", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
   const mateIn = MATE_BY_DIFF[puzzle.difficulty];
 
@@ -130,8 +130,7 @@ export default function CheckGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
           const pts = checkPoints(mateIn, puzzle.difficulty, undoCount);
           saveScore({ puzzleId: `check-${puzzle.id}`, points: pts, earnedAt: Date.now() });
           setEarnedPoints(pts);
-          // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-          // markComplete();
+          submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
         } else if (isStalemate(next)) { setStatus("stalemate"); }
       }
       setPendingBlack(null); setKingThinking(false);
@@ -145,8 +144,7 @@ export default function CheckGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
     saveScore({ puzzleId: `check-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setBoard(b); setStatus("checkmate");
-    // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-    // markComplete();
+    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
   }
 
   function applyWhiteTurn(from: Square, to: Square) {

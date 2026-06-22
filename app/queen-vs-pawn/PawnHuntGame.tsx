@@ -6,7 +6,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, pawnPoints } from "../lib/scores";
-// import { useGameSession } from "../lib/useGameSession";
+import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
@@ -49,7 +49,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
   const [defending, setDefending] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
 
-  // const { submitScore } = useGameSession("queen-vs-pawn", puzzle.id);
+  const { submitScore } = useGameSession("queen-vs-pawn", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const [defenseTrigger, setDefenseTrigger] = useState(0);
@@ -73,8 +73,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
     saveScore({ puzzleId: `queen-vs-pawn-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("won");
-    // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-    // markComplete();
+    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
   }
 
   // Black's reply, computed off the main thread.

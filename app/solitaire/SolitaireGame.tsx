@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square, HistoryEntry } from "./types";
 import { getLegalCaptures, applyCapture, pieceCount, cloneBoard } from "./logic";
 import { saveScore } from "../lib/scores";
-// import { useGameSession } from "../lib/useGameSession";
+import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
@@ -84,7 +84,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
   const [justTransformed, setJustTransformed] = useState(false);
   const isFirstRender = useRef(true);
 
-  // const { submitScore } = useGameSession("solitaire", puzzle.id);
+  const { submitScore } = useGameSession("solitaire", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
   const attemptCountRef = useRef(1);
 
@@ -132,7 +132,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
       const pts = solitairePoints(puzzle.difficulty, pieceCount(puzzle.board.map((r) => [...r])), undoCount);
       saveScore({ puzzleId: `solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
-      // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
       // markComplete();
       return;
     }

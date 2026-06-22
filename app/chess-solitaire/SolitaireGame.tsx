@@ -7,7 +7,7 @@ import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { getLegalCaptures, applyCapture, hasAnyCapture } from "./logic";
 import { saveScore } from "../lib/scores";
-// import { useGameSession } from "../lib/useGameSession";
+import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { SolitairePiece, PuzzleDef, GameStatus, MoveRecord, Difficulty } from "./types";
@@ -66,7 +66,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
   });
   const [undoCount, setUndoCount] = useState(0);
 
-  // const { submitScore } = useGameSession("chess-solitaire", puzzle.id);
+  const { submitScore } = useGameSession("chess-solitaire", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -109,7 +109,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
       const updated = markCompleted(puzzle.id, pts);
       setEarnedPoints(pts);
       saveScore({ puzzleId: `chess-solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
-      // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
       // markComplete();
       setCompleted(updated);
     } else if (!hasAnyCapture(next)) {

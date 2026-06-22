@@ -6,7 +6,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, matePoints } from "../lib/scores";
-// import { useGameSession } from "../lib/useGameSession";
+import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
@@ -46,8 +46,7 @@ export default function MateGame({
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
-  // Server-side session for score submission (signed-in users only)
-  // const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle.id);
+  const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
 
   const [chess] = useState(() => new Chess(puzzle.fen));
@@ -84,13 +83,7 @@ export default function MateGame({
     saveScore({ puzzleId: `${slug}-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("solved");
-    // Submit raw data for server-side scoring (signed-in users only)
-    // submitScore({
-      // timeSeconds: Math.round((Date.now() - startedAt) / 1000),
-      // undoCount,
-      // totalAttempts: attemptCountRef.current,
-    // });
-    // markComplete();
+    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
   }
 
   // Defender (Black) reply, computed off the main thread.
