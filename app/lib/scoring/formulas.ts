@@ -226,7 +226,7 @@ export async function getPuzzleDifficulty(
   gameId: GameId,
   puzzleId: number
 ): Promise<Difficulty | null> {
-  const { getAdminDb } = await import("../firebase-admin");
+  const { getAdminDb } = await import("@/app/lib/firebase-admin");
   const snap = await getAdminDb()
     .collection("games").doc(gameId)
     .collection("puzzles").doc(String(puzzleId))

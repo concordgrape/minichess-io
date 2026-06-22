@@ -1,6 +1,6 @@
 import { getApps, initializeApp, cert, type App } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
-import { getAuth, type Auth } from "firebase-admin/auth";
+import type { Auth } from "firebase-admin/auth";
 
 let _app: App | undefined;
 let _auth: Auth | undefined;
@@ -17,7 +17,12 @@ function getAdminApp(): App {
 
 export const getAdminDb = (): Firestore => getFirestore(getAdminApp());
 
-export function getAdminAuth(): Auth {
-  if (!_auth) _auth = getAuth(getAdminApp());
+// Dynamic import avoids pulling jwks-rsa → jose v5 (ESM-only) at module
+// evaluation time, which crashes Vercel's CJS serverless runtime.
+export async function getAdminAuth(): Promise<Auth> {
+  if (!_auth) {
+    const { getAuth } = await import("firebase-admin/auth");
+    _auth = getAuth(getAdminApp());
+  }
   return _auth;
 }

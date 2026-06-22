@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     let uid: string;
     let displayName: string;
     try {
-      const auth = getAdminAuth();
+      const auth = await getAdminAuth();
       const decoded = await auth.verifyIdToken(authHeader.slice(7));
       uid = decoded.uid;
       displayName = decoded.name ?? decoded.email ?? `user_${decoded.uid.slice(0, 6)}`;
