@@ -1,20 +1,24 @@
-import { getAdminDb } from "@/app/lib/firebase-admin";
-import { GAME_FORMULAS } from "@/app/lib/scoring/formulas";
-import type { GameId } from "@/app/lib/scoring/types";
-
 export const dynamic = "force-dynamic";
+
+const VALID_GAMES = new Set([
+  "takes", "solitaire", "check", "smothered", "chess-solitaire",
+  "queen-vs-pawn", "king-and-pawn", "rook-endgame", "zugzwang",
+  "mate-in-1", "mate-in-2", "mate-in-3", "survival",
+]);
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
-  const { gameId } = await params;
-
-  if (!GAME_FORMULAS[gameId as GameId]) {
-    return Response.json({ error: "unknown_game" }, { status: 404 });
-  }
-
   try {
+    const { gameId } = await params;
+
+    if (!VALID_GAMES.has(gameId)) {
+      return Response.json({ error: "unknown_game" }, { status: 404 });
+    }
+
+    const { getAdminDb } = await import("@/app/lib/firebase-admin");
+
     const snap = await getAdminDb()
       .collection("games")
       .doc(gameId)
@@ -36,7 +40,8 @@ export async function GET(
       headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60" },
     });
   } catch (e) {
-    console.error(`[puzzles/${gameId}] list error:`, e);
-    return Response.json({ error: "internal" }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error(`[puzzles/list] error:`, e);
+    return Response.json({ error: "internal", detail: msg }, { status: 500 });
   }
 }
