@@ -5,7 +5,7 @@ import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { Piece, Puzzle, GameStatus } from "./types";
 import { getLegalCaptures, hasAnyCapture, applyCapture } from "./logic";
 import { saveScore, takesPoints } from "../lib/scores";
-import { useGameSession } from "../lib/useGameSession";
+// import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
@@ -23,14 +23,11 @@ function pieceImage(type: string) {
 
 interface MoveRecord { attacker: Piece; target: Piece; piecesBefore: Piece[]; }
 
-export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
+export default function TakesGame({ puzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const [puzzleIdx, setPuzzleIdx] = useState(0);
-  const puzzle = puzzles[puzzleIdx];
 
-  const { submitScore } = useGameSession("takes", puzzle.id);
-  const { startedAt, markComplete, resetGame } = useGamePhase();
-  const attemptCountRef = useRef(1);
+  // const { submitScore } = useGameSession("takes", puzzle.id);
+  const { startedAt, resetGame } = useGamePhase();
 
   const [pieces, setPieces] = useState<Piece[]>(() => puzzle.pieces.map((p) => ({ ...p })));
   const [selected, setSelected] = useState<Piece | null>(null);
@@ -40,17 +37,13 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
 
-  const reset = useCallback((idx: number) => {
-    const p = puzzles[idx];
-    setPieces(p.pieces.map((x) => ({ ...x })));
+  const reset = useCallback(() => {
+    setPieces(puzzle.pieces.map((x) => ({ ...x })));
     setSelected(null); setTargets([]);
     setHistory([]); setStatus("playing");
     setUndoCount(0); setEarnedPoints(null);
-    setPuzzleIdx(idx);
     resetGame();
-    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
-    else attemptCountRef.current += 1;
-  }, [puzzles, puzzle.id]);
+  }, [puzzle]);
 
   function selectPiece(piece: Piece) {
     if (status !== "playing") return;
@@ -71,8 +64,8 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
       const pts = takesPoints(puzzle.difficulty, undoCount);
       saveScore({ puzzleId: `takes-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
-      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-      markComplete();
+      // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+      // markComplete();
       return;
     }
     const king = next.find((p) => p.type === "k")!;
@@ -164,24 +157,12 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
               {history.length > 0 && status !== "won" && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => reset(puzzleIdx)}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={reset}>Reset</button>
             </div>
           </div>
         </div>
 
         <div style={{ maxWidth: 260 }}>
-          {puzzles.length > 1 && (
-            <select
-              className="form-select form-select-sm rounded-0 w-100 mb-3"
-              value={puzzleIdx}
-              onChange={(e) => reset(Number(e.target.value))}
-              aria-label="Select puzzle"
-            >
-              {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
-              ))}
-            </select>
-          )}
           <div className="mb-3">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
             <strong>Puzzle #{puzzle.id}</strong>

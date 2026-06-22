@@ -6,7 +6,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, matePoints } from "../lib/scores";
-import { useGameSession } from "../lib/useGameSession";
+// import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import type { MatePuzzle, GameStatus } from "./types";
 
@@ -28,26 +28,23 @@ function rowColToSq(row: number, col: number): Square {
 }
 
 export default function MateGame({
-  puzzles,
+  puzzle,
   mateIn,
   slug,
 }: {
-  puzzles: MatePuzzle[];
+  puzzle: MatePuzzle;
   mateIn: number;
   /** Route slug used to namespace saved scores (e.g. "mate-in-2"). */
   slug: string;
 }) {
-  const [puzzleIdx, setPuzzleIdx] = useState(0);
-  const puzzle = puzzles[puzzleIdx];
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
   // Server-side session for score submission (signed-in users only)
-  const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle.id);
-  const { startedAt, markComplete, resetGame } = useGamePhase();
-  const attemptCountRef = useRef(1);
+  // const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle.id);
+  const { startedAt, resetGame } = useGamePhase();
 
-  const [chess] = useState(() => new Chess(puzzles[0].fen));
+  const [chess] = useState(() => new Chess(puzzle.fen));
   const [board, setBoard] = useState(() => chess.board());
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
@@ -64,9 +61,8 @@ export default function MateGame({
     setBoard([...chess.board()]);
   }, [chess]);
 
-  const load = useCallback((idx: number) => {
-    chess.load(puzzles[idx].fen);
-    setPuzzleIdx(idx);
+  const load = useCallback(() => {
+    chess.load(puzzle.fen);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setMovesLeft(mateIn);
@@ -74,10 +70,7 @@ export default function MateGame({
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
     resetGame();
-    // reset attempt counter on new puzzle; increment on same-puzzle reset
-    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
-    else attemptCountRef.current += 1;
-  }, [chess, puzzles, mateIn]);
+  }, [chess, puzzle, mateIn]);
 
   function award() {
     const pts = matePoints(mateIn, puzzle.difficulty, undoCount);
@@ -85,12 +78,12 @@ export default function MateGame({
     setEarnedPoints(pts);
     setStatus("solved");
     // Submit raw data for server-side scoring (signed-in users only)
-    submitScore({
-      timeSeconds: Math.round((Date.now() - startedAt) / 1000),
-      undoCount,
-      totalAttempts: attemptCountRef.current,
-    });
-    markComplete();
+    // submitScore({
+      // timeSeconds: Math.round((Date.now() - startedAt) / 1000),
+      // undoCount,
+      // totalAttempts: attemptCountRef.current,
+    // });
+    // markComplete();
   }
 
   // Defender (Black) reply, computed off the main thread.
@@ -246,24 +239,12 @@ export default function MateGame({
               {history.length > 0 && status !== "solved" && !defending && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load(puzzleIdx)}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={load}>Reset</button>
             </div>
           </div>
         </div>
 
         <div style={{ maxWidth: 240 }}>
-          {puzzles.length > 1 && (
-            <select
-              className="form-select form-select-sm rounded-0 w-100 mb-3"
-              value={puzzleIdx}
-              onChange={(e) => load(Number(e.target.value))}
-              aria-label="Select puzzle"
-            >
-              {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
-              ))}
-            </select>
-          )}
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Mate in {mateIn}

@@ -1,152 +1,30 @@
-[
-  {
-    "id": 1,
-    "difficulty": "easy",
-    "board": [
-      [
-        null,
-        "Q",
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        "k"
-      ],
-      [
-        "R",
-        null,
-        null,
-        null
-      ]
+{
+  "id": 20260622,
+  "difficulty": "medium",
+  "board": [
+    [
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      "N",
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      "Q"
+    ],
+    [
+      "k",
+      null,
+      null,
+      null
     ]
-  },
-  {
-    "id": 2,
-    "difficulty": "easy",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        "k",
-        null,
-        null,
-        "Q"
-      ],
-      [
-        null,
-        null,
-        "R",
-        null
-      ]
-    ]
-  },
-  {
-    "id": 3,
-    "difficulty": "medium",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        "N",
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        "Q"
-      ],
-      [
-        "k",
-        null,
-        null,
-        null
-      ]
-    ]
-  },
-  {
-    "id": 4,
-    "difficulty": "medium",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        "R",
-        null,
-        null
-      ],
-      [
-        "k",
-        null,
-        "Q",
-        null
-      ]
-    ]
-  },
-  {
-    "id": 5,
-    "difficulty": "hard",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        "B",
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        "R",
-        null
-      ],
-      [
-        "k",
-        null,
-        null,
-        "Q"
-      ]
-    ]
-  }
-]
+  ]
+}

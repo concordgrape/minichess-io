@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square, HistoryEntry } from "./types";
 import { getLegalCaptures, applyCapture, pieceCount, cloneBoard } from "./logic";
 import { saveScore } from "../lib/scores";
-import { useGameSession } from "../lib/useGameSession";
+// import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
@@ -61,10 +61,8 @@ function writeSaved(state: SavedState) {
   try { localStorage.setItem(storageKey(state.puzzleId), JSON.stringify(state)); } catch { /* ignore */ }
 }
 
-export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
+export default function SolitaireGame({ puzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const [puzzleIdx, setPuzzleIdx] = useState(0);
-  const puzzle = puzzles[puzzleIdx];
 
   const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
 
@@ -80,8 +78,8 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
   const [justTransformed, setJustTransformed] = useState(false);
   const isFirstRender = useRef(true);
 
-  const { submitScore } = useGameSession("solitaire", puzzle.id);
-  const { startedAt, markComplete, resetGame } = useGamePhase();
+  // const { submitScore } = useGameSession("solitaire", puzzle.id);
+  const { startedAt, resetGame } = useGamePhase();
   const attemptCountRef = useRef(1);
 
   // Persist on state changes
@@ -106,26 +104,9 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
     attemptCountRef.current += 1;
   }, []);
 
-  const reset = useCallback((idx: number) => {
-    const p = puzzles[idx];
-    setPuzzleIdx(idx);
-    const sv = loadSaved(p.id);
-    if (sv) {
-      setBoard(sv.board);
-      setPos(sv.pos);
-      setLegalCaptures(getLegalCaptures(sv.board, sv.pos.row, sv.pos.col));
-      setStatus(sv.status);
-      setHistory(sv.history);
-      setUndoCount(sv.undoCount);
-      setEarnedPoints(null);
-      setJustTransformed(false);
-      isFirstRender.current = true;
-      resetGame();
-      attemptCountRef.current = 1;
-    } else {
-      resetToFresh(p);
-    }
-  }, [puzzles, resetToFresh]);
+  const reset = useCallback(() => {
+    resetToFresh(puzzle);
+  }, [puzzle, resetToFresh]);
 
   function doCapture(to: Square) {
     if (status !== "playing") return;
@@ -147,8 +128,8 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
       const pts = solitairePoints(puzzle.difficulty, pieceCount(puzzle.board.map((r) => [...r])), undoCount);
       saveScore({ puzzleId: `solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
-      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-      markComplete();
+      // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+      // markComplete();
       return;
     }
 
@@ -288,10 +269,7 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
               )}
               <button
                 className="btn btn-sm btn-outline-secondary rounded-0"
-                onClick={() => {
-                  localStorage.removeItem(storageKey(puzzle.id));
-                  resetToFresh(puzzle);
-                }}
+                onClick={reset}
               >
                 Reset
               </button>
@@ -301,18 +279,6 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
 
         {/* Sidebar */}
         <div style={{ maxWidth: 250 }}>
-          {puzzles.length > 1 && (
-            <select
-              className="form-select form-select-sm rounded-0 w-100 mb-3"
-              value={puzzleIdx}
-              onChange={(e) => reset(Number(e.target.value))}
-              aria-label="Select puzzle"
-            >
-              {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
-              ))}
-            </select>
-          )}
           <div className="mb-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
             <strong>Puzzle #{puzzle.id}</strong>

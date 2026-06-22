@@ -1,152 +1,30 @@
-[
-  {
-    "id": 1,
-    "difficulty": "easy",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        "p",
-        "k",
-        "p",
-        null
-      ],
-      [
-        "N",
-        "Q",
-        null,
-        null
-      ]
+{
+  "id": 20260622,
+  "difficulty": "medium",
+  "board": [
+    [
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      "p",
+      "k",
+      "r"
+    ],
+    [
+      null,
+      "Q",
+      "N",
+      null
     ]
-  },
-  {
-    "id": 2,
-    "difficulty": "easy",
-    "board": [
-      [
-        "k",
-        "p",
-        null,
-        null
-      ],
-      [
-        "p",
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        "Q",
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        "N"
-      ]
-    ]
-  },
-  {
-    "id": 3,
-    "difficulty": "medium",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        "p",
-        "k",
-        "r"
-      ],
-      [
-        null,
-        "Q",
-        "N",
-        null
-      ]
-    ]
-  },
-  {
-    "id": 4,
-    "difficulty": "medium",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        "p",
-        "k",
-        "p",
-        null
-      ],
-      [
-        null,
-        "N",
-        null,
-        "Q"
-      ]
-    ]
-  },
-  {
-    "id": 5,
-    "difficulty": "hard",
-    "board": [
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        "p",
-        "k"
-      ],
-      [
-        null,
-        null,
-        "p",
-        null
-      ],
-      [
-        null,
-        "Q",
-        null,
-        "N"
-      ]
-    ]
-  }
-]
+  ]
+}

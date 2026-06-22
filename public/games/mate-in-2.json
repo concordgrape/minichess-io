@@ -1,32 +1,5 @@
-[
-  {
-    "id": 1,
-    "difficulty": "easy",
-    "fen": "7k/6R1/8/8/8/8/8/R6K w - - 0 1"
-  },
-  {
-    "id": 2,
-    "difficulty": "medium",
-    "fen": "7k/8/5K2/8/1Q6/8/8/8 w - - 0 1"
-  },
-  {
-    "id": 3,
-    "difficulty": "medium",
-    "fen": "7k/8/5K2/8/8/8/8/R7 w - - 0 1"
-  },
-  {
-    "id": 4,
-    "difficulty": "medium",
-    "fen": "7k/8/4K3/8/8/8/8/Q7 w - - 0 1"
-  },
-  {
-    "id": 5,
-    "difficulty": "hard",
-    "fen": "7k/8/4K3/8/8/8/8/R7 w - - 0 1"
-  },
-  {
-    "id": 6,
-    "difficulty": "hard",
-    "fen": "k7/8/2K5/8/8/8/8/1R6 w - - 0 1"
-  }
-]
+{
+  "id": 20260622,
+  "difficulty": "medium",
+  "fen": "7k/8/5K2/8/1Q6/8/8/8 w - - 0 1"
+}

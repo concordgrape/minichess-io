@@ -5,7 +5,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { getCaptures, spawnPawns, spawnCount, type Pawn, type Pos } from "./logic";
 import { useGamePhase } from "../lib/GameStartContext";
-import { useGameSession } from "../lib/useGameSession";
+// import { useGameSession } from "../lib/useGameSession";
 import BoardOverlay from "../components/BoardOverlay";
 
 const PIECE_IMAGE = "/piece-knight-white.svg";
@@ -18,8 +18,8 @@ const INITIAL_PAWNS = 3;
 
 export default function SurvivalGame() {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const { phase, markComplete, resetGame } = useGamePhase();
-  const { submitScore } = useGameSession("survival", 0);
+  const { phase, resetGame } = useGamePhase();
+  // const { submitScore } = useGameSession("survival", 0);
 
   const [gameOver, setGameOver] = useState(false);
   const [playerPos, setPlayerPos] = useState<Pos>(STARTING_POS);
@@ -100,9 +100,8 @@ export default function SurvivalGame() {
           setBestScore(newScore);
           localStorage.setItem("survival_best", String(newScore));
         }
-        // totalAttempts repurposed as capture count for server-side scoring
-        submitScore({ timeSeconds: 0, undoCount: 0, totalAttempts: newScore });
-        markComplete();
+        // submitScore({ timeSeconds: 0, undoCount: 0, totalAttempts: newScore });
+        // markComplete();
       }
     }
   }

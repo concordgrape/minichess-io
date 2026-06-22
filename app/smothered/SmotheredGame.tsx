@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square } from "./types";
 import { saveScore, smotheredPoints } from "../lib/scores";
-import { useGameSession } from "../lib/useGameSession";
+// import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import {
@@ -62,14 +62,11 @@ function writeSaved(state: SavedState) {
   try { localStorage.setItem(storageKey(state.puzzleId), JSON.stringify(state)); } catch { /* ignore */ }
 }
 
-export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
+export default function SmotheredGame({ puzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const [puzzleIdx, setPuzzleIdx] = useState(0);
-  const puzzle = puzzles[puzzleIdx];
 
-  const { submitScore } = useGameSession("smothered", puzzle.id);
-  const { startedAt, markComplete, resetGame } = useGamePhase();
-  const attemptCountRef = useRef(1);
+  // const { submitScore } = useGameSession("smothered", puzzle.id);
+  const { startedAt, resetGame } = useGamePhase();
   const mateIn = MATE_BY_DIFF[puzzle.difficulty];
 
   const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
@@ -96,24 +93,19 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [board, status, movesLeft, undoCount]);
 
-  const reset = useCallback((idx: number) => {
-    const p = puzzles[idx];
-    const sv = loadSaved(p.id);
-    setPuzzleIdx(idx);
-    setBoard(sv?.board ?? p.board.map((r) => [...r]));
+  const reset = useCallback(() => {
+    setBoard(puzzle.board.map((r) => [...r]));
     setSelected(null); setLegalSquares([]);
-    setStatus(sv?.status ?? "playing");
-    setMovesLeft(sv?.movesLeft ?? MATE_BY_DIFF[p.difficulty]);
-    setHistory(sv?.history ?? []);
+    setStatus("playing");
+    setMovesLeft(mateIn);
+    setHistory([]);
     setKingThinking(false);
     setLastMove(null);
-    setUndoCount(sv?.undoCount ?? 0);
+    setUndoCount(0);
     setEarnedPoints(null); setPendingBlack(null); setWrongPieceFlash(false);
     isFirstRender.current = true;
     resetGame();
-    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
-    else attemptCountRef.current += 1;
-  }, [puzzles, puzzle.id]);
+  }, [puzzle, mateIn]);
 
   // Black king responds after a short delay
   useEffect(() => {
@@ -135,8 +127,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
             const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
             saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
             setEarnedPoints(pts);
-            submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-            markComplete();
+            // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+            // markComplete();
             setStatus("won");
           } else {
             setStatus("lost-wrong-piece");
@@ -179,8 +171,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
         const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
         saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
         setEarnedPoints(pts);
-        submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-        markComplete();
+        // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+        // markComplete();
         setBoard(next); setStatus("won");
       } else {
         setBoard(next); setStatus("lost-wrong-piece");
@@ -360,16 +352,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
               <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => {
-                localStorage.removeItem(storageKey(puzzle.id));
-                const p = puzzles[puzzleIdx];
-                setBoard(p.board.map((r) => [...r]));
-                setSelected(null); setLegalSquares([]);
-                setStatus("playing"); setMovesLeft(MATE_BY_DIFF[p.difficulty]);
-                setHistory([]); setKingThinking(false);
-                setLastMove(null); setUndoCount(0); setEarnedPoints(null);
-                setPendingBlack(null); setWrongPieceFlash(false);
-                isFirstRender.current = true;
-                resetGame();
+                try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}
+                reset();
               }}>Reset</button>
             </div>
           </div>
@@ -377,18 +361,6 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
 
         {/* Sidebar */}
         <div style={{ maxWidth: 250 }}>
-          {puzzles.length > 1 && (
-            <select
-              className="form-select form-select-sm rounded-0 w-100 mb-3"
-              value={puzzleIdx}
-              onChange={(e) => reset(Number(e.target.value))}
-              aria-label="Select puzzle"
-            >
-              {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
-              ))}
-            </select>
-          )}
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Mate in {mateIn}

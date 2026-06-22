@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import SmotheredGame from "./SmotheredGame";
-import GameLeaderboard from "@/app/components/GameLeaderboard";
+// import GameLeaderboard from "@/app/components/GameLeaderboard";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import type { Puzzle } from "./types";
 
@@ -12,15 +12,15 @@ export default async function SmotheredPage() {
     path.join(process.cwd(), "public", "games", "smothered.json"),
     "utf-8"
   );
-  const puzzles: Puzzle[] = JSON.parse(file);
+  const puzzle = JSON.parse(file);
   return (
     <div>
       <h1 className="h4 mb-1">Smothered</h1>
       <p className="text-muted mb-4">Trap the king with its own pieces and deliver a smothered mate.</p>
       <GameStartOverlay gameId="smothered">
-        <SmotheredGame puzzles={puzzles} />
+        <SmotheredGame puzzle={puzzle} />
       </GameStartOverlay>
-      <GameLeaderboard gameId="smothered" />
+{/*       <GameLeaderboard gameId="smothered" />*/}
     </div>
   );
 }

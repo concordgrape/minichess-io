@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import PawnHuntGame from "./PawnHuntGame";
-import GameLeaderboard from "@/app/components/GameLeaderboard";
+// import GameLeaderboard from "@/app/components/GameLeaderboard";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import type { PawnPuzzle } from "./types";
 
@@ -15,15 +15,15 @@ export default async function QueenPawnPage() {
     path.join(process.cwd(), "public", "games", "queen-vs-pawn.json"),
     "utf-8"
   );
-  const puzzles: PawnPuzzle[] = JSON.parse(file);
+  const puzzle = JSON.parse(file);
   return (
     <div>
       <h1 className="h4 mb-1">Queen vs Pawn</h1>
       <p className="text-muted mb-4">A passed pawn is one step from queening. Catch it with the queen before it promotes.</p>
       <GameStartOverlay gameId="queen-vs-pawn">
-        <PawnHuntGame puzzles={puzzles} />
+        <PawnHuntGame puzzle={puzzle} />
       </GameStartOverlay>
-      <GameLeaderboard gameId="queen-vs-pawn" />
+{/*       <GameLeaderboard gameId="queen-vs-pawn" />*/}
     </div>
   );
 }

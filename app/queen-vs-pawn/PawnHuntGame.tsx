@@ -6,7 +6,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, pawnPoints } from "../lib/scores";
-import { useGameSession } from "../lib/useGameSession";
+// import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import { pawnCaptured, pawnPromoted } from "./engine";
 import type { PawnPuzzle, GameStatus } from "./types";
@@ -28,13 +28,11 @@ function rowColToSq(row: number, col: number): Square {
   return `${String.fromCharCode(97 + col)}${8 - row}` as Square;
 }
 
-export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzzle[]; winIn?: number }) {
-  const [puzzleIdx, setPuzzleIdx] = useState(0);
-  const puzzle = puzzles[puzzleIdx];
+export default function PawnHuntGame({ puzzle, winIn = 2 }: { puzzle: PawnPuzzle; winIn?: number }) {
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
-  const [chess] = useState(() => new Chess(puzzles[0].fen));
+  const [chess] = useState(() => new Chess(puzzle.fen));
   const [board, setBoard] = useState(() => chess.board());
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
@@ -44,18 +42,16 @@ export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzz
   const [defending, setDefending] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
 
-  const { submitScore } = useGameSession("queen-vs-pawn", puzzle.id);
-  const { startedAt, markComplete, resetGame } = useGamePhase();
-  const attemptCountRef = useRef(1);
+  // const { submitScore } = useGameSession("queen-vs-pawn", puzzle.id);
+  const { startedAt, resetGame } = useGamePhase();
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const [defenseTrigger, setDefenseTrigger] = useState(0);
   const pendingDefense = useRef(false);
 
   const refresh = useCallback(() => setBoard([...chess.board()]), [chess]);
 
-  const load = useCallback((idx: number) => {
-    chess.load(puzzles[idx].fen);
-    setPuzzleIdx(idx);
+  const load = useCallback(() => {
+    chess.load(puzzle.fen);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setMovesLeft(winIn);
@@ -63,17 +59,15 @@ export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzz
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
     resetGame();
-    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
-    else attemptCountRef.current += 1;
-  }, [chess, puzzles, puzzle.id]);
+  }, [chess, puzzle]);
 
   function award() {
     const pts = pawnPoints(winIn, puzzle.difficulty, undoCount);
     saveScore({ puzzleId: `queen-vs-pawn-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("won");
-    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
-    markComplete();
+    // submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+    // markComplete();
   }
 
   // Black's reply, computed off the main thread.
@@ -217,24 +211,12 @@ export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzz
               {history.length > 0 && status !== "won" && !defending && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load(puzzleIdx)}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={load}>Reset</button>
             </div>
           </div>
         </div>
 
         <div style={{ maxWidth: 240 }}>
-          {puzzles.length > 1 && (
-            <select
-              className="form-select form-select-sm rounded-0 w-100 mb-3"
-              value={puzzleIdx}
-              onChange={(e) => load(Number(e.target.value))}
-              aria-label="Select puzzle"
-            >
-              {puzzles.map((p, i) => (
-                <option key={p.id} value={i}>Puzzle {p.id} — {p.difficulty}</option>
-              ))}
-            </select>
-          )}
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Win in {winIn}

@@ -1,172 +1,34 @@
-[
-  {
-    "id": 1,
-    "difficulty": "easy",
-    "board": [
-      [
-        "r",
-        null,
-        null,
-        "p"
-      ],
-      [
-        null,
-        null,
-        "n",
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        "b"
-      ]
+{
+  "id": 20260622,
+  "difficulty": "medium",
+  "board": [
+    [
+      null,
+      "n",
+      null,
+      null
     ],
-    "start": {
-      "row": 0,
-      "col": 0
-    }
-  },
-  {
-    "id": 2,
-    "difficulty": "easy",
-    "board": [
-      [
-        null,
-        "p",
-        null,
-        "r"
-      ],
-      [
-        "n",
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        "p",
-        null
-      ],
-      [
-        null,
-        "b",
-        null,
-        null
-      ]
+    [
+      null,
+      "r",
+      null,
+      null
     ],
-    "start": {
-      "row": 0,
-      "col": 3
-    }
-  },
-  {
-    "id": 3,
-    "difficulty": "medium",
-    "board": [
-      [
-        null,
-        "n",
-        null,
-        null
-      ],
-      [
-        null,
-        "r",
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        "p",
-        null
-      ],
-      [
-        null,
-        "b",
-        null,
-        "q"
-      ]
+    [
+      null,
+      null,
+      "p",
+      null
     ],
-    "start": {
-      "row": 3,
-      "col": 3
-    }
-  },
-  {
-    "id": 4,
-    "difficulty": "medium",
-    "board": [
-      [
-        null,
-        null,
-        "k",
-        null
-      ],
-      [
-        null,
-        null,
-        "r",
-        null
-      ],
-      [
-        null,
-        "b",
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        "n"
-      ]
-    ],
-    "start": {
-      "row": 3,
-      "col": 3
-    }
-  },
-  {
-    "id": 5,
-    "difficulty": "hard",
-    "board": [
-      [
-        null,
-        "b",
-        null,
-        null
-      ],
-      [
-        null,
-        null,
-        "n",
-        null
-      ],
-      [
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        null,
-        "r",
-        "q",
-        "k"
-      ]
-    ],
-    "start": {
-      "row": 3,
-      "col": 3
-    }
+    [
+      null,
+      "b",
+      null,
+      "q"
+    ]
+  ],
+  "start": {
+    "row": 3,
+    "col": 3
   }
-]
+}

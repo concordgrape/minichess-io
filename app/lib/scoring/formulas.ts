@@ -230,7 +230,8 @@ export async function getPuzzleDifficulty(
 ): Promise<Difficulty | null> {
   const filePath = path.join(process.cwd(), "public", "games", `${gameId}.json`);
   const raw = await readFile(filePath, "utf-8");
-  const puzzles: Array<{ id: number; difficulty: Difficulty }> = JSON.parse(raw);
+  const data: { id: number; difficulty: Difficulty } | Array<{ id: number; difficulty: Difficulty }> = JSON.parse(raw);
+  const puzzles = Array.isArray(data) ? data : [data];
   return puzzles.find((p) => p.id === puzzleId)?.difficulty ?? null;
 }
 

@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import MateGame from "../mate/MateGame";
-import GameLeaderboard from "@/app/components/GameLeaderboard";
+// import GameLeaderboard from "@/app/components/GameLeaderboard";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import type { MatePuzzle } from "../mate/types";
 
@@ -15,15 +15,15 @@ export default async function MateIn2Page() {
     path.join(process.cwd(), "public", "games", "mate-in-2.json"),
     "utf-8"
   );
-  const puzzles: MatePuzzle[] = JSON.parse(file);
+  const puzzle = JSON.parse(file);
   return (
     <div>
       <h1 className="h4 mb-1">Mate in 2</h1>
       <p className="text-muted mb-4">Force checkmate in two moves against Black&apos;s best defense.</p>
       <GameStartOverlay gameId="mate-in-2">
-        <MateGame puzzles={puzzles} mateIn={2} slug="mate-in-2" />
+        <MateGame puzzle={puzzle} mateIn={2} slug="mate-in-2" />
       </GameStartOverlay>
-      <GameLeaderboard gameId="mate-in-2" />
+{/*       <GameLeaderboard gameId="mate-in-2" />*/}
     </div>
   );
 }
