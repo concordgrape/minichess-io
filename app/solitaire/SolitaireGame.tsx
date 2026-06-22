@@ -4,8 +4,11 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square, HistoryEntry } from "./types";
 import { getLegalCaptures, applyCapture, pieceCount, cloneBoard } from "./logic";
 import { saveScore } from "../lib/scores";
+import { useGameSession } from "../lib/useGameSession";
+import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import BoardOverlay from "../components/BoardOverlay";
 
 const STORAGE_VERSION = "solitaire-v1";
 
@@ -77,6 +80,10 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
   const [justTransformed, setJustTransformed] = useState(false);
   const isFirstRender = useRef(true);
 
+  const { submitScore } = useGameSession("solitaire", puzzle.id);
+  const { startedAt, markComplete, resetGame } = useGamePhase();
+  const attemptCountRef = useRef(1);
+
   // Persist on state changes
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
@@ -95,6 +102,8 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
     setEarnedPoints(null);
     setJustTransformed(false);
     isFirstRender.current = true;
+    resetGame();
+    attemptCountRef.current += 1;
   }, []);
 
   const reset = useCallback((idx: number) => {
@@ -111,6 +120,8 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
       setEarnedPoints(null);
       setJustTransformed(false);
       isFirstRender.current = true;
+      resetGame();
+      attemptCountRef.current = 1;
     } else {
       resetToFresh(p);
     }
@@ -136,6 +147,8 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
       const pts = solitairePoints(puzzle.difficulty, pieceCount(puzzle.board.map((r) => [...r])), undoCount);
       saveScore({ puzzleId: `solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+      markComplete();
       return;
     }
 
@@ -223,7 +236,8 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         {/* Board + status */}
         <div>
-          <Board
+          <BoardOverlay>
+<Board
             size={4}
             squareSize={sq}
             pieces={boardPieces}
@@ -232,6 +246,7 @@ export default function SolitaireGame({ puzzles }: { puzzles: Puzzle[] }) {
             onDrop={handleDrop}
             interactive={status === "playing"}
           />
+</BoardOverlay>
 
           <div className="mt-2 d-flex align-items-center gap-2 flex-wrap" style={{ minHeight: 32 }}>
             {status === "playing" && (

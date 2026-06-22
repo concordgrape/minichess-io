@@ -1,9 +1,11 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import SolitaireGame from "./SolitaireGame";
+import GameLeaderboard from "@/app/components/GameLeaderboard";
+import GameStartOverlay from "@/app/components/GameStartOverlay";
 import type { Puzzle } from "./types";
 
-export const metadata = { title: "DailyCheckmate — Chess Solitaire" };
+export const metadata = { title: "DailyCheckmate — Chain Capture" };
 
 export default async function SolitairePage() {
   const file = await readFile(
@@ -15,7 +17,10 @@ export default async function SolitairePage() {
     <div>
       <h1 className="h4 mb-1">Chain Capture</h1>
       <p className="text-muted mb-4">Clear the board in one unbroken chain of captures.</p>
-      <SolitaireGame puzzles={puzzles} />
+      <GameStartOverlay gameId="solitaire">
+        <SolitaireGame puzzles={puzzles} />
+      </GameStartOverlay>
+      <GameLeaderboard gameId="solitaire" />
     </div>
   );
 }

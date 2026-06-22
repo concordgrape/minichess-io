@@ -1,6 +1,8 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import PawnHuntGame from "./PawnHuntGame";
+import GameLeaderboard from "@/app/components/GameLeaderboard";
+import GameStartOverlay from "@/app/components/GameStartOverlay";
 import type { PawnPuzzle } from "./types";
 
 export const metadata = {
@@ -18,7 +20,10 @@ export default async function QueenPawnPage() {
     <div>
       <h1 className="h4 mb-1">Queen vs Pawn</h1>
       <p className="text-muted mb-4">A passed pawn is one step from queening. Catch it with the queen before it promotes.</p>
-      <PawnHuntGame puzzles={puzzles} />
+      <GameStartOverlay gameId="queen-vs-pawn">
+        <PawnHuntGame puzzles={puzzles} />
+      </GameStartOverlay>
+      <GameLeaderboard gameId="queen-vs-pawn" />
     </div>
   );
 }

@@ -3,8 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Chess, type Square, type Move, type PieceSymbol, type Color } from "chess.js";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import BoardOverlay from "../components/BoardOverlay";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, pawnPoints } from "../lib/scores";
+import { useGameSession } from "../lib/useGameSession";
+import { useGamePhase } from "../lib/GameStartContext";
 import { pawnCaptured, pawnPromoted } from "./engine";
 import type { PawnPuzzle, GameStatus } from "./types";
 
@@ -40,6 +43,10 @@ export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzz
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [defending, setDefending] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
+
+  const { submitScore } = useGameSession("queen-vs-pawn", puzzle.id);
+  const { startedAt, markComplete, resetGame } = useGamePhase();
+  const attemptCountRef = useRef(1);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const [defenseTrigger, setDefenseTrigger] = useState(0);
   const pendingDefense = useRef(false);
@@ -55,13 +62,18 @@ export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzz
     setLastMove(null); setDefending(false);
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
-  }, [chess, puzzles]);
+    resetGame();
+    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
+    else attemptCountRef.current += 1;
+  }, [chess, puzzles, puzzle.id]);
 
   function award() {
     const pts = pawnPoints(winIn, puzzle.difficulty, undoCount);
     saveScore({ puzzleId: `queen-vs-pawn-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("won");
+    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+    markComplete();
   }
 
   // Black's reply, computed off the main thread.
@@ -168,7 +180,8 @@ export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzz
     <div>
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         <div>
-          <Board
+          <BoardOverlay>
+<Board
             size={8}
             squareSize={sq}
             pieces={pieces}
@@ -177,6 +190,7 @@ export default function PawnHuntGame({ puzzles, winIn = 2 }: { puzzles: PawnPuzz
             onDrop={handleDrop}
             interactive={canInteract}
           />
+</BoardOverlay>
 
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (

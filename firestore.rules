@@ -2,29 +2,37 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users can read/write their own profile
+    // User profiles — public read, self-write only
     match /users/{uid} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == uid;
 
-      // Game history is append-only via the server
+      // Game history is append-only via the server (Admin SDK)
       match /gameHistory/{entry} {
         allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false;
+      }
+    }
+
+    // Per-game leaderboard and per-user scores
+    // Structure: games/{gameId}/scores/{uid}
+    //            games/{gameId}/leaderboard/top-players
+    match /games/{gameId} {
+      allow read: if true;
+      allow write: if false;
+
+      match /scores/{uid} {
+        allow read: if true;   // anyone can look up a player's score
+        allow write: if false; // server-only via Admin SDK
+      }
+
+      match /leaderboard/{doc} {
+        allow read: if true;   // public leaderboard
         allow write: if false; // server-only via Admin SDK
       }
     }
 
-    // Leaderboard collections are read-only to clients; written server-side
-    match /bestScores/{doc} {
-      allow read: if true;
-      allow write: if false;
-    }
-    match /bestScoresByDiff/{doc} {
-      allow read: if true;
-      allow write: if false;
-    }
-
-    // Sessions, rate limits, stats, and flagged scores are server-only
+    // Server-only internal collections
     match /gameSessions/{doc} {
       allow read, write: if false;
     }

@@ -2,8 +2,11 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import BoardOverlay from "../components/BoardOverlay";
 import { getLegalCaptures, applyCapture, hasAnyCapture } from "./logic";
 import { saveScore } from "../lib/scores";
+import { useGameSession } from "../lib/useGameSession";
+import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { SolitairePiece, PuzzleDef, GameStatus, MoveRecord, Difficulty } from "./types";
 
@@ -57,6 +60,10 @@ export default function SolitaireGame({ puzzles }: Props) {
     catch { return new Set(); }
   });
   const [undoCount, setUndoCount] = useState(0);
+
+  const { submitScore } = useGameSession("chess-solitaire", puzzle.id);
+  const { startedAt, markComplete, resetGame } = useGamePhase();
+  const attemptCountRef = useRef(1);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -75,7 +82,10 @@ export default function SolitaireGame({ puzzles }: Props) {
     setHintId(null);
     setUndoCount(0);
     setEarnedPoints(null);
-  }, [puzzles]);
+    resetGame();
+    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
+    else attemptCountRef.current += 1;
+  }, [puzzles, puzzle.id]);
 
   function doCapture(attacker: SolitairePiece, target: SolitairePiece) {
     const before = pieces;
@@ -99,6 +109,8 @@ export default function SolitaireGame({ puzzles }: Props) {
       const updated = markCompleted(puzzle.id, pts);
       setEarnedPoints(pts);
       saveScore({ puzzleId: `chess-solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+      markComplete();
       setCompleted(updated);
     } else if (!hasAnyCapture(next)) {
       setPieces(next);
@@ -213,7 +225,8 @@ export default function SolitaireGame({ puzzles }: Props) {
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         {/* Board column */}
         <div>
-          <Board
+          <BoardOverlay>
+<Board
             size={8}
             squareSize={sq}
             pieces={boardPieces}
@@ -224,6 +237,7 @@ export default function SolitaireGame({ puzzles }: Props) {
             lightColor={LIGHT_SQ}
             darkColor={DARK_SQ}
           />
+</BoardOverlay>
 
           {/* Status bar */}
           <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">

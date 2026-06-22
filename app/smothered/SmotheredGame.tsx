@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square } from "./types";
 import { saveScore, smotheredPoints } from "../lib/scores";
+import { useGameSession } from "../lib/useGameSession";
+import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import {
   cloneBoard, findKing, isCheckmate, isStalemate, isInCheck,
@@ -10,6 +12,7 @@ import {
   blackBestMove, applyKingMove, applyWhiteMove, getWhitePieceMoves,
 } from "./logic";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import BoardOverlay from "../components/BoardOverlay";
 
 const STORAGE_VERSION = "smothered-v1";
 
@@ -63,6 +66,10 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
+
+  const { submitScore } = useGameSession("smothered", puzzle.id);
+  const { startedAt, markComplete, resetGame } = useGamePhase();
+  const attemptCountRef = useRef(1);
   const mateIn = MATE_BY_DIFF[puzzle.difficulty];
 
   const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
@@ -103,7 +110,10 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
     setUndoCount(sv?.undoCount ?? 0);
     setEarnedPoints(null); setPendingBlack(null); setWrongPieceFlash(false);
     isFirstRender.current = true;
-  }, [puzzles]);
+    resetGame();
+    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
+    else attemptCountRef.current += 1;
+  }, [puzzles, puzzle.id]);
 
   // Black king responds after a short delay
   useEffect(() => {
@@ -125,6 +135,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
             const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
             saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
             setEarnedPoints(pts);
+            submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+            markComplete();
             setStatus("won");
           } else {
             setStatus("lost-wrong-piece");
@@ -167,6 +179,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
         const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
         saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
         setEarnedPoints(pts);
+        submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+        markComplete();
         setBoard(next); setStatus("won");
       } else {
         setBoard(next); setStatus("lost-wrong-piece");
@@ -288,7 +302,8 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         {/* Board + status bar */}
         <div>
-          <Board
+          <BoardOverlay>
+<Board
             size={4}
             squareSize={sq}
             pieces={boardPieces}
@@ -297,6 +312,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
             onDrop={handleDrop}
             interactive={canInteract}
           />
+</BoardOverlay>
 
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (

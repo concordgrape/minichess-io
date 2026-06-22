@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
+import { revalidateTag } from "next/cache";
 import { getAdminAuth, getAdminDb } from "@/app/lib/firebase-admin";
 import { GAME_FORMULAS, computeScore } from "@/app/lib/scoring/formulas";
 import type { GameId, Difficulty, PuzzleRawData } from "@/app/lib/scoring/types";
@@ -124,66 +125,73 @@ export async function POST(request: NextRequest) {
   const { score, normalizedScore } = computeScore(rawData, gameId!, difficulty!);
   const completedAt = new Date(now);
 
-  // ── Update leaderboard + user docs (batch) ───────────────────────────────────
-  const bestRef = db.collection("bestScores").doc(`${uid}_${gameId}`);
-  const bestDiffRef = db.collection("bestScoresByDiff").doc(`${uid}_${gameId}_${difficulty}`);
+  // ── Write to games/{gameId}/scores/{uid} and update top-players leaderboard ──
+  const gameRef = db.collection("games").doc(gameId!);
+  const userScoreRef = gameRef.collection("scores").doc(uid);
+  const topPlayersRef = gameRef.collection("leaderboard").doc("top-players");
   const userRef = db.collection("users").doc(uid);
 
   await db.runTransaction(async (tx) => {
-    const [bestSnap, bestDiffSnap, userSnap] = await Promise.all([
-      tx.get(bestRef),
-      tx.get(bestDiffRef),
+    const [userScoreSnap, topPlayersSnap, userSnap] = await Promise.all([
+      tx.get(userScoreRef),
+      tx.get(topPlayersRef),
       tx.get(userRef),
     ]);
 
-    const prevBest = bestSnap.data();
-    const prevBestDiff = bestDiffSnap.data();
+    const prevScore = userScoreSnap.data();
+    const isNewBest = !prevScore || normalizedScore > (prevScore.normalizedScore as number);
+
+    // Write user's best score for this game
+    if (isNewBest) {
+      tx.set(userScoreRef, {
+        uid, displayName: displayName!,
+        gameId: gameId!, difficulty: difficulty!,
+        puzzleId: puzzleId!,
+        score, normalizedScore,
+        updatedAt: completedAt,
+      });
+    }
+
+    // Update top-100 leaderboard document for this game
+    if (isNewBest) {
+      type Player = {
+        rank: number; uid: string; displayName: string;
+        score: number; normalizedScore: number; difficulty: string;
+        updatedAt: string;
+      };
+      const existing: Player[] = topPlayersSnap.data()?.players ?? [];
+
+      // Remove previous entry for this user (if any), add updated entry, sort, cap at 100
+      const without = existing.filter((p) => p.uid !== uid);
+      without.push({
+        rank: 0, uid, displayName: displayName!,
+        score, normalizedScore, difficulty: difficulty!,
+        updatedAt: completedAt.toISOString(),
+      });
+      without.sort((a, b) => b.normalizedScore - a.normalizedScore);
+      const top100 = without.slice(0, 100).map((p, i) => ({ ...p, rank: i + 1 }));
+
+      tx.set(topPlayersRef, { players: top100, updatedAt: completedAt });
+    }
+
+    // Update users/{uid} globalScore (used by profile page + global leaderboard)
     const userData = userSnap.data() ?? {};
     const gamesBest: Record<string, unknown> = userData.gamesBest ?? {};
     const currentGlobalScore: number = userData.globalScore ?? 0;
+    const prevNorm: number = (gamesBest[gameId!] as { normalizedScore?: number } | undefined)?.normalizedScore ?? 0;
 
-    // Update overall best for this game (by normalizedScore, which is difficulty-weighted)
-    if (!prevBest || normalizedScore > (prevBest.normalizedScore as number)) {
-      tx.set(bestRef, {
-        uid, displayName: displayName!,
-        gameId: gameId!, difficulty: difficulty!,
-        score, normalizedScore,
-        updatedAt: completedAt,
-      });
-    }
-
-    // Update per-difficulty best for this game (by raw score)
-    if (!prevBestDiff || score > (prevBestDiff.score as number)) {
-      tx.set(bestDiffRef, {
-        uid, displayName: displayName!,
-        gameId: gameId!, difficulty: difficulty!,
-        score, normalizedScore,
-        updatedAt: completedAt,
-      });
-    }
-
-    // Recompute globalScore: replace old normalizedScore for this game with new one
-    const prevGameBest = gamesBest[gameId!] as { normalizedScore?: number } | undefined;
-    const prevNorm: number = prevGameBest?.normalizedScore ?? 0;
-    const isNewBest = normalizedScore > prevNorm;
-    const newGlobalScore = isNewBest
-      ? currentGlobalScore - prevNorm + normalizedScore
-      : currentGlobalScore;
-
-    const updatedGamesBest = {
-      ...gamesBest,
-      ...(isNewBest ? {
-        [gameId!]: {
-          score, normalizedScore, difficulty: difficulty!,
-          puzzleId: puzzleId!, updatedAt: completedAt.toISOString(),
+    if (isNewBest) {
+      tx.set(userRef, {
+        globalScore: Math.max(0, currentGlobalScore - prevNorm + normalizedScore),
+        gamesBest: {
+          ...gamesBest,
+          [gameId!]: {
+            score, normalizedScore, difficulty: difficulty!,
+            puzzleId: puzzleId!, updatedAt: completedAt.toISOString(),
+          },
         },
-      } : {}),
-    };
-
-    tx.set(userRef, {
-      globalScore: Math.max(0, newGlobalScore),
-      gamesBest: updatedGamesBest,
-    }, { merge: true });
+      }, { merge: true });
+    }
   });
 
   // ── Append to history (outside transaction — append-only, no conflict risk) ──
@@ -226,6 +234,9 @@ export async function POST(request: NextRequest) {
       }
     }
   });
+
+  // Bust leaderboard caches for this game so the next fetch returns fresh data
+  revalidateTag(`lb-${gameId}`, { expire: 0 });
 
   return Response.json({ saved: true, score, normalizedScore });
 }

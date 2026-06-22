@@ -26,28 +26,22 @@ export type GameLeaderboard = {
   entries: LeaderboardEntry[];
 };
 
-/** Fetch top-10 for a single game, cached 1 hour. */
+/** Fetch top-10 for a single game from games/{gameId}/leaderboard/top-players. */
 const fetchGame = (gameId: GameId) =>
   unstable_cache(
     async () => {
-      const snap = await getAdminDb()
-        .collection("bestScores")
-        .where("gameId", "==", gameId)
-        .orderBy("normalizedScore", "desc")
-        .limit(10)
-        .get();
-      return snap.docs.map((d, i): LeaderboardEntry => ({
-        rank: i + 1,
-        uid: d.data().uid as string,
-        displayName: d.data().displayName as string,
-        score: d.data().score as number,
-        normalizedScore: d.data().normalizedScore as number,
-        difficulty: d.data().difficulty as LeaderboardEntry["difficulty"],
-        updatedAt: (d.data().updatedAt?.toDate?.()?.toISOString() as string) ?? "",
-      }));
+      try {
+        const snap = await getAdminDb()
+          .collection("games").doc(gameId)
+          .collection("leaderboard").doc("top-players")
+          .get();
+        return ((snap.data()?.players ?? []) as LeaderboardEntry[]).slice(0, 10);
+      } catch {
+        return [];
+      }
     },
     [`page-lb-${gameId}`],
-    { revalidate: 3600 }
+    { revalidate: 3600, tags: [`lb-${gameId}`] }
   )();
 
 /** Fetch all 12 game leaderboards in parallel, each cached independently. */

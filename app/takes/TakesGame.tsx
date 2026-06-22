@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import type { Piece, Puzzle, GameStatus } from "./types";
 import { getLegalCaptures, hasAnyCapture, applyCapture } from "./logic";
 import { saveScore, takesPoints } from "../lib/scores";
+import { useGameSession } from "../lib/useGameSession";
+import { useGamePhase } from "../lib/GameStartContext";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import BoardOverlay from "../components/BoardOverlay";
 
 const PIECE_NAMES: Record<string, string> = {
   p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
@@ -25,6 +28,10 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
 
+  const { submitScore } = useGameSession("takes", puzzle.id);
+  const { startedAt, markComplete, resetGame } = useGamePhase();
+  const attemptCountRef = useRef(1);
+
   const [pieces, setPieces] = useState<Piece[]>(() => puzzle.pieces.map((p) => ({ ...p })));
   const [selected, setSelected] = useState<Piece | null>(null);
   const [targets, setTargets] = useState<Piece[]>([]);
@@ -40,7 +47,10 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
     setHistory([]); setStatus("playing");
     setUndoCount(0); setEarnedPoints(null);
     setPuzzleIdx(idx);
-  }, [puzzles]);
+    resetGame();
+    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
+    else attemptCountRef.current += 1;
+  }, [puzzles, puzzle.id]);
 
   function selectPiece(piece: Piece) {
     if (status !== "playing") return;
@@ -61,6 +71,8 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
       const pts = takesPoints(puzzle.difficulty, undoCount);
       saveScore({ puzzleId: `takes-${puzzle.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+      markComplete();
       return;
     }
     const king = next.find((p) => p.type === "k")!;
@@ -120,7 +132,8 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
     <div>
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         <div>
-          <Board
+          <BoardOverlay>
+<Board
             size={4}
             squareSize={sq}
             pieces={boardPieces}
@@ -129,6 +142,7 @@ export default function TakesGame({ puzzles }: { puzzles: Puzzle[] }) {
             onDrop={handleDrop}
             interactive={status === "playing"}
           />
+</BoardOverlay>
 
           <div className="mt-2 d-flex align-items-center gap-2">
             {status === "playing" && (

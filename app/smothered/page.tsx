@@ -1,6 +1,8 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import SmotheredGame from "./SmotheredGame";
+import GameLeaderboard from "@/app/components/GameLeaderboard";
+import GameStartOverlay from "@/app/components/GameStartOverlay";
 import type { Puzzle } from "./types";
 
 export const metadata = { title: "DailyCheckmate — Smothered" };
@@ -15,7 +17,10 @@ export default async function SmotheredPage() {
     <div>
       <h1 className="h4 mb-1">Smothered</h1>
       <p className="text-muted mb-4">Trap the king with its own pieces and deliver a smothered mate.</p>
-      <SmotheredGame puzzles={puzzles} />
+      <GameStartOverlay gameId="smothered">
+        <SmotheredGame puzzles={puzzles} />
+      </GameStartOverlay>
+      <GameLeaderboard gameId="smothered" />
     </div>
   );
 }

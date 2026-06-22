@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Chess, type Square, type Move, type PieceSymbol, type Color } from "chess.js";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import BoardOverlay from "../components/BoardOverlay";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, matePoints } from "../lib/scores";
 import { useGameSession } from "../lib/useGameSession";
+import { useGamePhase } from "../lib/GameStartContext";
 import type { MatePuzzle, GameStatus } from "./types";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
@@ -42,7 +44,7 @@ export default function MateGame({
 
   // Server-side session for score submission (signed-in users only)
   const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle.id);
-  const startTimeRef = useRef<number>(Date.now());
+  const { startedAt, markComplete, resetGame } = useGamePhase();
   const attemptCountRef = useRef(1);
 
   const [chess] = useState(() => new Chess(puzzles[0].fen));
@@ -71,7 +73,7 @@ export default function MateGame({
     setLastMove(null); setDefending(false);
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
-    startTimeRef.current = Date.now();
+    resetGame();
     // reset attempt counter on new puzzle; increment on same-puzzle reset
     if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
     else attemptCountRef.current += 1;
@@ -84,10 +86,11 @@ export default function MateGame({
     setStatus("solved");
     // Submit raw data for server-side scoring (signed-in users only)
     submitScore({
-      timeSeconds: Math.round((Date.now() - startTimeRef.current) / 1000),
+      timeSeconds: Math.round((Date.now() - startedAt) / 1000),
       undoCount,
       totalAttempts: attemptCountRef.current,
     });
+    markComplete();
   }
 
   // Defender (Black) reply, computed off the main thread.
@@ -206,7 +209,8 @@ export default function MateGame({
     <div>
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         <div>
-          <Board
+          <BoardOverlay>
+<Board
             size={8}
             squareSize={sq}
             pieces={pieces}
@@ -215,6 +219,7 @@ export default function MateGame({
             onDrop={handleDrop}
             interactive={canInteract}
           />
+</BoardOverlay>
 
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (

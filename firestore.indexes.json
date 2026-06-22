@@ -1,22 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "bestScores",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "gameId", "order": "ASCENDING" },
-        { "fieldPath": "normalizedScore", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "bestScoresByDiff",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "gameId", "order": "ASCENDING" },
-        { "fieldPath": "difficulty", "order": "ASCENDING" },
-        { "fieldPath": "score", "order": "DESCENDING" }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }

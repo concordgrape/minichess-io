@@ -1,6 +1,8 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import MateGame from "../mate/MateGame";
+import GameLeaderboard from "@/app/components/GameLeaderboard";
+import GameStartOverlay from "@/app/components/GameStartOverlay";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
@@ -18,7 +20,10 @@ export default async function MateIn3Page() {
     <div>
       <h1 className="h4 mb-1">Mate in 3</h1>
       <p className="text-muted mb-4">Calculate a forced checkmate in three moves.</p>
-      <MateGame puzzles={puzzles} mateIn={3} slug="mate-in-3" />
+      <GameStartOverlay gameId="mate-in-3">
+        <MateGame puzzles={puzzles} mateIn={3} slug="mate-in-3" />
+      </GameStartOverlay>
+      <GameLeaderboard gameId="mate-in-3" />
     </div>
   );
 }

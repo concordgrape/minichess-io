@@ -3,11 +3,14 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { Board as BoardType, Puzzle, GameStatus, Square } from "./types";
 import { saveScore, checkPoints } from "../lib/scores";
+import { useGameSession } from "../lib/useGameSession";
+import { useGamePhase } from "../lib/GameStartContext";
 import {
   cloneBoard, findKing, isCheckmate, isStalemate, isInCheck,
   blackBestMove, applyKingMove, applyWhiteMove, getWhitePieceMoves,
 } from "./logic";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import BoardOverlay from "../components/BoardOverlay";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 
 const STORAGE_VERSION = "check-v1";
@@ -61,6 +64,10 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
   const puzzle = puzzles[puzzleIdx];
+
+  const { submitScore } = useGameSession("check", puzzle.id);
+  const { startedAt, markComplete, resetGame } = useGamePhase();
+  const attemptCountRef = useRef(1);
   const mateIn = MATE_BY_DIFF[puzzle.difficulty];
 
   const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
@@ -100,7 +107,10 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
     setUndoCount(saved?.undoCount ?? 0);
     setEarnedPoints(null); setPendingBlack(null);
     isFirstRender.current = true;
-  }, [puzzles]);
+    resetGame();
+    if (puzzles[idx].id !== puzzle.id) attemptCountRef.current = 1;
+    else attemptCountRef.current += 1;
+  }, [puzzles, puzzle.id]);
 
   useEffect(() => {
     if (!pendingBlack) return;
@@ -120,6 +130,8 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
           const pts = checkPoints(mateIn, puzzle.difficulty, undoCount);
           saveScore({ puzzleId: `check-${puzzle.id}`, points: pts, earnedAt: Date.now() });
           setEarnedPoints(pts);
+          submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+          markComplete();
         } else if (isStalemate(next)) { setStatus("stalemate"); }
       }
       setPendingBlack(null); setKingThinking(false);
@@ -133,6 +145,8 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
     saveScore({ puzzleId: `check-${puzzle.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setBoard(b); setStatus("checkmate");
+    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: attemptCountRef.current });
+    markComplete();
   }
 
   function applyWhiteTurn(from: Square, to: Square) {
@@ -226,7 +240,8 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
     <div>
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
         <div>
-          <Board
+          <BoardOverlay>
+<Board
             size={4}
             squareSize={sq}
             pieces={boardPieces}
@@ -235,6 +250,7 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
             onDrop={handleDrop}
             interactive={canInteract}
           />
+</BoardOverlay>
 
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (
