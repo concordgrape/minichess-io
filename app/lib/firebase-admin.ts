@@ -1,6 +1,5 @@
 import { getApps, initializeApp, cert, type App } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
-import { getAuth, type Auth } from "firebase-admin/auth";
 
 let _app: App | undefined;
 
@@ -15,4 +14,10 @@ function getAdminApp(): App {
 }
 
 export const getAdminDb = (): Firestore => getFirestore(getAdminApp());
-export const getAdminAuth = (): Auth => getAuth(getAdminApp());
+
+// Lazy-loaded to avoid pulling in jwks-rsa/jose at module evaluation time,
+// which breaks on Vercel due to a CommonJS/ESM conflict in jose v5+.
+export async function getAdminAuth() {
+  const { getAuth } = await import("firebase-admin/auth");
+  return getAuth(getAdminApp());
+}
