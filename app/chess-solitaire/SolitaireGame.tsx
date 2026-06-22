@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
+import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { getLegalCaptures, applyCapture, hasAnyCapture } from "./logic";
 import { saveScore } from "../lib/scores";
 // import { useGameSession } from "../lib/useGameSession";
@@ -42,8 +43,9 @@ interface Props {
   puzzle: PuzzleDef;
 }
 
-export default function SolitaireGame({ puzzle }: Props) {
+export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
+  const [puzzle, setPuzzle] = useState(initialPuzzle);
 
   const [pieces, setPieces] = useState<SolitairePiece[]>(() => makePieces(puzzle.pieces));
   const [selected, setSelected] = useState<SolitairePiece | null>(null);
@@ -66,8 +68,8 @@ export default function SolitaireGame({ puzzle }: Props) {
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
-  const resetPuzzle = useCallback(() => {
-    setPieces(makePieces(puzzle.pieces));
+  const resetPuzzle = useCallback((p: PuzzleDef = puzzle) => {
+    setPieces(makePieces(p.pieces));
     setSelected(null);
     setCaptures([]);
     setHistory([]);
@@ -78,7 +80,7 @@ export default function SolitaireGame({ puzzle }: Props) {
     setUndoCount(0);
     setEarnedPoints(null);
     resetGame();
-  }, [puzzle]);
+  }, [puzzle, resetGame]);
 
   function doCapture(attacker: SolitairePiece, target: SolitairePiece) {
     const before = pieces;
@@ -261,13 +263,24 @@ export default function SolitaireGame({ puzzle }: Props) {
               {status === "playing" && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={hint}>Hint</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={resetPuzzle}>Restart</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => resetPuzzle()}>Restart</button>
             </div>
           </div>
         </div>
 
         {/* Info panel */}
         <div style={{ maxWidth: 240 }}>
+          <div className="mb-3">
+            <PuzzleSelectDropdown
+              gameId="chess-solitaire"
+              currentId={puzzle.id}
+              onPuzzleLoaded={(data) => {
+                const p = data as unknown as PuzzleDef;
+                setPuzzle(p);
+                resetPuzzle(p);
+              }}
+            />
+          </div>
           <div className="mb-3 d-flex align-items-center gap-2 flex-wrap">
             <span className={`badge bg-${DIFF_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 12, padding: "4px 8px" }}>
               {DIFF_LABEL[puzzle.difficulty]}
@@ -346,7 +359,7 @@ export default function SolitaireGame({ puzzle }: Props) {
               <div className="badge text-bg-warning rounded-0 fs-6 mb-3">+{earnedPoints} pts</div>
             )}
             <div className="d-flex gap-2 justify-content-center">
-              <button className="btn btn-outline-secondary rounded-0" onClick={resetPuzzle}>Play again</button>
+              <button className="btn btn-outline-secondary rounded-0" onClick={() => resetPuzzle()}>Play again</button>
             </div>
           </div>
         </div>
@@ -371,7 +384,7 @@ export default function SolitaireGame({ puzzle }: Props) {
               <button className="btn btn-outline-secondary rounded-0" onClick={() => { setStatus("playing"); undo(); }}>
                 Undo last move
               </button>
-              <button className="btn btn-danger rounded-0" onClick={resetPuzzle}>Restart</button>
+              <button className="btn btn-danger rounded-0" onClick={() => resetPuzzle()}>Restart</button>
             </div>
           </div>
         </div>

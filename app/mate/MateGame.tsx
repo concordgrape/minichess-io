@@ -8,6 +8,7 @@ import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, matePoints } from "../lib/scores";
 // import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
+import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import type { MatePuzzle, GameStatus } from "./types";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
@@ -28,7 +29,7 @@ function rowColToSq(row: number, col: number): Square {
 }
 
 export default function MateGame({
-  puzzle,
+  puzzle: initialPuzzle,
   mateIn,
   slug,
 }: {
@@ -37,6 +38,7 @@ export default function MateGame({
   /** Route slug used to namespace saved scores (e.g. "mate-in-2"). */
   slug: string;
 }) {
+  const [puzzle, setPuzzle] = useState(initialPuzzle);
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
@@ -61,8 +63,8 @@ export default function MateGame({
     setBoard([...chess.board()]);
   }, [chess]);
 
-  const load = useCallback(() => {
-    chess.load(puzzle.fen);
+  const load = useCallback((p: MatePuzzle = puzzle) => {
+    chess.load(p.fen);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setMovesLeft(mateIn);
@@ -70,7 +72,7 @@ export default function MateGame({
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
     resetGame();
-  }, [chess, puzzle, mateIn]);
+  }, [chess, puzzle, mateIn, resetGame]);
 
   function award() {
     const pts = matePoints(mateIn, puzzle.difficulty, undoCount);
@@ -239,12 +241,23 @@ export default function MateGame({
               {history.length > 0 && status !== "solved" && !defending && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={load}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load()}>Reset</button>
             </div>
           </div>
         </div>
 
         <div style={{ maxWidth: 240 }}>
+          <div className="mb-3">
+            <PuzzleSelectDropdown
+              gameId={slug}
+              currentId={puzzle.id}
+              onPuzzleLoaded={(data) => {
+                const p = data as unknown as MatePuzzle;
+                setPuzzle(p);
+                load(p);
+              }}
+            />
+          </div>
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Mate in {mateIn}

@@ -9,6 +9,7 @@ import { useGamePhase } from "../lib/GameStartContext";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
+import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 
 const STORAGE_VERSION = "solitaire-v1";
 
@@ -61,8 +62,9 @@ function writeSaved(state: SavedState) {
   try { localStorage.setItem(storageKey(state.puzzleId), JSON.stringify(state)); } catch { /* ignore */ }
 }
 
-export default function SolitaireGame({ puzzle }: { puzzle: Puzzle }) {
+export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
+  const [puzzle, setPuzzle] = useState(initialPuzzle);
 
   const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
 
@@ -104,9 +106,7 @@ export default function SolitaireGame({ puzzle }: { puzzle: Puzzle }) {
     attemptCountRef.current += 1;
   }, []);
 
-  const reset = useCallback(() => {
-    resetToFresh(puzzle);
-  }, [puzzle, resetToFresh]);
+  const reset = useCallback(() => resetToFresh(puzzle), [puzzle, resetToFresh]);
 
   function doCapture(to: Square) {
     if (status !== "playing") return;
@@ -279,6 +279,18 @@ export default function SolitaireGame({ puzzle }: { puzzle: Puzzle }) {
 
         {/* Sidebar */}
         <div style={{ maxWidth: 250 }}>
+          <div className="mb-3">
+            <PuzzleSelectDropdown
+              gameId="solitaire"
+              currentId={puzzle.id}
+              onPuzzleLoaded={(data) => {
+                const p = data as unknown as Puzzle;
+                try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}
+                setPuzzle(p);
+                resetToFresh(p);
+              }}
+            />
+          </div>
           <div className="mb-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
             <strong>Puzzle #{puzzle.id}</strong>

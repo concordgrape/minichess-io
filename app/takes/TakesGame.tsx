@@ -9,6 +9,7 @@ import { saveScore, takesPoints } from "../lib/scores";
 import { useGamePhase } from "../lib/GameStartContext";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
+import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 
 const PIECE_NAMES: Record<string, string> = {
   p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
@@ -23,8 +24,9 @@ function pieceImage(type: string) {
 
 interface MoveRecord { attacker: Piece; target: Piece; piecesBefore: Piece[]; }
 
-export default function TakesGame({ puzzle }: { puzzle: Puzzle }) {
+export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
+  const [puzzle, setPuzzle] = useState(initialPuzzle);
 
   // const { submitScore } = useGameSession("takes", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
@@ -37,13 +39,15 @@ export default function TakesGame({ puzzle }: { puzzle: Puzzle }) {
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
 
-  const reset = useCallback(() => {
-    setPieces(puzzle.pieces.map((x) => ({ ...x })));
+  const resetToFresh = useCallback((p: Puzzle) => {
+    setPieces(p.pieces.map((x) => ({ ...x })));
     setSelected(null); setTargets([]);
     setHistory([]); setStatus("playing");
     setUndoCount(0); setEarnedPoints(null);
     resetGame();
-  }, [puzzle]);
+  }, [resetGame]);
+
+  const reset = useCallback(() => resetToFresh(puzzle), [puzzle, resetToFresh]);
 
   function selectPiece(piece: Piece) {
     if (status !== "playing") return;
@@ -163,6 +167,17 @@ export default function TakesGame({ puzzle }: { puzzle: Puzzle }) {
         </div>
 
         <div style={{ maxWidth: 260 }}>
+          <div className="mb-3">
+            <PuzzleSelectDropdown
+              gameId="takes"
+              currentId={puzzle.id}
+              onPuzzleLoaded={(data) => {
+                const p = data as unknown as Puzzle;
+                setPuzzle(p);
+                resetToFresh(p);
+              }}
+            />
+          </div>
           <div className="mb-3">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
             <strong>Puzzle #{puzzle.id}</strong>

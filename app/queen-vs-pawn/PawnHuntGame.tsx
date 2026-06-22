@@ -8,6 +8,7 @@ import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, pawnPoints } from "../lib/scores";
 // import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
+import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { pawnCaptured, pawnPromoted } from "./engine";
 import type { PawnPuzzle, GameStatus } from "./types";
 
@@ -28,7 +29,8 @@ function rowColToSq(row: number, col: number): Square {
   return `${String.fromCharCode(97 + col)}${8 - row}` as Square;
 }
 
-export default function PawnHuntGame({ puzzle, winIn = 2 }: { puzzle: PawnPuzzle; winIn?: number }) {
+export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puzzle: PawnPuzzle; winIn?: number }) {
+  const [puzzle, setPuzzle] = useState(initialPuzzle);
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
@@ -50,8 +52,8 @@ export default function PawnHuntGame({ puzzle, winIn = 2 }: { puzzle: PawnPuzzle
 
   const refresh = useCallback(() => setBoard([...chess.board()]), [chess]);
 
-  const load = useCallback(() => {
-    chess.load(puzzle.fen);
+  const load = useCallback((p: PawnPuzzle = puzzle) => {
+    chess.load(p.fen);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setMovesLeft(winIn);
@@ -59,7 +61,7 @@ export default function PawnHuntGame({ puzzle, winIn = 2 }: { puzzle: PawnPuzzle
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
     resetGame();
-  }, [chess, puzzle]);
+  }, [chess, puzzle, winIn, resetGame]);
 
   function award() {
     const pts = pawnPoints(winIn, puzzle.difficulty, undoCount);
@@ -211,12 +213,23 @@ export default function PawnHuntGame({ puzzle, winIn = 2 }: { puzzle: PawnPuzzle
               {history.length > 0 && status !== "won" && !defending && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={load}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load()}>Reset</button>
             </div>
           </div>
         </div>
 
         <div style={{ maxWidth: 240 }}>
+          <div className="mb-3">
+            <PuzzleSelectDropdown
+              gameId="queen-vs-pawn"
+              currentId={puzzle.id}
+              onPuzzleLoaded={(data) => {
+                const p = data as unknown as PawnPuzzle;
+                setPuzzle(p);
+                load(p);
+              }}
+            />
+          </div>
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Win in {winIn}

@@ -13,6 +13,7 @@ import {
 } from "./logic";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
+import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 
 const STORAGE_VERSION = "smothered-v1";
 
@@ -62,8 +63,9 @@ function writeSaved(state: SavedState) {
   try { localStorage.setItem(storageKey(state.puzzleId), JSON.stringify(state)); } catch { /* ignore */ }
 }
 
-export default function SmotheredGame({ puzzle }: { puzzle: Puzzle }) {
+export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
+  const [puzzle, setPuzzle] = useState(initialPuzzle);
 
   // const { submitScore } = useGameSession("smothered", puzzle.id);
   const { startedAt, resetGame } = useGamePhase();
@@ -93,11 +95,11 @@ export default function SmotheredGame({ puzzle }: { puzzle: Puzzle }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [board, status, movesLeft, undoCount]);
 
-  const reset = useCallback(() => {
-    setBoard(puzzle.board.map((r) => [...r]));
+  const resetToFresh = useCallback((p: Puzzle) => {
+    setBoard(p.board.map((r) => [...r]));
     setSelected(null); setLegalSquares([]);
     setStatus("playing");
-    setMovesLeft(mateIn);
+    setMovesLeft(MATE_BY_DIFF[p.difficulty]);
     setHistory([]);
     setKingThinking(false);
     setLastMove(null);
@@ -105,7 +107,9 @@ export default function SmotheredGame({ puzzle }: { puzzle: Puzzle }) {
     setEarnedPoints(null); setPendingBlack(null); setWrongPieceFlash(false);
     isFirstRender.current = true;
     resetGame();
-  }, [puzzle, mateIn]);
+  }, [resetGame]);
+
+  const reset = useCallback(() => resetToFresh(puzzle), [puzzle, resetToFresh]);
 
   // Black king responds after a short delay
   useEffect(() => {
@@ -353,7 +357,7 @@ export default function SmotheredGame({ puzzle }: { puzzle: Puzzle }) {
               )}
               <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => {
                 try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}
-                reset();
+                resetToFresh(puzzle);
               }}>Reset</button>
             </div>
           </div>
@@ -361,6 +365,18 @@ export default function SmotheredGame({ puzzle }: { puzzle: Puzzle }) {
 
         {/* Sidebar */}
         <div style={{ maxWidth: 250 }}>
+          <div className="mb-3">
+            <PuzzleSelectDropdown
+              gameId="smothered"
+              currentId={puzzle.id}
+              onPuzzleLoaded={(data) => {
+                const p = data as unknown as Puzzle;
+                try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}
+                setPuzzle(p);
+                resetToFresh(p);
+              }}
+            />
+          </div>
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
               Mate in {mateIn}
