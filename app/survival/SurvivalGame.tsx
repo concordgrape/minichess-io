@@ -4,24 +4,26 @@ import { useState, useEffect, useRef } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { getCaptures, spawnPawns, spawnCount, type Pawn, type Pos } from "./logic";
-// Knight is the fixed piece for Survival
-import { saveScore } from "../lib/scores";
+import { useGamePhase } from "../lib/GameStartContext";
+import { useGameSession } from "../lib/useGameSession";
+import BoardOverlay from "../components/BoardOverlay";
 
 const PIECE_IMAGE = "/piece-knight-white.svg";
 
 let _id = 0;
 const nextId = () => `p${_id++}`;
 
-type Phase = "playing" | "gameover";
-
 const STARTING_POS: Pos = { row: 1, col: 1 };
 const INITIAL_PAWNS = 3;
 
 export default function SurvivalGame() {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const [phase, setPhase] = useState<Phase>("playing");
+  const { phase, markComplete, resetGame } = useGamePhase();
+  const { submitScore } = useGameSession("survival", 0);
+
+  const [gameOver, setGameOver] = useState(false);
   const [playerPos, setPlayerPos] = useState<Pos>(STARTING_POS);
-  const [pawns, setPawns] = useState<Pawn[]>([]); // populated client-side in useEffect
+  const [pawns, setPawns] = useState<Pawn[]>([]);
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [selected, setSelected] = useState(false);
@@ -30,32 +32,44 @@ export default function SurvivalGame() {
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // Generate initial pawns client-side only to avoid SSR/hydration mismatch
-    setPawns(spawnPawns(INITIAL_PAWNS, [], STARTING_POS, nextId));
     const stored = localStorage.getItem("survival_best");
     if (stored) setBestScore(Number(stored));
   }, []);
 
-  function startGame() {
+  // React to overlay phase changes
+  useEffect(() => {
+    if (phase === "playing") {
+      initGame();
+    } else if (phase === "waiting") {
+      setGameOver(false);
+      setPawns([]);
+      setScore(0);
+      setSelected(false);
+      setCaptures([]);
+    }
+  }, [phase]);
+
+  function initGame() {
     _id = 0;
     setPlayerPos(STARTING_POS);
     setPawns(spawnPawns(INITIAL_PAWNS, [], STARTING_POS, nextId));
     setScore(0);
+    setGameOver(false);
     setSelected(false);
     setCaptures([]);
     setNewPawns(new Set());
-    setPhase("playing");
   }
 
   function handleSquareClick(row: number, col: number) {
-    if (phase !== "playing") return;
+    if (phase !== "playing" || gameOver) return;
 
     if (row === playerPos.row && col === playerPos.col) {
       if (!selected) {
         setSelected(true);
         setCaptures(getCaptures("N", playerPos, pawns));
       } else {
-        setSelected(false); setCaptures([]);
+        setSelected(false);
+        setCaptures([]);
       }
       return;
     }
@@ -81,12 +95,14 @@ export default function SurvivalGame() {
       flashTimer.current = setTimeout(() => setNewPawns(new Set()), 500);
 
       if (nextCaps.length === 0) {
-        setPhase("gameover");
+        setGameOver(true);
         if (newScore > bestScore) {
           setBestScore(newScore);
           localStorage.setItem("survival_best", String(newScore));
-          saveScore({ puzzleId: "survival", points: newScore * 10, earnedAt: Date.now() });
         }
+        // totalAttempts repurposed as capture count for server-side scoring
+        submitScore({ timeSeconds: 0, undoCount: 0, totalAttempts: newScore });
+        markComplete();
       }
     }
   }
@@ -96,12 +112,11 @@ export default function SurvivalGame() {
     const caps = getCaptures("N", playerPos, pawns);
     setSelected(true);
     setCaptures(caps);
-    // Use a micro-delay so state is set before the click handler reads it
     setTimeout(() => handleSquareClick(toRow, toCol), 0);
   }
 
   const boardPieces: BoardPiece[] = [
-    { row: playerPos.row, col: playerPos.col, code: "N", imageUrl: PIECE_IMAGE, draggable: phase === "playing" },
+    { row: playerPos.row, col: playerPos.col, code: "N", imageUrl: PIECE_IMAGE, draggable: phase === "playing" && !gameOver },
     ...pawns.map((p) => ({ row: p.row, col: p.col, code: "p", imageUrl: "/piece-pawn-black.svg", draggable: false })),
   ];
 
@@ -115,24 +130,26 @@ export default function SurvivalGame() {
       squareStyles.push({ row: p.row, col: p.col, bg: (p.row + p.col) % 2 === 0 ? "#f5c842" : "#d4a017" });
   });
 
-  const currentCaptures = phase === "playing" ? getCaptures("N", playerPos, pawns) : [];
+  const currentCaptures = phase === "playing" && !gameOver ? getCaptures("N", playerPos, pawns) : [];
   const spawnsNext = spawnCount(score + 1);
 
   return (
     <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
       <div>
-        <Board
-          size={4}
-          squareSize={sq}
-          pieces={boardPieces}
-          squareStyles={squareStyles}
-          onSquareClick={handleSquareClick}
-          onDrop={handleDrop}
-          interactive={phase === "playing"}
-        />
+        <BoardOverlay>
+          <Board
+            size={4}
+            squareSize={sq}
+            pieces={boardPieces}
+            squareStyles={squareStyles}
+            onSquareClick={handleSquareClick}
+            onDrop={handleDrop}
+            interactive={phase === "playing" && !gameOver}
+          />
+        </BoardOverlay>
 
         <div className="mt-2 d-flex align-items-center gap-2">
-          {phase === "playing" && (
+          {phase === "playing" && !gameOver && (
             <span className="text-muted small">
               {selected ? "Click a pawn to capture" : "Click your knight to select"}
               {" · "}
@@ -141,15 +158,12 @@ export default function SurvivalGame() {
                 : `${currentCaptures.length} capture${currentCaptures.length !== 1 ? "s" : ""} available`}
             </span>
           )}
-          {phase === "gameover" && <span className="fw-bold text-danger">Surrounded! Game over.</span>}
-          <div className="ms-auto d-flex gap-2">
-            {phase === "playing" && (
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={startGame}>Restart</button>
-            )}
-            {phase === "gameover" && (
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={startGame}>Play again</button>
-            )}
-          </div>
+          {gameOver && <span className="fw-bold text-danger">Surrounded! Game over.</span>}
+          {phase === "playing" && !gameOver && (
+            <div className="ms-auto">
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={resetGame}>Restart</button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -160,7 +174,7 @@ export default function SurvivalGame() {
           <div className="text-muted small mt-1">Best: {bestScore}</div>
         </div>
 
-        {phase === "playing" && (
+        {phase === "playing" && !gameOver && (
           <div className="mb-3 small">
             <div className="text-muted text-uppercase mb-1" style={{ letterSpacing: 1, fontSize: 11 }}>Next spawn</div>
             <div className="fw-semibold">
@@ -171,10 +185,10 @@ export default function SurvivalGame() {
           </div>
         )}
 
-        {phase === "gameover" && score > 0 && (
+        {gameOver && score > 0 && (
           <div className="small text-muted mb-3 p-2 border rounded-0">
             <div className="fw-semibold mb-1">{score >= bestScore ? "🏆 New best!" : "Final score"}</div>
-            <div>+{score * 10} pts added to total</div>
+            <div>{score} capture{score !== 1 ? "s" : ""}</div>
           </div>
         )}
 

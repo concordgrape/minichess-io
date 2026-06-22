@@ -193,6 +193,7 @@ const GAME_LABELS: Record<GameId, string> = {
   "king-and-pawn": "King & Pawn",
   "rook-endgame": "Rook Endgame",
   "zugzwang": "Zugzwang",
+  "survival": "Survival",
 };
 
 const DIFF_COLOR: Record<string, string> = {

@@ -204,6 +204,17 @@ export const GAME_FORMULAS: Record<GameId, GameFormula> = {
       return Math.max(10, Math.round((600 + speed - undoP - resetP) * DIFF[diff]));
     },
   },
+
+  // ── Survival ────────────────────────────────────────────────────────────────
+  // totalAttempts = captures scored (repurposed field)
+  // Score = captures × 10. Normalized against 50 captures (500 pts) as ceiling.
+  "survival": {
+    description: "captures × 10; normalized against 500 (50 captures)",
+    maxHardScore: 500,
+    timeBounds: [0, 7200],
+    difficultyMultipliers: DIFF,
+    compute: ({ totalAttempts }) => Math.max(0, totalAttempts * 10),
+  },
 };
 
 // ─── Helpers (server-side only) ───────────────────────────────────────────────

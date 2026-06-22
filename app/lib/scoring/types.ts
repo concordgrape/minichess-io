@@ -2,7 +2,8 @@ export type GameId =
   | "mate-in-1" | "mate-in-2" | "mate-in-3"
   | "check" | "smothered" | "takes"
   | "solitaire" | "chess-solitaire"
-  | "queen-vs-pawn" | "king-and-pawn" | "rook-endgame" | "zugzwang";
+  | "queen-vs-pawn" | "king-and-pawn" | "rook-endgame" | "zugzwang"
+  | "survival";
 
 export type Difficulty = "easy" | "medium" | "hard";
 
