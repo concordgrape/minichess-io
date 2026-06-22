@@ -369,6 +369,7 @@ export default function SmotheredGame({ puzzles }: { puzzles: Puzzle[] }) {
                 setLastMove(null); setUndoCount(0); setEarnedPoints(null);
                 setPendingBlack(null); setWrongPieceFlash(false);
                 isFirstRender.current = true;
+                resetGame();
               }}>Reset</button>
             </div>
           </div>

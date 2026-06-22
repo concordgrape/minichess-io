@@ -277,7 +277,10 @@ export default function CheckGame({ puzzles }: { puzzles: Puzzle[] }) {
               {history.length > 0 && status !== "checkmate" && !kingThinking && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => reset(puzzleIdx)}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => {
+                try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}
+                reset(puzzleIdx);
+              }}>Reset</button>
             </div>
           </div>
         </div>
