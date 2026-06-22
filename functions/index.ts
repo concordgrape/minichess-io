@@ -4,12 +4,9 @@ import * as admin from "firebase-admin";
 import { Timestamp } from "firebase-admin/firestore";
 import { publishGamesBatch } from "./githubPublisher";
 import {
-  Difficulty,
-  TAKES_BANK, SOLITAIRE_BANK, CHECK_BANK, SMOTHERED_BANK,
-  CHESS_SOLITAIRE_BANK, QUEEN_VS_PAWN_BANK, KING_AND_PAWN_BANK,
-  ROOK_ENDGAME_BANK, ZUGZWANG_BANK, MATE_IN_1_BANK, MATE_IN_2_BANK,
-  MATE_IN_3_BANK, PuzzleBank,
-} from "./puzzleBanks";
+  GAME_IDS, randomDifficulty, generatePuzzle, serializeForFirestore,
+  type Difficulty,
+} from "./generate";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -17,39 +14,6 @@ const db = admin.firestore();
 const SECRETS = ["GITHUB_TOKEN", "GITHUB_REPO", "GITHUB_BRANCH"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Pick a random difficulty with equal 33% chance each. */
-function randomDifficulty(): Difficulty {
-  const roll = Math.random();
-  if (roll < 1 / 3) return "easy";
-  if (roll < 2 / 3) return "medium";
-  return "hard";
-}
-
-/** Pick a random element from an array. */
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-/**
- * Select one puzzle from a bank with the given difficulty.
- * Falls back to other difficulties in order (medium → easy → hard) if the
- * requested difficulty has no puzzles.
- */
-function selectFromBank<T>(bank: PuzzleBank<T>, difficulty: Difficulty): { difficulty: Difficulty; data: T } {
-  const fallback: Difficulty[] = difficulty === "easy"
-    ? ["easy", "medium", "hard"]
-    : difficulty === "medium"
-    ? ["medium", "easy", "hard"]
-    : ["hard", "medium", "easy"];
-
-  for (const diff of fallback) {
-    if (bank[diff].length > 0) {
-      return { difficulty: diff, data: pick(bank[diff]) };
-    }
-  }
-  throw new Error("Puzzle bank is empty for all difficulties");
-}
 
 /** Generate today's date as an integer YYYYMMDD in EST. */
 function todayId(): number {
@@ -70,7 +34,7 @@ async function writePuzzleToFirestore(
   gameId: string,
   id: number,
   difficulty: Difficulty,
-  puzzleData: object,
+  puzzleData: Record<string, unknown>,
   releaseDate: Date,
 ): Promise<void> {
   await db
@@ -82,7 +46,7 @@ async function writePuzzleToFirestore(
       id,
       difficulty,
       gameType: gameId,
-      ...puzzleData,
+      ...serializeForFirestore(puzzleData),
       releaseDate: Timestamp.fromDate(releaseDate),
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       status: "scheduled",
@@ -92,34 +56,21 @@ async function writePuzzleToFirestore(
 
 // ─── Daily puzzle generator ───────────────────────────────────────────────────
 
-const GAMES: Array<{ gameId: string; bank: PuzzleBank<object> }> = [
-  { gameId: "takes", bank: TAKES_BANK as PuzzleBank<object> },
-  { gameId: "solitaire", bank: SOLITAIRE_BANK as PuzzleBank<object> },
-  { gameId: "check", bank: CHECK_BANK as PuzzleBank<object> },
-  { gameId: "smothered", bank: SMOTHERED_BANK as PuzzleBank<object> },
-  { gameId: "chess-solitaire", bank: CHESS_SOLITAIRE_BANK as PuzzleBank<object> },
-  { gameId: "queen-vs-pawn", bank: QUEEN_VS_PAWN_BANK as PuzzleBank<object> },
-  { gameId: "king-and-pawn", bank: KING_AND_PAWN_BANK as PuzzleBank<object> },
-  { gameId: "rook-endgame", bank: ROOK_ENDGAME_BANK as PuzzleBank<object> },
-  { gameId: "zugzwang", bank: ZUGZWANG_BANK as PuzzleBank<object> },
-  { gameId: "mate-in-1", bank: MATE_IN_1_BANK as PuzzleBank<object> },
-  { gameId: "mate-in-2", bank: MATE_IN_2_BANK as PuzzleBank<object> },
-  { gameId: "mate-in-3", bank: MATE_IN_3_BANK as PuzzleBank<object> },
-];
-
-async function generateAllPuzzles(): Promise<{ path: string; content: object; gameId: string; id: number; difficulty: Difficulty; data: object }[]> {
+async function generateAllPuzzles(): Promise<{ path: string; content: object }[]> {
   const id = todayId();
   const releaseDate = idToReleaseDate(id);
-  const results = [];
+  const results: { path: string; content: object }[] = [];
 
-  for (const { gameId, bank } of GAMES) {
-    const difficulty = randomDifficulty();
-    const { difficulty: actual, data } = selectFromBank(bank, difficulty);
-    const content = { id, difficulty: actual, ...data };
-    results.push({ path: `public/games/${gameId}.json`, content, gameId, id, difficulty: actual, data });
-    console.log(`[generator] ${gameId}: ${actual}`);
+  for (const gameId of GAME_IDS) {
+    const { difficulty, data } = generatePuzzle(gameId, randomDifficulty());
 
-    await writePuzzleToFirestore(gameId, id, actual, data, releaseDate);
+    // GitHub JSON keeps the raw shape (real arrays); Firestore gets the
+    // serialized shape (nested arrays as JSON strings).
+    const content = { id, difficulty, ...data };
+    results.push({ path: `public/games/${gameId}.json`, content });
+    console.log(`[generator] ${gameId}: ${difficulty}`);
+
+    await writePuzzleToFirestore(gameId, id, difficulty, data, releaseDate);
     console.log(`[firestore] games/${gameId}/puzzles/${id} written`);
   }
 
@@ -134,22 +85,21 @@ export const dailyPuzzleGenerator = onSchedule(
     timeZone: "America/New_York",
     secrets: SECRETS,
     memory: "256MiB",
-    timeoutSeconds: 60,
+    timeoutSeconds: 120,
   },
   async () => {
     console.log("[generator] Starting daily puzzle generation");
     const results = await generateAllPuzzles();
     const dateStr = String(todayId());
-    const files = results.map(({ path, content }) => ({ path, content }));
-    await publishGamesBatch(files, `chore: daily puzzles for ${dateStr}`);
-    console.log(`[generator] Done — pushed ${files.length} puzzles for ${dateStr}`);
+    await publishGamesBatch(results, `chore: daily puzzles for ${dateStr}`);
+    console.log(`[generator] Done — pushed ${results.length} puzzles for ${dateStr}`);
   }
 );
 
 // ─── HTTP trigger for manual runs / testing ──────────────────────────────────
 
 export const generatePuzzlesNow = onRequest(
-  { secrets: SECRETS, memory: "256MiB", timeoutSeconds: 60 },
+  { secrets: SECRETS, memory: "256MiB", timeoutSeconds: 120 },
   async (req, res) => {
     const secret = process.env.GENERATOR_SECRET ?? "";
     if (secret && req.headers["x-generator-secret"] !== secret) {
@@ -161,9 +111,8 @@ export const generatePuzzlesNow = onRequest(
       console.log("[generator] Manual trigger");
       const results = await generateAllPuzzles();
       const dateStr = String(todayId());
-      const files = results.map(({ path, content }) => ({ path, content }));
-      await publishGamesBatch(files, `chore: manual puzzle generation for ${dateStr}`);
-      res.json({ ok: true, date: dateStr, games: files.map((f) => f.path) });
+      await publishGamesBatch(results, `chore: manual puzzle generation for ${dateStr}`);
+      res.json({ ok: true, date: dateStr, games: results.map((f) => f.path) });
     } catch (e) {
       console.error("[generator] Error:", e);
       res.status(500).json({ error: String(e) });

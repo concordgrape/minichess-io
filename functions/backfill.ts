@@ -4,9 +4,13 @@
  * Generates puzzles for a specific game and writes them to Firestore.
  * Does NOT push JSON files to GitHub — Firestore only.
  *
- * IDs are date-based (YYYYMMDD). Each generated puzzle is scheduled one day
- * after the latest existing puzzle for that game (or starting from tomorrow
- * if the collection is empty). Existing documents are skipped safely.
+ * Puzzles are produced by the algorithmic generators in generate.ts (the same
+ * ones the daily Cloud Function uses), so every puzzle is solvable, difficulty
+ * is randomised, and positions never duplicate.
+ *
+ * IDs are date-based (YYYYMMDD). For a fresh collection, game #count lands on
+ * today and the rest fill the preceding days; if puzzles already exist, the new
+ * batch is inserted immediately before the oldest one. Existing docs are skipped.
  *
  * Usage (from the functions/ directory):
  *
@@ -18,10 +22,8 @@
  *   queen-vs-pawn, king-and-pawn, rook-endgame, zugzwang,
  *   mate-in-1, mate-in-2, mate-in-3
  *
- * Requires GOOGLE_APPLICATION_CREDENTIALS to point to a Firebase service
- * account key JSON file, e.g.:
- *   export GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
- *   npx ts-node backfill.ts --game=takes --count=30
+ * Requires a service account either via FIREBASE_SERVICE_ACCOUNT_KEY (JSON
+ * string, e.g. in .env.local) or GOOGLE_APPLICATION_CREDENTIALS (keyfile path).
  */
 
 import * as admin from "firebase-admin";
@@ -39,41 +41,15 @@ if (fs.existsSync(envPath)) {
     if (!process.env[key]) process.env[key] = line.slice(eq + 1).trim();
   }
 }
+
 import {
-  Difficulty,
-  PuzzleBank,
-  TAKES_BANK,
-  SOLITAIRE_BANK,
-  CHECK_BANK,
-  SMOTHERED_BANK,
-  CHESS_SOLITAIRE_BANK,
-  QUEEN_VS_PAWN_BANK,
-  KING_AND_PAWN_BANK,
-  ROOK_ENDGAME_BANK,
-  ZUGZWANG_BANK,
-  MATE_IN_1_BANK,
-  MATE_IN_2_BANK,
-  MATE_IN_3_BANK,
-} from "./puzzleBanks";
+  GAME_IDS, isGameId, randomDifficulty, generatePuzzle,
+  puzzleSignature, serializeForFirestore, type GameId,
+} from "./generate";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const TIMEZONE = "America/New_York";
-
-const GAME_BANKS: Record<string, PuzzleBank<object>> = {
-  "takes": TAKES_BANK as PuzzleBank<object>,
-  "solitaire": SOLITAIRE_BANK as PuzzleBank<object>,
-  "check": CHECK_BANK as PuzzleBank<object>,
-  "smothered": SMOTHERED_BANK as PuzzleBank<object>,
-  "chess-solitaire": CHESS_SOLITAIRE_BANK as PuzzleBank<object>,
-  "queen-vs-pawn": QUEEN_VS_PAWN_BANK as PuzzleBank<object>,
-  "king-and-pawn": KING_AND_PAWN_BANK as PuzzleBank<object>,
-  "rook-endgame": ROOK_ENDGAME_BANK as PuzzleBank<object>,
-  "zugzwang": ZUGZWANG_BANK as PuzzleBank<object>,
-  "mate-in-1": MATE_IN_1_BANK as PuzzleBank<object>,
-  "mate-in-2": MATE_IN_2_BANK as PuzzleBank<object>,
-  "mate-in-3": MATE_IN_3_BANK as PuzzleBank<object>,
-};
 
 // ─── Firebase init ────────────────────────────────────────────────────────────
 
@@ -103,31 +79,18 @@ function parseArgs(): { game: string; count: number; dryRun: boolean } {
   return { game, count, dryRun };
 }
 
-function randomDifficulty(): Difficulty {
-  const r = Math.random();
-  if (r < 1 / 3) return "easy";
-  if (r < 2 / 3) return "medium";
-  return "hard";
-}
-
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function selectFromBank<T>(bank: PuzzleBank<T>, difficulty: Difficulty): { difficulty: Difficulty; data: T } {
-  const order: Difficulty[] = difficulty === "easy"
-    ? ["easy", "medium", "hard"]
-    : difficulty === "medium"
-    ? ["medium", "easy", "hard"]
-    : ["hard", "medium", "easy"];
-
-  for (const diff of order) {
-    if (bank[diff].length > 0) return { difficulty: diff, data: pick(bank[diff]) };
+/** Generate a puzzle that is not a duplicate of any in `seen` (best effort). */
+function generateUnique(game: GameId, seen: Set<string>) {
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const result = generatePuzzle(game, randomDifficulty());
+    const sig = puzzleSignature(game, result.data);
+    if (!seen.has(sig)) { seen.add(sig); return result; }
   }
-  throw new Error("Puzzle bank is empty");
+  // Give up on uniqueness after many tries — still a valid, solvable puzzle.
+  return generatePuzzle(game, randomDifficulty());
 }
 
-/** Advance a Date by N days, returning midnight EST as UTC. */
+/** Advance a Date by N days (UTC). */
 function addDays(date: Date, days: number): Date {
   const d = new Date(date);
   d.setUTCDate(d.getUTCDate() + days);
@@ -152,8 +115,8 @@ function todayEST(): Date {
 async function main() {
   const { game, count, dryRun } = parseArgs();
 
-  if (!game || !GAME_BANKS[game]) {
-    console.error(`\nError: --game must be one of:\n  ${Object.keys(GAME_BANKS).join(", ")}\n`);
+  if (!game || !isGameId(game)) {
+    console.error(`\nError: --game must be one of:\n  ${GAME_IDS.join(", ")}\n`);
     process.exit(1);
   }
   if (isNaN(count) || count < 1) {
@@ -161,7 +124,6 @@ async function main() {
     process.exit(1);
   }
 
-  const bank = GAME_BANKS[game];
   const col = db.collection("games").doc(game).collection("puzzles");
 
   console.log(`\nMinichess Backfill`);
@@ -169,18 +131,18 @@ async function main() {
   console.log(`  Count   : ${count}`);
   console.log(`  Dry run : ${dryRun}\n`);
 
-  // Find the oldest existing puzzle so we can extend backwards from it
+  // Find the oldest existing puzzle so we can extend backwards from it.
   const existingSnap = await col.orderBy("releaseDate", "asc").limit(1).get();
   let oldest: Date;
   if (!existingSnap.empty) {
     const oldestTs = existingSnap.docs[0].data().releaseDate;
     const oldestDate: Date = oldestTs?.toDate?.() ?? new Date(oldestTs);
-    // Anchor the new batch so game #count lands the day before the oldest existing game
+    // Anchor the new batch so game #count lands the day before the oldest existing game.
     oldest = addDays(oldestDate, -count);
     console.log(`  Existing oldest : ${oldestDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}`);
     console.log(`  Inserting before it, from ${oldest.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}\n`);
   } else {
-    // No existing games — game #count = today, game #1 = (count-1) days ago
+    // No existing games — game #count = today, game #1 = (count-1) days ago.
     const today = todayEST();
     oldest = addDays(today, -(count - 1));
     console.log(`  Game #1  : ${oldest.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}`);
@@ -190,13 +152,14 @@ async function main() {
   let created = 0;
   let skipped = 0;
   let failed = 0;
+  const seen = new Set<string>();
 
   for (let i = 0; i < count; i++) {
     const releaseDate = addDays(oldest, i);
     const id = dateToId(releaseDate);
     const docRef = col.doc(String(id));
 
-    // Skip if already exists
+    // Skip if already exists.
     if (!dryRun) {
       const existing = await docRef.get();
       if (existing.exists) {
@@ -207,22 +170,14 @@ async function main() {
     }
 
     try {
-      const difficulty = randomDifficulty();
-      const { difficulty: actual, data } = selectFromBank(bank, difficulty);
+      const { difficulty, data } = generateUnique(game, seen);
 
       if (!dryRun) {
-        // Firestore doesn't allow nested arrays — serialize any array-of-arrays to JSON strings
-        const serialized = Object.fromEntries(
-          Object.entries(data as Record<string, unknown>).map(([k, v]) => [
-            k,
-            Array.isArray(v) && v.some(Array.isArray) ? JSON.stringify(v) : v,
-          ])
-        );
         await docRef.set({
           id,
-          difficulty: actual,
+          difficulty,
           gameType: game,
-          ...serialized,
+          ...serializeForFirestore(data),
           releaseDate: Timestamp.fromDate(releaseDate),
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           status: "scheduled",
@@ -231,7 +186,7 @@ async function main() {
       }
 
       const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-      console.log(`  ✅ #${i + 1} ${dateStr} (id ${id}) — ${actual}${dryRun ? " [dry run]" : ""}`);
+      console.log(`  ✅ #${i + 1} ${dateStr} (id ${id}) — ${difficulty}${dryRun ? " [dry run]" : ""}`);
       created++;
     } catch (err) {
       const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });

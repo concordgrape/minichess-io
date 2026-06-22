@@ -31,6 +31,7 @@ export default function Account() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [scores, setScores] = useState<UserScoresResponse | null | "error">(null);
+  const [completionCounts, setCompletionCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!user) return;
@@ -46,6 +47,15 @@ export default function Account() {
           if (d.email) setEmail(d.email);
           setCountry(d.country || "");
           setPublicInfo(d.publicInfo || "");
+          // Count completed puzzles per game from puzzleProgress
+          const progress = d.puzzleProgress as Record<string, { completed?: number[] }> | undefined;
+          if (progress) {
+            const counts: Record<string, number> = {};
+            for (const [gameId, p] of Object.entries(progress)) {
+              counts[gameId] = p.completed?.length ?? 0;
+            }
+            setCompletionCounts(counts);
+          }
         }
       } catch (e) {
         if (dev) console.error(e);
@@ -176,6 +186,12 @@ export default function Account() {
         </div>
       </div>
 
+      {/* ── Badges ──────────────────────────────────────────────────────────── */}
+      <hr className="my-4" />
+      <h2 className="h5 fw-bold mb-3">Badges</h2>
+      <BadgesPanel creationTime={user.metadata.creationTime} isGuest={isGuest} />
+      <GameBadgesPanel completionCounts={completionCounts} isGuest={isGuest} />
+
       {/* ── Scores ──────────────────────────────────────────────────────────── */}
       <hr className="my-4" />
       <h2 className="h5 fw-bold mb-3">Scores</h2>
@@ -203,6 +219,208 @@ const GAME_LABELS: Record<GameId, string> = {
 const DIFF_COLOR: Record<string, string> = {
   easy: "success", medium: "warning", hard: "danger",
 };
+
+// ── Badge SVGs ────────────────────────────────────────────────────────────────
+
+function SeedlingIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+      <circle cx="24" cy="24" r="22" fill="#1a6b2e" />
+      <path d="M24 36V22" stroke="#a8e6b0" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M24 26c0 0-6-4-6-10 0 0 6 0 6 10z" fill="#4caf72" />
+      <path d="M24 22c0 0 5-3 5-9 0 0-5 1-5 9z" fill="#6dd48a" />
+    </svg>
+  );
+}
+
+function FlameIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+      <circle cx="24" cy="24" r="22" fill="#8b2500" />
+      {/* Outer flame */}
+      <path d="M24 9 C24 9 31 17 30 23 C32 20 32 16 30 13 C34 18 35 25 32 31 C30 35 27 37 24 37 C21 37 18 35 16 31 C13 25 14 18 18 13 C16 16 16 20 18 23 C17 17 24 9 24 9 Z" fill="#ff6b00" />
+      {/* Inner bright core */}
+      <path d="M24 20 C24 20 28 25 27 29 C26 32 25 33 24 33 C23 33 22 32 21 29 C20 25 24 20 24 20 Z" fill="#ffcc00" />
+    </svg>
+  );
+}
+
+function BoltIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+      <circle cx="24" cy="24" r="22" fill="#5a3e00" />
+      <polygon points="26,10 14,27 23,27 22,38 34,21 25,21" fill="#ffd700" />
+    </svg>
+  );
+}
+
+function TrophyIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+      <circle cx="24" cy="24" r="22" fill="#7a5c00" />
+      <path d="M17 13h14v10c0 5-3 8-7 8s-7-3-7-8V13z" fill="#ffd700" />
+      <path d="M17 16c-3 0-5 2-5 5s2 4 5 4" stroke="#ffd700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <path d="M31 16c3 0 5 2 5 5s-2 4-5 4" stroke="#ffd700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <rect x="21" y="31" width="6" height="4" fill="#ffd700" />
+      <rect x="17" y="35" width="14" height="2.5" rx="1" fill="#ffd700" />
+    </svg>
+  );
+}
+
+function DiamondIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+      <circle cx="24" cy="24" r="22" fill="#003366" />
+      <polygon points="24,10 34,20 24,38 14,20" fill="#a8d8f0" />
+      <polygon points="24,10 34,20 24,22 14,20" fill="#e0f4ff" />
+      <polygon points="14,20 24,22 24,38" fill="#5bafd6" />
+      <polygon points="34,20 24,22 24,38" fill="#7ec8e3" />
+    </svg>
+  );
+}
+
+function CrownIcon() {
+  return (
+    <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+      <circle cx="24" cy="24" r="22" fill="#4a0080" />
+      <path d="M10,36 L10,22 L16,29 L24,13 L32,29 L38,22 L38,36 Z" fill="#ffd700" />
+      <circle cx="13" cy="22" r="2.5" fill="#fff" opacity="0.9" />
+      <circle cx="24" cy="13" r="2.5" fill="#fff" opacity="0.9" />
+      <circle cx="35" cy="22" r="2.5" fill="#fff" opacity="0.9" />
+    </svg>
+  );
+}
+
+const LONGEVITY_BADGES: { label: string; Icon: () => React.JSX.Element; days: number; description: string }[] = [
+  { label: "First Day",  Icon: SeedlingIcon, days: 1,    description: "Played for 1 day" },
+  { label: "One Week",   Icon: FlameIcon,    days: 7,    description: "Played for a week" },
+  { label: "One Month",  Icon: BoltIcon,     days: 30,   description: "Played for a month" },
+  { label: "One Year",   Icon: TrophyIcon,   days: 365,  description: "Played for a year" },
+  { label: "Five Years", Icon: DiamondIcon,  days: 1825, description: "Played for 5 years" },
+  { label: "Decade",     Icon: CrownIcon,    days: 3650, description: "Played for 10+ years" },
+];
+
+function BadgesPanel({ creationTime, isGuest }: { creationTime?: string; isGuest: boolean }) {
+  if (isGuest) return <p className="text-muted small">Sign in to earn badges.</p>;
+  if (!creationTime) return <p className="text-muted small">No account data available.</p>;
+
+  const daysSinceJoined = Math.floor((Date.now() - new Date(creationTime).getTime()) / 86_400_000);
+
+  return (
+    <div className="d-flex flex-wrap gap-3">
+      {LONGEVITY_BADGES.map(({ label, Icon, days, description }) => {
+        const earned = daysSinceJoined >= days;
+        return (
+          <div key={label} title={description} style={{ width: 80, textAlign: "center", opacity: earned ? 1 : 0.2, filter: earned ? "none" : "grayscale(1)" }}>
+            <Icon />
+            <div className="fw-semibold mt-1" style={{ fontSize: 11 }}>{label}</div>
+            <div className="text-muted" style={{ fontSize: 10 }}>{description}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Game completion badges ─────────────────────────────────────────────────────
+
+const COMPLETION_MILESTONES: { count: number; subtitle: string }[] = [
+  { count: 1,    subtitle: "First Solve" },
+  { count: 5,    subtitle: "Getting Started" },
+  { count: 10,   subtitle: "Warming Up" },
+  { count: 20,   subtitle: "Regular" },
+  { count: 50,   subtitle: "Dedicated" },
+  { count: 100,  subtitle: "Century" },
+  { count: 500,  subtitle: "Expert" },
+  { count: 1000, subtitle: "Master" },
+];
+
+// Bronze circle → silver circle → gold circle → bronze star → silver star → gold star → gem → crown
+const MILESTONE_COLORS = [
+  { bg: "#a0522d", rim: "#cd7f32", label: "#fff" },  // 1   bronze
+  { bg: "#708090", rim: "#c0c0c0", label: "#fff" },  // 5   silver
+  { bg: "#b8860b", rim: "#ffd700", label: "#fff" },  // 10  gold
+  { bg: "#7b3300", rim: "#e8824a", label: "#fff" },  // 20  bronze star
+  { bg: "#4a5568", rim: "#a0aec0", label: "#fff" },  // 50  silver star
+  { bg: "#744700", rim: "#f6c000", label: "#fff" },  // 100 gold star
+  { bg: "#1a3a6b", rim: "#63b3ed", label: "#fff" },  // 500 gem
+  { bg: "#3d006e", rim: "#b794f4", label: "#fff" },  // 1k  crown
+];
+
+function MilestoneCircle({ milestone, subtitle, index, earned }: { milestone: number; subtitle: string; index: number; earned: boolean }) {
+  const { bg, rim, label } = MILESTONE_COLORS[index];
+  const isStar = index >= 3 && index <= 5;
+  const isGem = index === 6;
+  const isCrown = index === 7;
+  const displayLabel = milestone >= 1000 ? "1k" : String(milestone);
+
+  // 5-pointed star, outer r=16, inner r=6.5, centered at 24,24
+  const starPath = "M24,8 L28,19 L39,19 L30,26 L33,37 L24,31 L15,37 L18,26 L9,19 L20,19 Z";
+  // Crown shape: three pointed peaks with a base band
+  const crownPath = "M10,34 L10,22 L16,28 L24,14 L32,28 L38,22 L38,34 Z";
+
+  return (
+    <div
+      title={earned ? `Completed ${milestone} puzzle${milestone > 1 ? "s" : ""}` : `Complete ${milestone} puzzles to unlock`}
+      style={{ width: 56, textAlign: "center", opacity: earned ? 1 : 0.18, filter: earned ? "none" : "grayscale(1)" }}
+    >
+      <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+        <circle cx="24" cy="24" r="22" fill={bg} />
+        {isStar ? (
+          <>
+            <path d={starPath} fill={rim} />
+          </>
+        ) : isGem ? (
+          <>
+            <polygon points="10,22 24,8 38,22 24,40" fill={rim} />
+            <polygon points="10,22 24,8 38,22 24,22" fill="#a8d8f0" opacity="0.5" />
+            <polygon points="10,22 24,22 24,40" fill={rim} opacity="0.7" />
+          </>
+        ) : isCrown ? (
+          <>
+            <path d={crownPath} fill={rim} />
+            <circle cx="13" cy="22" r="2.5" fill="#fff" opacity="0.9" />
+            <circle cx="24" cy="14" r="2.5" fill="#fff" opacity="0.9" />
+            <circle cx="35" cy="22" r="2.5" fill="#fff" opacity="0.9" />
+          </>
+        ) : (
+          <circle cx="24" cy="24" r="13" fill={rim} />
+        )}
+        <text x="24" y={isStar ? "30" : isCrown ? "32" : "29"} textAnchor="middle" fill={label} fontSize={displayLabel.length > 2 ? "9" : "11"} fontWeight="bold" fontFamily="sans-serif">
+          {displayLabel}
+        </text>
+      </svg>
+      <div className="fw-semibold mt-1" style={{ fontSize: 10 }}>{displayLabel}</div>
+      <div className="text-muted" style={{ fontSize: 10 }}>{subtitle}</div>
+    </div>
+  );
+}
+
+function GameBadgesPanel({ completionCounts, isGuest }: { completionCounts: Record<string, number>; isGuest: boolean }) {
+  if (isGuest) return null;
+
+  const games = Object.keys(GAME_LABELS) as GameId[];
+  const played = games.filter((g) => (completionCounts[g] ?? 0) > 0);
+  if (played.length === 0) return null;
+
+  return (
+    <div className="mt-4">
+      {played.map((gameId) => {
+        const count = completionCounts[gameId] ?? 0;
+        return (
+          <div key={gameId} className="mb-4">
+            <div className="fw-semibold small mb-2">{GAME_LABELS[gameId]} <span className="text-muted fw-normal">({count} completed)</span></div>
+            <div className="d-flex flex-wrap gap-2">
+              {COMPLETION_MILESTONES.map(({ count: threshold, subtitle }, i) => (
+                <MilestoneCircle key={threshold} milestone={threshold} subtitle={subtitle} index={i} earned={count >= threshold} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresResponse | null; scoresError?: boolean; isGuest: boolean }) {
   if (isGuest) {
