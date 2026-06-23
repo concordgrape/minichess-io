@@ -84,24 +84,35 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
   const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const fetchingRef = useRef(false);
-  // Prevent double-firing in React Strict Mode
-  const autoRandomFired = useRef(false);
 
-  // On mount: fetch first page to get maxId, then auto-load a random puzzle
+  // On mount / gameId change: reset list, fetch first page, auto-load a random puzzle.
+  // The cleanup `cancelled` flag prevents stale responses from a previous run
+  // (React Strict Mode fires effects twice; without this the second run could race
+  // the first and show a flash of the JSON fallback before the real puzzle arrives).
   useEffect(() => {
-    if (autoRandomFired.current) return;
-    autoRandomFired.current = true;
+    let cancelled = false;
+
+    setPuzzles([]);
+    setHasMore(false);
+    setMaxId(null);
+
+    const loadJsonFallback = () => {
+      if (cancelled) return;
+      fetch(`/games/${gameId}.json`)
+        .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+        .then((data) => { if (!cancelled) onPuzzleLoaded(data); })
+        .catch(() => {});
+    };
 
     fetchPage(gameId).then(({ puzzles: p, hasMore: more }) => {
+      if (cancelled) return;
       setPuzzles(p);
       setHasMore(more);
-      if (p.length === 0) return;
+      if (p.length === 0) { loadJsonFallback(); return; }
 
       const max = p[0].id;
       setMaxId(max);
 
-      // Check sessionStorage: reuse the same random puzzle within the tab session,
-      // but always start fresh on page load (key is cleared on mount).
       const key = SESSION_KEY(gameId);
       const stored = sessionStorage.getItem(key);
       const randomId = stored
@@ -110,12 +121,17 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
 
       if (!stored) sessionStorage.setItem(key, String(randomId));
 
-      // Only auto-load if the current puzzle is the default (matches the JSON file id)
-      // i.e. don't override if user already navigated to a specific puzzle
       loadPuzzleData(gameId, randomId).then((data) => {
-        if (data) onPuzzleLoaded(data);
+        if (cancelled) return;
+        if (data) { onPuzzleLoaded(data); return; }
+        // Specific ID not found — try the first known puzzle instead
+        loadPuzzleData(gameId, p[0].id).then((fallback) => {
+          if (!cancelled && fallback) onPuzzleLoaded(fallback);
+        });
       });
-    }).catch(() => {});
+    }).catch(() => loadJsonFallback());
+
+    return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId]);
 
@@ -132,14 +148,6 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
       .catch(() => {})
       .finally(() => setInitialLoading(false));
   }, [open, gameId, puzzles.length]);
-
-  // Reset when gameId changes
-  useEffect(() => {
-    setPuzzles([]);
-    setHasMore(false);
-    setMaxId(null);
-    autoRandomFired.current = false;
-  }, [gameId]);
 
   // Infinite scroll via IntersectionObserver on sentinel div
   useEffect(() => {
