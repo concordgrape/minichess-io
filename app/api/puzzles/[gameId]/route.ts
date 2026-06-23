@@ -6,8 +6,10 @@ const VALID_GAMES = new Set([
   "mate-in-1", "mate-in-2", "mate-in-3", "survival",
 ]);
 
+const PAGE_SIZE = 100;
+
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
   try {
@@ -17,27 +19,39 @@ export async function GET(
       return Response.json({ error: "unknown_game" }, { status: 404 });
     }
 
+    const url = new URL(request.url);
+    const after = url.searchParams.get("after"); // last seen ID (cursor)
+
     const { getAdminDb } = await import("@/app/lib/firebase-admin");
 
-    const snap = await getAdminDb()
+    let query = getAdminDb()
       .collection("games")
       .doc(gameId)
       .collection("puzzles")
       .orderBy("id", "desc")
-      .limit(60)
-      .get();
+      .limit(PAGE_SIZE);
+
+    if (after !== null) {
+      const afterId = parseInt(after, 10);
+      if (!isNaN(afterId)) {
+        query = query.where("id", "<", afterId);
+      }
+    }
+
+    const snap = await query.get();
 
     const puzzles = snap.docs.map((d) => {
       const data = d.data();
       return {
         id: data.id as number,
         difficulty: data.difficulty as string,
-        releaseDate: (data.releaseDate?.toDate?.() as Date | undefined)?.getTime() ?? null,
       };
     });
 
-    return Response.json(puzzles, {
-      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60" },
+    const hasMore = puzzles.length === PAGE_SIZE;
+
+    return Response.json({ puzzles, hasMore }, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" },
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface PuzzleMeta {
   id: number;
   difficulty: string;
-  releaseDate: number | null;
 }
 
 interface Props {
@@ -20,16 +19,6 @@ const DIFF_COLOR: Record<string, string> = {
   medium: "warning",
   hard: "danger",
 };
-
-function formatDate(ts: number | null): string {
-  if (!ts) return "—";
-  return new Date(ts).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 function StatusDot({ status }: { status: "completed" | "inProgress" | null }) {
   if (status === "completed") {
@@ -50,22 +39,84 @@ function StatusDot({ status }: { status: "completed" | "inProgress" | null }) {
   return <span style={{ width: 14, flexShrink: 0 }} />;
 }
 
+function Spinner() {
+  return (
+    <div className="d-flex align-items-center justify-content-center gap-2 py-3 text-muted small">
+      <span
+        className="spinner-border spinner-border-sm"
+        style={{ width: 14, height: 14, borderWidth: 2 }}
+      />
+      Loading more…
+    </div>
+  );
+}
+
+async function fetchPage(gameId: string, after?: number): Promise<{ puzzles: PuzzleMeta[]; hasMore: boolean }> {
+  const url = after !== undefined
+    ? `/api/puzzles/${gameId}?after=${after}`
+    : `/api/puzzles/${gameId}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(String(res.status));
+  return res.json();
+}
+
 export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded, getStatus }: Props) {
   const [open, setOpen] = useState(false);
   const [puzzles, setPuzzles] = useState<PuzzleMeta[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [loadingId, setLoadingId] = useState<number | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const fetchingRef = useRef(false);
 
-  // Fetch the list when modal opens for the first time
+  // Load first page when modal opens
   useEffect(() => {
     if (!open || puzzles.length > 0) return;
-    setLoading(true);
-    fetch(`/api/puzzles/${gameId}`)
-      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
-      .then((data) => { if (Array.isArray(data)) setPuzzles(data); })
+    setInitialLoading(true);
+    fetchPage(gameId)
+      .then(({ puzzles: p, hasMore: more }) => {
+        setPuzzles(p);
+        setHasMore(more);
+      })
       .catch(() => {})
-      .finally(() => setLoading(false));
+      .finally(() => setInitialLoading(false));
   }, [open, gameId, puzzles.length]);
+
+  // Reset when gameId changes
+  useEffect(() => {
+    setPuzzles([]);
+    setHasMore(false);
+  }, [gameId]);
+
+  // Infinite scroll via IntersectionObserver on sentinel div
+  useEffect(() => {
+    if (!open || !hasMore || !sentinelRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting || fetchingRef.current || !hasMore) return;
+        fetchingRef.current = true;
+        setLoadingMore(true);
+        const lastId = puzzles[puzzles.length - 1]?.id;
+        fetchPage(gameId, lastId)
+          .then(({ puzzles: more, hasMore: stillMore }) => {
+            setPuzzles((prev) => [...prev, ...more]);
+            setHasMore(stillMore);
+          })
+          .catch(() => {})
+          .finally(() => {
+            setLoadingMore(false);
+            fetchingRef.current = false;
+          });
+      },
+      { root: listRef.current, threshold: 0.1 }
+    );
+
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [open, hasMore, puzzles, gameId]);
 
   // Close on Escape
   useEffect(() => {
@@ -93,7 +144,6 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
 
   return (
     <>
-      {/* Calendar button */}
       <button
         className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
         onClick={() => setOpen(true)}
@@ -108,7 +158,6 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
         <span>Past puzzles</span>
       </button>
 
-      {/* Modal backdrop */}
       {open && (
         <div
           className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
@@ -138,11 +187,11 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
             </div>
 
             {/* List */}
-            <div style={{ overflowY: "auto", overscrollBehavior: "contain", flex: 1 }}>
-              {loading && (
+            <div ref={listRef} style={{ overflowY: "auto", overscrollBehavior: "contain", flex: 1 }}>
+              {initialLoading && (
                 <div className="text-center text-muted small py-4">Loading…</div>
               )}
-              {!loading && puzzles.length === 0 && (
+              {!initialLoading && puzzles.length === 0 && (
                 <div className="text-center text-muted small py-4">No past puzzles available.</div>
               )}
               {puzzles.map((p) => {
@@ -177,6 +226,13 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
                   </button>
                 );
               })}
+
+              {/* Sentinel for IntersectionObserver + loading indicator */}
+              {hasMore && (
+                <div ref={sentinelRef}>
+                  {loadingMore && <Spinner />}
+                </div>
+              )}
             </div>
           </div>
         </div>
