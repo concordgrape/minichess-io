@@ -3,6 +3,11 @@ import Image from "next/image";
 import { getLocale } from "@/app/i18n";
 
 const PLACEHOLDER = "/og-img.png";
+const GAME_IMAGES: Record<string, string> = {
+  "/mate-in-1": "/images/mate_in_1.webp",
+  "/mate-in-2": "/images/mate_in_2.webp",
+  "/mate-in-3": "/images/mate_in_3.webp",
+};
 
 export default async function Home() {
   const en = await getLocale();
@@ -37,7 +42,7 @@ export default async function Home() {
               <div className="card rounded-0 h-100 game-tile">
                 <div style={{ position: "relative", aspectRatio: "16 / 9", overflow: "hidden" }}>
                   <Image
-                    src={PLACEHOLDER}
+                    src={GAME_IMAGES[g.href] ?? PLACEHOLDER}
                     alt={g.title}
                     fill
                     sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
