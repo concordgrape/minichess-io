@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import Shell from "./Shell";
 import AuthProvider from "./AuthProvider";
+import { LocaleProvider } from "./i18n/LocaleProvider";
 
 const openSans = Open_Sans({ subsets: ["latin"] });
 
@@ -20,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={openSans.className}>
       <body>
-        <AuthProvider>
-          <Shell>{children}</Shell>
-        </AuthProvider>
+        <LocaleProvider>
+          <AuthProvider>
+            <Shell>{children}</Shell>
+          </AuthProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

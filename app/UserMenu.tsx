@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { User } from "firebase/auth";
 import { useAuth } from "./AuthProvider";
+import { useLocale } from "@/app/i18n/LocaleProvider";
 
 function svgProps() {
   return {
@@ -35,12 +36,13 @@ const LogOutIcon = () => (
   <svg {...svgProps()}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
 );
 
-function displayNameOf(user: User): string {
-  return user.displayName || user.email?.split("@")[0] || "Player";
+function displayNameOf(user: User, fallback: string): string {
+  return user.displayName || user.email?.split("@")[0] || fallback;
 }
 
 export default function UserMenu({ user }: { user: User }) {
   const { logOut } = useAuth();
+  const { locale } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -65,7 +67,7 @@ export default function UserMenu({ user }: { user: User }) {
           className="fw-semibold"
           style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
         >
-          {displayNameOf(user)}
+          {displayNameOf(user, locale.userMenu.fallbackName)}
         </span>
         <span aria-hidden="true">▾</span>
       </button>
@@ -76,7 +78,7 @@ export default function UserMenu({ user }: { user: User }) {
           style={{ display: "block", minWidth: 200, zIndex: 1055 }}
         >
           <Link className="dropdown-item d-flex align-items-center gap-2 py-2" href="/profile" onClick={() => setOpen(false)}>
-            <WrenchIcon /> Account
+            <WrenchIcon /> {locale.userMenu.account}
           </Link>
           <hr className="dropdown-divider my-1" />
           <button
@@ -86,7 +88,7 @@ export default function UserMenu({ user }: { user: User }) {
               logOut();
             }}
           >
-            <LogOutIcon /> Log out
+            <LogOutIcon /> {locale.userMenu.logOut}
           </button>
         </div>
       )}

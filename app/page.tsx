@@ -1,39 +1,34 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getLocale } from "@/app/i18n";
 
-interface GameTile {
-  href: string;
-  title: string;
-  image: string;
-  description: string;
-}
-
-// Image is the same placeholder for every tile for now — swap per-game later.
 const PLACEHOLDER = "/og-img.png";
 
-const GAMES: GameTile[] = [
-  { href: "/chess", title: "Play Chess", image: PLACEHOLDER, description: "Full chess against the engine — choose your difficulty, from beginner to expert." },
-  { href: "/minichess", title: "Mini Chess", image: PLACEHOLDER, description: "A compact 5×5 chess battle against the AI. Same rules, smaller board." },
-  { href: "/mate-in-1", title: "Mate in 1", image: PLACEHOLDER, description: "Spot the single move that delivers immediate checkmate." },
-  { href: "/mate-in-2", title: "Mate in 2", image: PLACEHOLDER, description: "Force checkmate in two moves against Black's best defense." },
-  { href: "/mate-in-3", title: "Mate in 3", image: PLACEHOLDER, description: "Calculate a forced checkmate three moves deep." },
-  { href: "/takes", title: "Takes", image: PLACEHOLDER, description: "Capture every piece on the board in the correct order." },
-  { href: "/check", title: "Check", image: PLACEHOLDER, description: "Deliver checkmate on the mini board within the move limit." },
-  { href: "/smothered", title: "Smothered", image: PLACEHOLDER, description: "Trap the king with its own pieces and land a smothered mate." },
-  { href: "/chess-solitaire", title: "Chess Solitaire", image: PLACEHOLDER, description: "Clear the board, capturing one piece at a time." },
-  { href: "/solitaire", title: "Chain Capture", image: PLACEHOLDER, description: "Wipe the board in a single unbroken chain of captures." },
-  { href: "/survival", title: "Survival", image: PLACEHOLDER, description: "Capture pawns with your knight for as long as you can." },
-  { href: "/king-and-pawn", title: "King and Pawn", image: PLACEHOLDER, description: "Promote the pawn with your king's support, then checkmate." },
-  { href: "/rook-endgame", title: "Rook Endgame", image: PLACEHOLDER, description: "Cut off the king with the rook and deliver mate." },
-  { href: "/zugzwang", title: "Zugzwang", image: PLACEHOLDER, description: "Find the quiet move that leaves your opponent helpless." },
-  { href: "/queen-vs-pawn", title: "Queen vs Pawn", image: PLACEHOLDER, description: "Catch the passed pawn with your queen before it promotes." },
-];
+export default async function Home() {
+  const en = await getLocale();
+  const { gameTiles, home } = en;
+  const GAMES = [
+    { href: "/chess",          ...gameTiles.chess },
+    { href: "/minichess",      ...gameTiles.minichess },
+    { href: "/mate-in-1",      ...gameTiles.mateIn1 },
+    { href: "/mate-in-2",      ...gameTiles.mateIn2 },
+    { href: "/mate-in-3",      ...gameTiles.mateIn3 },
+    { href: "/takes",          ...gameTiles.takes },
+    { href: "/check",          ...gameTiles.check },
+    { href: "/smothered",      ...gameTiles.smothered },
+    { href: "/chess-solitaire",...gameTiles.chessSolitaire },
+    { href: "/solitaire",      ...gameTiles.solitaire },
+    { href: "/survival",       ...gameTiles.survival },
+    { href: "/king-and-pawn",  ...gameTiles.kingAndPawn },
+    { href: "/rook-endgame",   ...gameTiles.rookEndgame },
+    { href: "/zugzwang",       ...gameTiles.zugzwang },
+    { href: "/queen-vs-pawn",  ...gameTiles.queenVsPawn },
+  ];
 
-export default function Home() {
   return (
     <div>
-      <h1 className="fw-bold mb-1">DailyCheckmate</h1>
-      <p className="text-muted mb-4">Pick a game or puzzle to play.</p>
+      <h1 className="fw-bold mb-1">{home.title}</h1>
+      <p className="text-muted mb-4">{home.subtitle}</p>
 
       <div className="row g-3">
         {GAMES.map((g) => (
@@ -42,7 +37,7 @@ export default function Home() {
               <div className="card rounded-0 h-100 game-tile">
                 <div style={{ position: "relative", aspectRatio: "16 / 9", overflow: "hidden" }}>
                   <Image
-                    src={g.image}
+                    src={PLACEHOLDER}
                     alt={g.title}
                     fill
                     sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"

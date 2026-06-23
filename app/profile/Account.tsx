@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { updateProfile, sendPasswordResetEmail } from "firebase/auth";
 import { useAuth } from "../AuthProvider";
 import { auth, db } from "../lib/firebase";
@@ -82,20 +82,41 @@ export default function Account() {
     e.preventDefault();
     if (!user) return;
     setStatus(null);
+
+    // Client-side pre-validation for immediate feedback
+    const name = username.trim();
+    if (name && /\s/.test(name)) {
+      setStatus({ type: "err", msg: "Username cannot contain spaces." });
+      return;
+    }
+    if (name && (name.length < 2 || name.length > 30)) {
+      setStatus({ type: "err", msg: "Username must be 2–30 characters." });
+      return;
+    }
+
     setSaving(true);
     try {
-      const name = username.trim();
+      const token = await auth?.currentUser?.getIdToken();
+      if (!token) throw new Error("not authenticated");
+
+      const res = await fetch("/api/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ username: name, email: email.trim(), country, publicInfo }),
+      });
+      const data = await res.json() as { error?: string; message?: string; saved?: boolean };
+
+      if (!res.ok) {
+        setStatus({ type: "err", msg: data.message ?? "Couldn't update your profile. Please try again." });
+        return;
+      }
+
+      // Update Firebase Auth display name client-side (requires client SDK)
       if (auth?.currentUser && name && name !== user.displayName) {
         await updateProfile(auth.currentUser, { displayName: name });
         await refreshUser();
       }
-      if (db) {
-        await setDoc(
-          doc(db, "users", user.uid),
-          { username: name, email: email.trim(), country, publicInfo, updatedAt: serverTimestamp() },
-          { merge: true }
-        );
-      }
+
       setStatus({ type: "ok", msg: "Profile updated." });
     } catch (e) {
       if (dev) console.error(e);
@@ -135,7 +156,7 @@ export default function Account() {
       <div className="row mb-3 align-items-center">
         <label className="col-sm-3 col-form-label fw-bold text-sm-end">Username</label>
         <div className="col-sm-9">
-          <input type="text" className="form-control rounded-0" value={username} onChange={(e) => setUsername(e.target.value)} disabled={isGuest} />
+          <input type="text" className="form-control rounded-0" value={username} onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))} disabled={isGuest} />
         </div>
       </div>
 

@@ -1,28 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { totalScore } from "./lib/scores";
 import UserMenu from "./UserMenu";
 import { useAuth } from "./AuthProvider";
 import Footer from "./components/Footer";
+import { useLocale } from "@/app/i18n/LocaleProvider";
+import { type LocaleKey } from "@/app/i18n/index";
+
+const LOCALE_OPTIONS: { key: LocaleKey; label: string }[] = [
+  { key: "en", label: "🇺🇸 English" },
+  { key: "de", label: "🇩🇪 Deutsch" },
+  { key: "es", label: "🇪🇸 Español" },
+  { key: "zh", label: "🇨🇳 中文" },
+];
 
 const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
+  const { locale: en } = useLocale();
   const [endgamesOpen, setEndgamesOpen] = useState(false);
   return (
   <>
     <div className="mb-3">
-      <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Play Chess</Link>
-      <Link href="/minichess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mini Chess</Link>
-      <Link href="/takes" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Takes</Link>
-      <Link href="/check" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Check</Link>
-      <Link href="/smothered" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Smothered</Link>
-      <Link href="/chess-solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Chess Solitaire</Link>
-      <Link href="/solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Chain Capture</Link>
-      <Link href="/survival" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Survival</Link>
-      <Link href="/mate-in-1" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 1</Link>
-      <Link href="/mate-in-2" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 2</Link>
-      <Link href="/mate-in-3" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Mate in 3</Link>
+      <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.playChess}</Link>
+      <Link href="/minichess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.miniChess}</Link>
+      <Link href="/takes" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.takes}</Link>
+      <Link href="/check" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.check}</Link>
+      <Link href="/smothered" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.smothered}</Link>
+      <Link href="/chess-solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.chessSolitaire}</Link>
+      <Link href="/solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.chainCapture}</Link>
+      <Link href="/survival" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.survival}</Link>
+      <Link href="/mate-in-1" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.mateIn1}</Link>
+      <Link href="/mate-in-2" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.mateIn2}</Link>
+      <Link href="/mate-in-3" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.mateIn3}</Link>
 
       {/* Endgame puzzles dropdown */}
       <button
@@ -31,37 +41,37 @@ const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
         aria-expanded={endgamesOpen}
         onClick={() => setEndgamesOpen((o) => !o)}
       >
-        Endgame Puzzles <span className="ms-auto">{endgamesOpen ? "▾" : "▸"}</span>
+        {en.sidebar.endgamePuzzles} <span className="ms-auto">{endgamesOpen ? "▾" : "▸"}</span>
       </button>
       {endgamesOpen && (
         <div style={{ paddingLeft: 14 }}>
-          <Link href="/king-and-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>King and Pawn</Link>
-          <Link href="/rook-endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Rook Endgame</Link>
-          <Link href="/zugzwang" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Zugzwang</Link>
-          <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>Queen vs Pawn</Link>
+          <Link href="/king-and-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.kingAndPawn}</Link>
+          <Link href="/rook-endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.rookEndgame}</Link>
+          <Link href="/zugzwang" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.zugzwang}</Link>
+          <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.queenVsPawn}</Link>
         </div>
       )}
     </div>
     <div className="mb-3">
-      <Link href="/leaderboard" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Leaderboard</Link>
-      <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Season leaders</a>
+      <Link href="/leaderboard" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>{en.sidebar.leaderboard}</Link>
+      <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>{en.sidebar.seasonLeaders}</a>
     </div>
     <div className="mb-3">
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Quests (0)</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Arena</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Equipment</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Marketplace</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Events</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>Championship</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.quests}</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.arena}</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.equipment}</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.marketplace}</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.events}</a>
+      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.championship}</a>
     </div>
     <div className="mb-3">
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>Players online (1430)</a>
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>News</a>
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>Statistics</a>
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>My profile</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.playersOnline}</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.news}</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.statistics}</a>
+      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.myProfile}</a>
     </div>
     <div>
-      <a href="#" className="sidebar-link sidebar-link--chat" onClick={onNavigate}>Chat (100+)</a>
+      <a href="#" className="sidebar-link sidebar-link--chat" onClick={onNavigate}>{en.sidebar.chat}</a>
     </div>
   </>
   );
@@ -71,7 +81,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [score, setScore] = useState(0);
+  const [langOpen, setLangOpen] = useState(false);
   const { user, openAuth } = useAuth();
+  const { locale: en, localeKey, setLocale } = useLocale();
+  const langRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setScore(totalScore());
@@ -101,6 +114,16 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [menuOpen]);
+
+  // Close language dropdown on outside click
+  useEffect(() => {
+    if (!langOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [langOpen]);
 
   // Prevent body scroll when drawer open
   useEffect(() => {
@@ -132,7 +155,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 >
                   ♟
                 </span>
-                DailyCheckmate
+                {en.siteName}
               </Link>
             </div>
 
@@ -142,15 +165,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 <UserMenu user={user} />
               ) : (
                 <>
-                  <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => openAuth("signup")}>Sign up</button>
-                  <button className="btn btn-info text-white rounded-0" onClick={() => openAuth("login")}>Log in</button>
+                  <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => openAuth("signup")}>{en.nav.signUp}</button>
+                  <button className="btn btn-info text-white rounded-0" onClick={() => openAuth("login")}>{en.nav.logIn}</button>
                 </>
               )}
               <button
                 className="btn btn-outline-secondary rounded-0 d-inline-flex align-items-center justify-content-center"
                 onClick={() => setDark((d) => !d)}
-                title={dark ? "Switch to light mode" : "Switch to dark mode"}
-                aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+                title={dark ? en.nav.switchToLight : en.nav.switchToDark}
+                aria-label={dark ? en.nav.switchToLight : en.nav.switchToDark}
               >
                 {dark ? (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -168,7 +191,33 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                   ★ {score.toLocaleString()}
                 </span>
               )}
-              <span className="text-muted small d-none d-sm-inline">🇺🇸 English ▾</span>
+
+              {/* Language dropdown */}
+              <div style={{ position: "relative" }} ref={langRef} className="d-none d-sm-block">
+                <button
+                  className="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-1 text-muted small"
+                  onClick={() => setLangOpen((o) => !o)}
+                  aria-expanded={langOpen}
+                >
+                  {en.nav.language}
+                </button>
+                {langOpen && (
+                  <div
+                    className="dropdown-menu show rounded-0 shadow position-absolute end-0 mt-1"
+                    style={{ minWidth: 150, zIndex: 1055 }}
+                  >
+                    {LOCALE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.key}
+                        className={`dropdown-item${localeKey === opt.key ? " active" : ""}`}
+                        onClick={() => { setLocale(opt.key); setLangOpen(false); }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -199,8 +248,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <span className="fw-bold">Menu</span>
-          <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => setMenuOpen(false)}>✕</button>
+          <span className="fw-bold">{en.nav.menu}</span>
+          <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => setMenuOpen(false)}>{en.nav.close}</button>
         </div>
         <SidebarLinks onNavigate={() => setMenuOpen(false)} />
       </div>
