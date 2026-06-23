@@ -52,27 +52,6 @@ const SidebarLinks = ({ onNavigate, sidebarPosts }: { onNavigate?: () => void; s
         </div>
       )}
     </div>
-    <div className="mb-3">
-      <Link href="/leaderboard" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>{en.sidebar.leaderboard}</Link>
-      <a href="#" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>{en.sidebar.seasonLeaders}</a>
-    </div>
-    <div className="mb-3">
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.quests}</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.arena}</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.equipment}</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.marketplace}</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.events}</a>
-      <a href="#" className="sidebar-link sidebar-link--features" onClick={onNavigate}>{en.sidebar.championship}</a>
-    </div>
-    <div className="mb-3">
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.playersOnline}</a>
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.news}</a>
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.statistics}</a>
-      <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.myProfile}</a>
-    </div>
-    <div className="mb-3">
-      <a href="#" className="sidebar-link sidebar-link--chat" onClick={onNavigate}>{en.sidebar.chat}</a>
-    </div>
     <div>
       <Link href="/blog" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.blog}</Link>
       {sidebarPosts.map((post) => (

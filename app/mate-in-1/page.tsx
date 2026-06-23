@@ -7,8 +7,14 @@ import { getLocale } from "@/app/i18n";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "Mate in 1 Puzzles — DailyCheckmate",
-  description: "Solve mate in 1 chess puzzles. Find the one move that delivers checkmate. Free online chess puzzles for all levels.",
+  title: "Mate in 1 Chess Puzzles — Find Checkmate in One Move",
+  description: "Solve mate in 1 chess puzzles. Find the one move that delivers checkmate. Free daily chess tactics for all skill levels.",
+  keywords: ["mate in 1", "mate in one", "checkmate in one move", "chess puzzles", "chess tactics"],
+  openGraph: {
+    title: "Mate in 1 Chess Puzzles | DailyCheckmate",
+    description: "Find the one move that delivers checkmate. Free daily chess tactics for all skill levels.",
+    url: "https://dailycheckmate.com/mate-in-1",
+  },
 };
 
 export default async function MateIn1Page() {

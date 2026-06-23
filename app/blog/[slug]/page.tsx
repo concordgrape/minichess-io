@@ -14,8 +14,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const post = await getPostBySlug(slug);
   if (!post) return {};
   return {
-    title: `${post.title} — DailyCheckmate Blog`,
+    title: post.title,
     description: post.excerpt,
+    keywords: post.tags,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url: `https://dailycheckmate.com/blog/${slug}`,
+      type: "article",
+    },
   };
 }
 

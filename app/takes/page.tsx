@@ -6,7 +6,16 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 import type { Puzzle } from "./types";
 
-export const metadata = { title: "DailyCheckmate — Takes" };
+export const metadata = {
+  title: "Takes — Capture All Pieces Chess Puzzle",
+  description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything. Free to play online.",
+  keywords: ["chess capture puzzle", "takes chess game", "capture all pieces chess", "daily chess puzzle"],
+  openGraph: {
+    title: "Takes — Capture All Pieces Chess Puzzle | DailyCheckmate",
+    description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything.",
+    url: "https://dailycheckmate.com/takes",
+  },
+};
 
 export default async function TakesPage() {
   const file = await readFile(path.join(process.cwd(), "public", "games", "takes.json"), "utf-8");

@@ -7,8 +7,14 @@ import { getLocale } from "@/app/i18n";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "King and Pawn Endgame Puzzle — DailyCheckmate",
-  description: "Solve a king and pawn endgame: promote the pawn with the king's support and deliver checkmate. Free online chess endgame puzzle.",
+  title: "King and Pawn Endgame Puzzle — Promote and Checkmate",
+  description: "Solve a king and pawn endgame: escort the pawn to promotion with the king's support and deliver checkmate. Free daily chess endgame puzzle.",
+  keywords: ["king and pawn endgame", "pawn promotion puzzle", "chess endgame puzzle", "king pawn checkmate"],
+  openGraph: {
+    title: "King and Pawn Endgame Puzzle | DailyCheckmate",
+    description: "Escort the pawn to promotion and deliver checkmate. Free daily chess endgame puzzle.",
+    url: "https://dailycheckmate.com/king-and-pawn",
+  },
 };
 
 export default async function KingAndPawnPage() {

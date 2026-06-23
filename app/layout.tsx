@@ -10,8 +10,38 @@ import { getAllPosts } from "./lib/blog";
 const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DailyCheckmate",
-  description: "Play chess puzzles and mini games online",
+  metadataBase: new URL("https://dailycheckmate.com"),
+  title: {
+    default: "DailyCheckmate — Daily Chess Puzzles",
+    template: "%s | DailyCheckmate",
+  },
+  description:
+    "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
+  keywords: [
+    "chess puzzles",
+    "daily chess puzzle",
+    "mate in one",
+    "mate in two",
+    "chess endgame puzzles",
+    "free chess games online",
+    "chess tactics",
+  ],
+  authors: [{ name: "DailyCheckmate" }],
+  openGraph: {
+    type: "website",
+    siteName: "DailyCheckmate",
+    title: "DailyCheckmate — Daily Chess Puzzles",
+    description:
+      "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
+    url: "https://dailycheckmate.com",
+  },
+  twitter: {
+    card: "summary",
+    title: "DailyCheckmate — Daily Chess Puzzles",
+    description:
+      "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more.",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default async function RootLayout({

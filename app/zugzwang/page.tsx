@@ -7,8 +7,14 @@ import { getLocale } from "@/app/i18n";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "Zugzwang Endgame Puzzle — DailyCheckmate",
-  description: "Solve a zugzwang chess puzzle: find the quiet waiting move that leaves the opponent with no good reply, then checkmate. Free online endgame puzzle.",
+  title: "Zugzwang Puzzle — Force Your Opponent Into a Losing Move",
+  description: "Solve a zugzwang chess puzzle: find the quiet waiting move that forces your opponent into a losing position. Free daily chess endgame puzzle.",
+  keywords: ["zugzwang", "zugzwang chess puzzle", "chess waiting move", "chess endgame puzzle", "chess strategy"],
+  openGraph: {
+    title: "Zugzwang Puzzle | DailyCheckmate",
+    description: "Find the quiet waiting move that forces your opponent into a losing position. Free daily chess endgame puzzle.",
+    url: "https://dailycheckmate.com/zugzwang",
+  },
 };
 
 export default async function ZugzwangPage() {

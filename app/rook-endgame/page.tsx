@@ -7,8 +7,14 @@ import { getLocale } from "@/app/i18n";
 import type { MatePuzzle } from "../mate/types";
 
 export const metadata = {
-  title: "Rook Endgame Puzzle — DailyCheckmate",
-  description: "Solve a king and rook versus king endgame: cut off the king with the rook and checkmate. Free online chess endgame puzzle.",
+  title: "Rook Endgame Puzzle — King and Rook vs King",
+  description: "Solve a rook endgame: use king and rook to cut off the enemy king and force checkmate. Free daily chess endgame puzzle.",
+  keywords: ["rook endgame", "king rook vs king", "rook checkmate", "chess endgame puzzle", "rook endgame technique"],
+  openGraph: {
+    title: "Rook Endgame Puzzle | DailyCheckmate",
+    description: "Use king and rook to cut off the enemy king and force checkmate. Free daily chess endgame puzzle.",
+    url: "https://dailycheckmate.com/rook-endgame",
+  },
 };
 
 export default async function RookEndgamePage() {

@@ -5,8 +5,14 @@ import { LOCALE_COOKIE } from "@/app/i18n/index";
 import { cookies } from "next/headers";
 
 export const metadata = {
-  title: "Blog — DailyCheckmate",
-  description: "Chess tips, puzzle guides, and updates from DailyCheckmate.",
+  title: "Chess Blog — Tips, Puzzle Guides, and Strategy",
+  description: "Read chess tips, puzzle guides, endgame techniques, and strategy articles from DailyCheckmate. Improve your game one post at a time.",
+  keywords: ["chess blog", "chess tips", "chess strategy", "chess puzzle guide", "improve at chess"],
+  openGraph: {
+    title: "Chess Blog | DailyCheckmate",
+    description: "Chess tips, puzzle guides, endgame techniques, and strategy articles to help you improve.",
+    url: "https://dailycheckmate.com/blog",
+  },
 };
 
 function PostCard({ post }: { post: BlogPost }) {

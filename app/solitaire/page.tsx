@@ -6,7 +6,16 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 import type { Puzzle } from "./types";
 
-export const metadata = { title: "DailyCheckmate — Chain Capture" };
+export const metadata = {
+  title: "Chain Capture — Chess Puzzle Game",
+  description: "Capture every piece on the board in one unbroken chain. A daily chess puzzle that trains calculation and piece mobility. Free online.",
+  keywords: ["chain capture chess", "chess capture chain puzzle", "chess solitaire puzzle", "daily chess puzzle"],
+  openGraph: {
+    title: "Chain Capture — Chess Puzzle Game | DailyCheckmate",
+    description: "Capture every piece on the board in one unbroken chain. Trains calculation and piece mobility.",
+    url: "https://dailycheckmate.com/solitaire",
+  },
+};
 
 export default async function SolitairePage() {
   const file = await readFile(path.join(process.cwd(), "public", "games", "solitaire.json"), "utf-8");

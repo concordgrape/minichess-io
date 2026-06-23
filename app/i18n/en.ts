@@ -65,7 +65,7 @@ const en = {
   // ── Home page ─────────────────────────────────────────────────────────────
   home: {
     title: "DailyCheckmate",
-    subtitle: "Pick a game or puzzle to play.",
+    subtitle: "A new chess puzzle every day. Sharpen your tactics, train your endgames, and play for free.",
   },
 
   // ── Game tiles (home page grid) ───────────────────────────────────────────

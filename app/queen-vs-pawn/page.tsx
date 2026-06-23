@@ -7,8 +7,14 @@ import { getLocale } from "@/app/i18n";
 import type { PawnPuzzle } from "./types";
 
 export const metadata = {
-  title: "Queen vs Pawn Puzzles — DailyCheckmate",
-  description: "Stop a passed pawn from queening. Use the queen to pin and capture the pawn before it promotes. Free online chess endgame puzzles.",
+  title: "Queen vs Pawn Puzzle — Stop the Passed Pawn",
+  description: "Stop a passed pawn from promoting with just your queen. A precise daily chess endgame puzzle that tests queen technique. Free online.",
+  keywords: ["queen vs pawn", "queen versus pawn endgame", "stop passed pawn chess", "chess endgame puzzle"],
+  openGraph: {
+    title: "Queen vs Pawn Puzzle | DailyCheckmate",
+    description: "Stop a passed pawn from promoting with just your queen. Tests precise queen technique.",
+    url: "https://dailycheckmate.com/queen-vs-pawn",
+  },
 };
 
 export default async function QueenPawnPage() {

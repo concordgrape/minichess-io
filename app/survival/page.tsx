@@ -2,7 +2,16 @@ import SurvivalGame from "./SurvivalGame";
 // import GameLeaderboard from "@/app/components/GameLeaderboard";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 
-export const metadata = { title: "DailyCheckmate — Survival" };
+export const metadata = {
+  title: "Survival Chess — How Long Can You Last?",
+  description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game. Free to play online.",
+  keywords: ["survival chess", "chess survival game", "chess endurance", "free chess game online"],
+  openGraph: {
+    title: "Survival Chess — How Long Can You Last? | DailyCheckmate",
+    description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game.",
+    url: "https://dailycheckmate.com/survival",
+  },
+};
 
 export default function SurvivalPage() {
   return (

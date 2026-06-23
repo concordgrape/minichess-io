@@ -60,18 +60,66 @@ async function fetchPage(gameId: string, after?: number): Promise<{ puzzles: Puz
   return res.json();
 }
 
+async function loadPuzzleData(gameId: string, id: number): Promise<Record<string, unknown> | null> {
+  try {
+    const res = await fetch(`/api/puzzles/${gameId}/${id}`);
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+const SESSION_KEY = (gameId: string) => `rp_${gameId}`;
+
 export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded, getStatus }: Props) {
   const [open, setOpen] = useState(false);
   const [puzzles, setPuzzles] = useState<PuzzleMeta[]>([]);
+  const [maxId, setMaxId] = useState<number | null>(null);
   const [initialLoading, setInitialLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [randomLoading, setRandomLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const fetchingRef = useRef(false);
+  // Prevent double-firing in React Strict Mode
+  const autoRandomFired = useRef(false);
 
-  // Load first page when modal opens
+  // On mount: fetch first page to get maxId, then auto-load a random puzzle
+  useEffect(() => {
+    if (autoRandomFired.current) return;
+    autoRandomFired.current = true;
+
+    fetchPage(gameId).then(({ puzzles: p, hasMore: more }) => {
+      setPuzzles(p);
+      setHasMore(more);
+      if (p.length === 0) return;
+
+      const max = p[0].id;
+      setMaxId(max);
+
+      // Check sessionStorage: reuse the same random puzzle within the tab session,
+      // but always start fresh on page load (key is cleared on mount).
+      const key = SESSION_KEY(gameId);
+      const stored = sessionStorage.getItem(key);
+      const randomId = stored
+        ? parseInt(stored, 10)
+        : Math.floor(Math.random() * max) + 1;
+
+      if (!stored) sessionStorage.setItem(key, String(randomId));
+
+      // Only auto-load if the current puzzle is the default (matches the JSON file id)
+      // i.e. don't override if user already navigated to a specific puzzle
+      loadPuzzleData(gameId, randomId).then((data) => {
+        if (data) onPuzzleLoaded(data);
+      });
+    }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameId]);
+
+  // Load first page when modal opens (if not already loaded)
   useEffect(() => {
     if (!open || puzzles.length > 0) return;
     setInitialLoading(true);
@@ -79,6 +127,7 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
       .then(({ puzzles: p, hasMore: more }) => {
         setPuzzles(p);
         setHasMore(more);
+        if (p.length > 0) setMaxId(p[0].id);
       })
       .catch(() => {})
       .finally(() => setInitialLoading(false));
@@ -88,6 +137,8 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
   useEffect(() => {
     setPuzzles([]);
     setHasMore(false);
+    setMaxId(null);
+    autoRandomFired.current = false;
   }, [gameId]);
 
   // Infinite scroll via IntersectionObserver on sentinel div
@@ -129,34 +180,59 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
   const selectPuzzle = useCallback(async (id: number) => {
     if (id === currentId) { setOpen(false); return; }
     setLoadingId(id);
-    try {
-      const res = await fetch(`/api/puzzles/${gameId}/${id}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      onPuzzleLoaded(data);
-      setOpen(false);
-    } catch {
-      // silently fail
-    } finally {
-      setLoadingId(null);
-    }
+    const data = await loadPuzzleData(gameId, id);
+    if (data) { onPuzzleLoaded(data); setOpen(false); }
+    setLoadingId(null);
   }, [gameId, currentId, onPuzzleLoaded]);
+
+  const pickRandom = useCallback(async () => {
+    const max = maxId ?? puzzles[0]?.id;
+    if (!max) return;
+    setRandomLoading(true);
+    const randomId = Math.floor(Math.random() * max) + 1;
+    sessionStorage.setItem(SESSION_KEY(gameId), String(randomId));
+    const data = await loadPuzzleData(gameId, randomId);
+    if (data) onPuzzleLoaded(data);
+    setRandomLoading(false);
+  }, [gameId, maxId, puzzles, onPuzzleLoaded]);
 
   return (
     <>
-      <button
-        className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
-        onClick={() => setOpen(true)}
-        title="Previous puzzles"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/>
-          <line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-        <span>Past puzzles</span>
-      </button>
+      {/* Button row */}
+      <div className="d-flex gap-2">
+        <button
+          className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          onClick={() => setOpen(true)}
+          title="Previous puzzles"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>Past puzzles</span>
+        </button>
+
+        <button
+          className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          onClick={pickRandom}
+          disabled={randomLoading}
+          title="Load a random puzzle"
+        >
+          {randomLoading ? (
+            <span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }} />
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="16 3 21 3 21 8"/>
+              <line x1="4" y1="20" x2="21" y2="3"/>
+              <polyline points="21 16 21 21 16 21"/>
+              <line x1="15" y1="15" x2="21" y2="21"/>
+            </svg>
+          )}
+          <span>Random</span>
+        </button>
+      </div>
 
       {open && (
         <div

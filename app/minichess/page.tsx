@@ -3,7 +3,16 @@ import path from "path";
 import MiniChessGame from "./MiniChessGame";
 import type { DailyPosition } from "./types";
 
-export const metadata = { title: "DailyCheckmate — Mini Chess" };
+export const metadata = {
+  title: "Mini Chess — 5x5 Chess Puzzle Game",
+  description: "Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics. Free daily puzzle online.",
+  keywords: ["mini chess", "5x5 chess", "small chess board", "chess variant", "chess puzzle game"],
+  openGraph: {
+    title: "Mini Chess — 5x5 Chess Puzzle Game | DailyCheckmate",
+    description: "Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics.",
+    url: "https://dailycheckmate.com/minichess",
+  },
+};
 
 export default async function MiniChessPage() {
   const file = await readFile(
