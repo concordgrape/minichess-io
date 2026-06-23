@@ -23,7 +23,7 @@ export async function GET(
       .collection("games")
       .doc(gameId)
       .collection("puzzles")
-      .orderBy("releaseDate", "desc")
+      .orderBy("id", "desc")
       .limit(60)
       .get();
 
