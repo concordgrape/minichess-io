@@ -41,22 +41,21 @@ function makePieces(defs: PuzzleDef["pieces"]): SolitairePiece[] {
 }
 
 interface Props {
-  puzzle: PuzzleDef;
+  puzzle?: PuzzleDef | null;
 }
 
-export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
+export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
-  const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const [puzzle, setPuzzle] = useState<PuzzleDef | null>(initialPuzzle);
   const { markInProgress, markCompleted: recordCompleted, getStatus } = usePuzzleProgress("chess-solitaire");
-  // Track puzzle progress
-  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
+  useEffect(() => { if (puzzle) markInProgress(puzzle.id); }, [puzzle?.id]);
 
-  const [pieces, setPieces] = useState<SolitairePiece[]>(() => makePieces(puzzle.pieces));
+  const [pieces, setPieces] = useState<SolitairePiece[]>(() => initialPuzzle ? makePieces(initialPuzzle.pieces) : []);
   const [selected, setSelected] = useState<SolitairePiece | null>(null);
   const [captures, setCaptures] = useState<SolitairePiece[]>([]);
   const [history, setHistory] = useState<MoveRecord[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
-  useEffect(() => { if (status === "solved") recordCompleted(puzzle.id); }, [status, puzzle.id]);
+  useEffect(() => { if (status === "solved" && puzzle) recordCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [lastMove, setLastMove] = useState<{ from: { row: number; col: number }; to: { row: number; col: number } } | null>(null);
   const [flash, setFlash] = useState<{ row: number; col: number } | null>(null); // capture flash
   const [hintId, setHintId] = useState<string | null>(null);
@@ -66,14 +65,14 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
   });
   const [undoCount, setUndoCount] = useState(0);
 
-  const { submitScore } = useGameSession("chess-solitaire", puzzle.id);
+  const { submitScore } = useGameSession("chess-solitaire", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
-  const resetPuzzle = useCallback((p: PuzzleDef = puzzle) => {
+  const resetPuzzle = useCallback((p: PuzzleDef) => {
     setPieces(makePieces(p.pieces));
     setSelected(null);
     setCaptures([]);
@@ -85,7 +84,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
     setUndoCount(0);
     setEarnedPoints(null);
     resetGame();
-  }, [puzzle, resetGame]);
+  }, [resetGame]);
 
   function doCapture(attacker: SolitairePiece, target: SolitairePiece) {
     const before = pieces;
@@ -105,10 +104,10 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
     if (next.length === 1) {
       setPieces(next);
       setStatus("solved");
-      const pts = calcPoints(puzzle.difficulty, pieces.length, undoCount);
-      const updated = markCompleted(puzzle.id, pts);
+      const pts = calcPoints(puzzle!.difficulty, pieces.length, undoCount);
+      const updated = markCompleted(puzzle!.id, pts);
       setEarnedPoints(pts);
-      saveScore({ puzzleId: `chess-solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+      saveScore({ puzzleId: `chess-solitaire-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
       submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
       // markComplete();
       setCompleted(updated);
@@ -216,6 +215,39 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
     captures.forEach((c) => squareStyles.push({ row: c.row, col: c.col, bg: light(c.row, c.col) ? CAP_SQ : CAP_DARK, ring: true }));
   }
 
+  if (!puzzle) {
+    return (
+      <div>
+        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+          <div>
+            <BoardOverlay>
+              <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
+            </BoardOverlay>
+          </div>
+          <div style={{ maxWidth: 260 }}>
+            <div className="mb-3">
+              <PuzzleSelectDropdown gameId="chess-solitaire" currentId={-1} getStatus={getStatus}
+                onPuzzleLoaded={(data) => {
+                  const p = data as unknown as PuzzleDef;
+                  setPuzzle(p);
+                  resetPuzzle(p);
+                }} />
+            </div>
+            <div className="small">
+              <div className="fw-semibold mb-1">Rules</div>
+              <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
+                <li>Click a piece to highlight valid captures.</li>
+                <li>Or drag a piece to capture.</li>
+                <li>Every move must be a capture.</li>
+                <li>Leave only one piece to win.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const remaining = pieces.length;
   const totalMoves = history.length;
   const potentialPts = calcPoints(puzzle.difficulty, puzzle.pieces.length, undoCount);
@@ -268,7 +300,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
               {status === "playing" && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={hint}>Hint</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => resetPuzzle()}>Restart</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => puzzle && resetPuzzle(puzzle)}>Restart</button>
             </div>
           </div>
         </div>
@@ -365,7 +397,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
               <div className="badge text-bg-warning rounded-0 fs-6 mb-3">+{earnedPoints} pts</div>
             )}
             <div className="d-flex gap-2 justify-content-center">
-              <button className="btn btn-outline-secondary rounded-0" onClick={() => resetPuzzle()}>Play again</button>
+              <button className="btn btn-outline-secondary rounded-0" onClick={() => puzzle && resetPuzzle(puzzle)}>Play again</button>
             </div>
           </div>
         </div>
@@ -390,7 +422,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: Props) {
               <button className="btn btn-outline-secondary rounded-0" onClick={() => { setStatus("playing"); undo(); }}>
                 Undo last move
               </button>
-              <button className="btn btn-danger rounded-0" onClick={() => resetPuzzle()}>Restart</button>
+              <button className="btn btn-danger rounded-0" onClick={() => puzzle && resetPuzzle(puzzle)}>Restart</button>
             </div>
           </div>
         </div>

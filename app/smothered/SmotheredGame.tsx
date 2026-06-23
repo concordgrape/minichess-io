@@ -64,20 +64,19 @@ function writeSaved(state: SavedState) {
   try { localStorage.setItem(storageKey(state.puzzleId), JSON.stringify(state)); } catch { /* ignore */ }
 }
 
-export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
+export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle?: Puzzle | null }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const [puzzle, setPuzzle] = useState<Puzzle | null>(initialPuzzle);
   const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("smothered");
-  // Track puzzle progress
-  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
+  useEffect(() => { if (puzzle) markInProgress(puzzle.id); }, [puzzle?.id]);
 
-  const { submitScore } = useGameSession("smothered", puzzle.id);
+  const { submitScore } = useGameSession("smothered", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
-  const mateIn = MATE_BY_DIFF[puzzle.difficulty];
+  const mateIn = puzzle ? MATE_BY_DIFF[puzzle.difficulty] : 1;
 
-  const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
+  const saved = typeof window !== "undefined" && initialPuzzle ? loadSaved(initialPuzzle.id) : null;
 
-  const [board, setBoard] = useState<BoardType>(() => saved?.board ?? puzzle.board.map((r) => [...r]));
+  const [board, setBoard] = useState<BoardType>(() => saved?.board ?? (initialPuzzle ? initialPuzzle.board.map((r) => [...r]) : []));
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalSquares, setLegalSquares] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>(() => saved?.status ?? "playing");
@@ -95,7 +94,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     if (kingThinking) return;
-    writeSaved({ puzzleId: puzzle.id, board, history, status, movesLeft, undoCount });
+    if (puzzle) writeSaved({ puzzleId: puzzle.id, board, history, status, movesLeft, undoCount });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [board, status, movesLeft, undoCount]);
 
@@ -113,7 +112,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
     resetGame();
   }, [resetGame]);
 
-  const reset = useCallback(() => resetToFresh(puzzle), [puzzle, resetToFresh]);
+  const reset = useCallback(() => { if (puzzle) resetToFresh(puzzle); }, [puzzle, resetToFresh]);
 
   // Black king responds after a short delay
   useEffect(() => {
@@ -132,8 +131,8 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
         // Check terminal after black moves
         if (isCheckmate(next)) {
           if (knightDeliversMate(next)) {
-            const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
-            saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+            const pts = smotheredPoints(mateIn, puzzle!.difficulty, undoCount);
+            saveScore({ puzzleId: `smothered-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
             setEarnedPoints(pts);
             submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
             setStatus("won");
@@ -175,8 +174,8 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
     // Immediate terminal check (before black moves)
     if (isCheckmate(next)) {
       if (knightDeliversMate(next)) {
-        const pts = smotheredPoints(mateIn, puzzle.difficulty, undoCount);
-        saveScore({ puzzleId: `smothered-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+        const pts = smotheredPoints(mateIn, puzzle!.difficulty, undoCount);
+        saveScore({ puzzleId: `smothered-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
         setEarnedPoints(pts);
         submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
         setBoard(next); setStatus("won");
@@ -233,6 +232,39 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
     setMovesLeft((m) => m + 1); setUndoCount((n) => n + 1);
     setSelected(null); setLegalSquares([]);
     setStatus("playing"); setLastMove(null); setPendingBlack(null); setWrongPieceFlash(false);
+  }
+
+  if (!puzzle) {
+    return (
+      <div>
+        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+          <div>
+            <BoardOverlay>
+              <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
+            </BoardOverlay>
+          </div>
+          <div style={{ maxWidth: 240 }}>
+            <div className="mb-3">
+              <PuzzleSelectDropdown gameId="smothered" currentId={-1} getStatus={getStatus}
+                onPuzzleLoaded={(data) => {
+                  const p = data as unknown as Puzzle;
+                  try { localStorage.removeItem(storageKey(p.id)); } catch {}
+                  setPuzzle(p);
+                  resetToFresh(p);
+                }} />
+            </div>
+            <div className="small">
+              <div className="fw-semibold mb-1">Rules</div>
+              <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
+                <li>You play White.</li>
+                <li>The black King's own pieces trap it.</li>
+                <li>Stalemate counts as a loss.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const king = findKing(board);
@@ -382,7 +414,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
           </div>
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
-              Mate in {mateIn}
+              {puzzle.difficulty}
             </span>
             <strong>Puzzle #{puzzle.id}</strong>
           </div>

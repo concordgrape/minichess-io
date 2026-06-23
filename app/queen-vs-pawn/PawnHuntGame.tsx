@@ -30,26 +30,25 @@ function rowColToSq(row: number, col: number): Square {
   return `${String.fromCharCode(97 + col)}${8 - row}` as Square;
 }
 
-export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puzzle: PawnPuzzle; winIn?: number }) {
-  const [puzzle, setPuzzle] = useState(initialPuzzle);
+export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }: { puzzle?: PawnPuzzle | null; winIn?: number }) {
+  const [puzzle, setPuzzle] = useState<PawnPuzzle | null>(initialPuzzle);
   const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("queen-vs-pawn");
-  // Track puzzle progress
-  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
+  useEffect(() => { if (puzzle) markInProgress(puzzle.id); }, [puzzle?.id]);
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
-  const [chess] = useState(() => new Chess(puzzle.fen));
-  const [board, setBoard] = useState(() => chess.board());
+  const [chess] = useState(() => new Chess(initialPuzzle?.fen ?? "8/8/8/8/8/8/8/8 w - - 0 1"));
+  const [board, setBoard] = useState(() => initialPuzzle ? chess.board() : []);
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
-  useEffect(() => { if (status === "won") markCompleted(puzzle.id); }, [status, puzzle.id]);
+  useEffect(() => { if (status === "won" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [movesLeft, setMovesLeft] = useState(winIn);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [defending, setDefending] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
 
-  const { submitScore } = useGameSession("queen-vs-pawn", puzzle.id);
+  const { submitScore } = useGameSession("queen-vs-pawn", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const [defenseTrigger, setDefenseTrigger] = useState(0);
@@ -57,7 +56,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
 
   const refresh = useCallback(() => setBoard([...chess.board()]), [chess]);
 
-  const load = useCallback((p: PawnPuzzle = puzzle) => {
+  const load = useCallback((p: PawnPuzzle) => {
     chess.load(p.fen);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
@@ -66,11 +65,11 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
     resetGame();
-  }, [chess, puzzle, winIn, resetGame]);
+  }, [chess, winIn, resetGame]);
 
   function award() {
-    const pts = pawnPoints(winIn, puzzle.difficulty, undoCount);
-    saveScore({ puzzleId: `queen-vs-pawn-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+    const pts = pawnPoints(winIn, puzzle!.difficulty, undoCount);
+    saveScore({ puzzleId: `queen-vs-pawn-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("won");
     submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
@@ -142,6 +141,38 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
     setStatus("playing"); setLastMove(null); setEarnedPoints(null);
     pendingDefense.current = false;
     refresh();
+  }
+
+  if (!puzzle) {
+    return (
+      <div>
+        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+          <div>
+            <BoardOverlay>
+              <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
+            </BoardOverlay>
+          </div>
+          <div style={{ maxWidth: 240 }}>
+            <div className="mb-3">
+              <PuzzleSelectDropdown gameId="queen-vs-pawn" currentId={-1} getStatus={getStatus}
+                onPuzzleLoaded={(data) => {
+                  const p = data as unknown as PawnPuzzle;
+                  setPuzzle(p);
+                  load(p);
+                }} />
+            </div>
+            <div className="small">
+              <div className="fw-semibold mb-1">Rules</div>
+              <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
+                <li>You play White (king and queen).</li>
+                <li>Black races to promote — if it queens, you lose.</li>
+                <li>Use checks to win a tempo and round up the pawn.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const canInteract = status === "playing" && !defending;
@@ -217,7 +248,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
               {history.length > 0 && status !== "won" && !defending && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load()}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load(puzzle)}>Reset</button>
             </div>
           </div>
         </div>
@@ -237,7 +268,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle, winIn = 2 }: { puz
           </div>
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
-              Win in {winIn}
+              {puzzle.difficulty}
             </span>
             <strong>Puzzle #{puzzle.id}</strong>
           </div>

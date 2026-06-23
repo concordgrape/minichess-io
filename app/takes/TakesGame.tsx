@@ -25,22 +25,21 @@ function pieceImage(type: string) {
 
 interface MoveRecord { attacker: Piece; target: Piece; piecesBefore: Piece[]; }
 
-export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
+export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: Puzzle | null }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const [puzzle, setPuzzle] = useState<Puzzle | null>(initialPuzzle);
   const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("takes");
-  // Track puzzle progress
-  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
+  useEffect(() => { if (puzzle) markInProgress(puzzle.id); }, [puzzle?.id]);
 
-  const { submitScore } = useGameSession("takes", puzzle.id);
+  const { submitScore } = useGameSession("takes", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
 
-  const [pieces, setPieces] = useState<Piece[]>(() => puzzle.pieces.map((p) => ({ ...p })));
+  const [pieces, setPieces] = useState<Piece[]>(() => initialPuzzle ? initialPuzzle.pieces.map((p) => ({ ...p })) : []);
   const [selected, setSelected] = useState<Piece | null>(null);
   const [targets, setTargets] = useState<Piece[]>([]);
   const [history, setHistory] = useState<MoveRecord[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
-  useEffect(() => { if (status === "won") markCompleted(puzzle.id); }, [status, puzzle.id]);
+  useEffect(() => { if (status === "won" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
 
@@ -52,7 +51,7 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
     resetGame();
   }, [resetGame]);
 
-  const reset = useCallback(() => resetToFresh(puzzle), [puzzle, resetToFresh]);
+  const reset = useCallback(() => { if (puzzle) resetToFresh(puzzle); }, [puzzle, resetToFresh]);
 
   function selectPiece(piece: Piece) {
     if (status !== "playing") return;
@@ -70,8 +69,8 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
     if (nonKing.length === 0) {
       setPieces(next); setSelected(null); setTargets([]);
       setStatus("won");
-      const pts = takesPoints(puzzle.difficulty, undoCount);
-      saveScore({ puzzleId: `takes-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+      const pts = takesPoints(puzzle!.difficulty, undoCount);
+      saveScore({ puzzleId: `takes-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
       submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
       return;
@@ -109,6 +108,36 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
     setHistory((h) => h.slice(0, -1));
     setSelected(null); setTargets([]);
     setStatus("playing"); setUndoCount((n) => n + 1);
+  }
+
+  if (!puzzle) {
+    return (
+      <div>
+        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+          <div>
+            <BoardOverlay>
+              <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
+            </BoardOverlay>
+          </div>
+          <div style={{ maxWidth: 260 }}>
+            <div className="mb-3">
+              <PuzzleSelectDropdown gameId="takes" currentId={-1} getStatus={getStatus}
+                onPuzzleLoaded={(data) => { const p = data as unknown as Puzzle; setPuzzle(p); resetToFresh(p); }} />
+            </div>
+            <div className="mb-3 small">
+              <div className="fw-semibold mb-1">Rules</div>
+              <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
+                <li>Every move must be a capture.</li>
+                <li>The King cannot be captured.</li>
+                <li>Sliding pieces are blocked by other pieces.</li>
+                <li>Pawns capture diagonally in all 4 directions.</li>
+                <li>Win by leaving only the King.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const nonKingCount = pieces.filter((p) => p.type !== "k").length;
@@ -184,7 +213,7 @@ export default function TakesGame({ puzzle: initialPuzzle }: { puzzle: Puzzle })
             />
           </div>
           <div className="mb-3">
-            <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
+            <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>{puzzle.difficulty}</span>
             <strong>Puzzle #{puzzle.id}</strong>
           </div>
           <div className="mb-3 small">

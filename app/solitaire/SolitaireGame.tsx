@@ -63,19 +63,18 @@ function writeSaved(state: SavedState) {
   try { localStorage.setItem(storageKey(state.puzzleId), JSON.stringify(state)); } catch { /* ignore */ }
 }
 
-export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzle }) {
+export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle?: Puzzle | null }) {
   const { ref: boardRef, size: sq } = useResponsiveSquare(88, 4);
-  const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const [puzzle, setPuzzle] = useState<Puzzle | null>(initialPuzzle);
   const { markInProgress, markCompleted, getStatus } = usePuzzleProgress("solitaire");
-  // Track puzzle progress
-  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
+  useEffect(() => { if (puzzle) markInProgress(puzzle.id); }, [puzzle?.id]);
 
-  const saved = typeof window !== "undefined" ? loadSaved(puzzle.id) : null;
+  const saved = typeof window !== "undefined" && initialPuzzle ? loadSaved(initialPuzzle.id) : null;
 
-  const [board, setBoard] = useState<BoardType>(() => saved?.board ?? puzzle.board.map((r) => [...r]));
-  const [pos, setPos] = useState<Square>(() => saved?.pos ?? puzzle.start);
+  const [board, setBoard] = useState<BoardType>(() => saved?.board ?? (initialPuzzle ? initialPuzzle.board.map((r) => [...r]) : []));
+  const [pos, setPos] = useState<Square>(() => saved?.pos ?? (initialPuzzle?.start ?? { row: 0, col: 0 }));
   const [legalCaptures, setLegalCaptures] = useState<Square[]>(() =>
-    (() => { const b = saved?.board ?? puzzle.board.map((r) => [...r]); const p = saved?.pos ?? puzzle.start; return getLegalCaptures(b, p.row, p.col); })()
+    initialPuzzle ? (() => { const b = saved?.board ?? initialPuzzle.board.map((r) => [...r]); const p = saved?.pos ?? initialPuzzle.start; return getLegalCaptures(b, p.row, p.col); })() : []
   );
   const [status, setStatus] = useState<GameStatus>(() => saved?.status ?? "playing");
   const [history, setHistory] = useState<HistoryEntry[]>(() => saved?.history ?? []);
@@ -84,14 +83,14 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
   const [justTransformed, setJustTransformed] = useState(false);
   const isFirstRender = useRef(true);
 
-  const { submitScore } = useGameSession("solitaire", puzzle.id);
+  const { submitScore } = useGameSession("solitaire", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
   const attemptCountRef = useRef(1);
 
   // Persist on state changes
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
-    writeSaved({ puzzleId: puzzle.id, board, pos, history, status, undoCount });
+    if (puzzle) writeSaved({ puzzleId: puzzle.id, board, pos, history, status, undoCount });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [board, status, undoCount]);
 
@@ -110,7 +109,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
     attemptCountRef.current += 1;
   }, []);
 
-  const reset = useCallback(() => resetToFresh(puzzle), [puzzle, resetToFresh]);
+  const reset = useCallback(() => { if (puzzle) resetToFresh(puzzle); }, [puzzle, resetToFresh]);
 
   function doCapture(to: Square) {
     if (status !== "playing") return;
@@ -129,8 +128,8 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
       setPos(to);
       setLegalCaptures([]);
       setStatus("won");
-      const pts = solitairePoints(puzzle.difficulty, pieceCount(puzzle.board.map((r) => [...r])), undoCount);
-      saveScore({ puzzleId: `solitaire-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+      const pts = solitairePoints(puzzle!.difficulty, pieceCount(puzzle!.board.map((r) => [...r])), undoCount);
+      saveScore({ puzzleId: `solitaire-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
       submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
       // markComplete();
@@ -172,6 +171,41 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
     setHistory((h) => h.slice(0, -1));
     setStatus("playing");
     setUndoCount((n) => n + 1);
+  }
+
+  if (!puzzle) {
+    return (
+      <div>
+        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+          <div>
+            <BoardOverlay>
+              <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
+            </BoardOverlay>
+          </div>
+          <div style={{ maxWidth: 260 }}>
+            <div className="mb-3">
+              <PuzzleSelectDropdown gameId="solitaire" currentId={-1} getStatus={getStatus}
+                onPuzzleLoaded={(data) => {
+                  const p = data as unknown as Puzzle;
+                  try { localStorage.removeItem(storageKey(p.id)); } catch {}
+                  setPuzzle(p);
+                  resetToFresh(p);
+                }} />
+            </div>
+            <div className="small">
+              <div className="fw-semibold mb-1">Rules</div>
+              <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
+                <li>You control <strong>one piece</strong> (yellow square).</li>
+                <li>Capture a piece to <strong>transform into it</strong>.</li>
+                <li>Clear every piece to win.</li>
+                <li>If you have no captures, you lose.</li>
+                <li>The King is just another piece to capture.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const totalPieces = pieceCount(puzzle.board.map((r) => [...r]));
@@ -297,7 +331,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle }: { puzzle: Puzzl
             />
           </div>
           <div className="mb-2">
-            <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0 me-2`}>{puzzle.difficulty}</span>
+            <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>{puzzle.difficulty}</span>
             <strong>Puzzle #{puzzle.id}</strong>
           </div>
 

@@ -30,31 +30,30 @@ function rowColToSq(row: number, col: number): Square {
 }
 
 export default function MateGame({
-  puzzle: initialPuzzle,
+  puzzle: initialPuzzle = null,
   mateIn,
   slug,
 }: {
-  puzzle: MatePuzzle;
+  puzzle?: MatePuzzle | null;
   mateIn: number;
   /** Route slug used to namespace saved scores (e.g. "mate-in-2"). */
   slug: string;
 }) {
-  const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const [puzzle, setPuzzle] = useState<MatePuzzle | null>(initialPuzzle);
   const { markInProgress, markCompleted, getStatus } = usePuzzleProgress(slug);
-  // Track puzzle progress
-  useEffect(() => { markInProgress(puzzle.id); }, [puzzle.id]);
+  useEffect(() => { if (puzzle) markInProgress(puzzle.id); }, [puzzle?.id]);
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
-  const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle.id);
+  const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
 
-  const [chess] = useState(() => new Chess(puzzle.fen));
-  const [board, setBoard] = useState(() => chess.board());
+  const [chess] = useState(() => new Chess(initialPuzzle?.fen ?? "8/8/8/8/8/8/8/8 w - - 0 1"));
+  const [board, setBoard] = useState(() => initialPuzzle ? chess.board() : []);
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
-  useEffect(() => { if (status === "solved") markCompleted(puzzle.id); }, [status, puzzle.id]);
+  useEffect(() => { if (status === "solved" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [movesLeft, setMovesLeft] = useState(mateIn);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [defending, setDefending] = useState(false);
@@ -67,7 +66,7 @@ export default function MateGame({
     setBoard([...chess.board()]);
   }, [chess]);
 
-  const load = useCallback((p: MatePuzzle = puzzle) => {
+  const load = useCallback((p: MatePuzzle) => {
     chess.load(p.fen);
     setBoard([...chess.board()]);
     setSelected(null); setLegalMoves([]);
@@ -76,11 +75,11 @@ export default function MateGame({
     setUndoCount(0); setEarnedPoints(null);
     pendingDefense.current = false;
     resetGame();
-  }, [chess, puzzle, mateIn, resetGame]);
+  }, [chess, mateIn, resetGame]);
 
   function award() {
-    const pts = matePoints(mateIn, puzzle.difficulty, undoCount);
-    saveScore({ puzzleId: `${slug}-${puzzle.id}`, points: pts, earnedAt: Date.now() });
+    const pts = matePoints(mateIn, puzzle!.difficulty, undoCount);
+    saveScore({ puzzleId: `${slug}-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("solved");
     submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
@@ -158,6 +157,35 @@ export default function MateGame({
   }
 
   const inCheck = chess.inCheck();
+  if (!puzzle) {
+    return (
+      <div>
+        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+          <div>
+            <BoardOverlay>
+              <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
+            </BoardOverlay>
+          </div>
+          <div style={{ maxWidth: 240 }}>
+            <div className="mb-3">
+              <PuzzleSelectDropdown gameId={slug} currentId={-1} getStatus={getStatus}
+                onPuzzleLoaded={(data) => { const p = data as unknown as MatePuzzle; setPuzzle(p); load(p); }} />
+            </div>
+            <div className="small">
+              <div className="fw-semibold mb-1">Rules</div>
+              <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
+                <li>You play White.</li>
+                <li>Deliver checkmate in {mateIn} move{mateIn > 1 ? "s" : ""}.</li>
+                <li>Black always plays its best defense.</li>
+                <li>Stalemate counts as a loss.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const canInteract = status === "playing" && !defending;
   const history = chess.history();
   const moveNum = mateIn - movesLeft + 1;
@@ -239,7 +267,7 @@ export default function MateGame({
               {history.length > 0 && status !== "solved" && !defending && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undo}>Undo</button>
               )}
-              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load()}>Reset</button>
+              <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load(puzzle)}>Reset</button>
             </div>
           </div>
         </div>
@@ -259,7 +287,7 @@ export default function MateGame({
           </div>
           <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>
-              Mate in {mateIn}
+              {puzzle.difficulty}
             </span>
             <strong>Puzzle #{puzzle.id}</strong>
           </div>
