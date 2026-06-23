@@ -46,7 +46,7 @@ export default async function Home() {
                     alt={g.title}
                     fill
                     sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
-                    style={{ objectFit: "cover" }}
+                    style={{ objectFit: "contain" }}
                   />
                 </div>
                 <div className="card-body">
