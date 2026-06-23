@@ -48,7 +48,7 @@ export default function MateGame({
   const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
 
-  const [chess] = useState(() => new Chess(initialPuzzle?.fen ?? "8/8/8/8/8/8/8/8 w - - 0 1"));
+  const [chess] = useState(() => new Chess(initialPuzzle?.fen ?? "4k3/8/8/8/8/8/8/4K3 w - - 0 1"));
   const [board, setBoard] = useState(() => initialPuzzle ? chess.board() : []);
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);

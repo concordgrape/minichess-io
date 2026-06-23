@@ -37,7 +37,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
   const player: Color = "w";
   const { ref: boardRef, size: sq } = useResponsiveSquare(64, 8);
 
-  const [chess] = useState(() => new Chess(initialPuzzle?.fen ?? "8/8/8/8/8/8/8/8 w - - 0 1"));
+  const [chess] = useState(() => new Chess(initialPuzzle?.fen ?? "4k3/8/8/8/8/8/8/4K3 w - - 0 1"));
   const [board, setBoard] = useState(() => initialPuzzle ? chess.board() : []);
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
