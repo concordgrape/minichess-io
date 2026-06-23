@@ -1,37 +1,28 @@
 /**
  * backfill.ts
  *
- * Generates puzzles for a specific game and writes them to Firestore.
- * Does NOT push JSON files to GitHub — Firestore only.
- *
- * Puzzles are produced by the algorithmic generators in generate.ts (the same
- * ones the daily Cloud Function uses), so every puzzle is solvable, difficulty
- * is randomised, and positions never duplicate.
- *
- * IDs are date-based (YYYYMMDD). For a fresh collection, game #count lands on
- * today and the rest fill the preceding days; if puzzles already exist, the new
- * batch is inserted immediately before the oldest one. Existing docs are skipped.
+ * Generates puzzles for one or all games and writes them to Firestore.
  *
  * Usage (from the functions/ directory):
  *
  *   npx ts-node backfill.ts --game=takes --count=30
+ *   npx ts-node backfill.ts --all --count=10        ← parallel worker threads
  *   npx ts-node backfill.ts --game=mate-in-2 --count=60 --dry-run
+ *
+ * --all spawns one worker thread per game so all 12 run in parallel.
+ * The algorithm is identical to the single-game path — no shortcuts.
  *
  * Available games:
  *   takes, solitaire, check, smothered, chess-solitaire,
  *   queen-vs-pawn, king-and-pawn, rook-endgame, zugzwang,
  *   mate-in-1, mate-in-2, mate-in-3
- *
- * Requires a service account either via FIREBASE_SERVICE_ACCOUNT_KEY (JSON
- * string, e.g. in .env.local) or GOOGLE_APPLICATION_CREDENTIALS (keyfile path).
  */
 
-import * as admin from "firebase-admin";
-import { Timestamp } from "firebase-admin/firestore";
+import { isMainThread, parentPort, workerData, Worker } from "worker_threads";
 import * as path from "path";
 import * as fs from "fs";
 
-// Load .env.local if present (for local dev without a keyfile)
+// Load .env.local before any other imports so credentials are available.
 const envPath = path.resolve(__dirname, "../.env.local");
 if (fs.existsSync(envPath)) {
   for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
@@ -42,111 +33,90 @@ if (fs.existsSync(envPath)) {
   }
 }
 
-import {
-  GAME_IDS, isGameId, randomDifficulty, generatePuzzle,
-  puzzleSignature, serializeForFirestore, type GameId,
-} from "./generate";
+// ─── Worker entry point ───────────────────────────────────────────────────────
+// When this file is loaded as a worker thread, workerData contains { game, count, dryRun }.
+// The worker runs the full generation pipeline and posts log lines back to the main thread.
 
-// ─── Config ───────────────────────────────────────────────────────────────────
-
-const TIMEZONE = "America/New_York";
-
-// ─── Firebase init ────────────────────────────────────────────────────────────
-
-function getCredential() {
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    return admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY));
-  }
-  const keyPath =
-    process.env.GOOGLE_APPLICATION_CREDENTIALS ||
-    path.resolve(__dirname, "./serviceAccountKey.json");
-  return admin.credential.cert(keyPath);
-}
-
-admin.initializeApp({ credential: getCredential() });
-const db = admin.firestore();
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function parseArgs(): { game: string; count: number; dryRun: boolean } {
-  const args = process.argv.slice(2);
-  const get = (flag: string) =>
-    args.find((a) => a.startsWith(`--${flag}=`))?.split("=")[1];
-
-  const game = get("game") ?? "";
-  const count = parseInt(get("count") ?? "30", 10);
-  const dryRun = args.includes("--dry-run");
-  return { game, count, dryRun };
-}
-
-/** Generate a puzzle that is not a duplicate of any in `seen` (best effort). */
-function generateUnique(game: GameId, seen: Set<string>) {
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const result = generatePuzzle(game, randomDifficulty());
-    const sig = puzzleSignature(game, result.data);
-    if (!seen.has(sig)) { seen.add(sig); return result; }
-  }
-  // Give up on uniqueness after many tries — still a valid, solvable puzzle.
-  return generatePuzzle(game, randomDifficulty());
-}
-
-/** Advance a Date by N days (UTC). */
-function addDays(date: Date, days: number): Date {
-  const d = new Date(date);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d;
-}
-
-/** Convert a JS Date to YYYYMMDD integer in EST. */
-function dateToId(date: Date): number {
-  const estStr = date.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-  return parseInt(estStr.replace(/-/g, ""), 10);
-}
-
-/** Midnight EST today as UTC. */
-function todayEST(): Date {
-  return new Date(
-    new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE }) + "T05:00:00.000Z"
-  );
-}
-
-// ─── Main ─────────────────────────────────────────────────────────────────────
-
-async function main() {
-  const { game, count, dryRun } = parseArgs();
-
-  if (!game || !isGameId(game)) {
-    console.error(`\nError: --game must be one of:\n  ${GAME_IDS.join(", ")}\n`);
+if (!isMainThread) {
+  runWorker().catch((err) => {
+    parentPort?.postMessage({ type: "error", text: String(err) });
     process.exit(1);
-  }
-  if (isNaN(count) || count < 1) {
-    console.error("Error: --count must be a positive integer");
-    process.exit(1);
+  });
+}
+
+async function runWorker() {
+  const { game, count, dryRun } = workerData as { game: string; count: number; dryRun: boolean };
+
+  // Each worker needs its own Firebase admin instance.
+  const admin = await import("firebase-admin");
+  const { Timestamp } = await import("firebase-admin/firestore");
+
+  const generate = await import("./generate");
+  const { isGameId, randomDifficulty, generatePuzzle, puzzleSignature, serializeForFirestore } = generate;
+  type GameId = import("./generate").GameId;
+
+  function log(text: string) {
+    parentPort?.postMessage({ type: "log", game, text });
   }
 
+  if (!isGameId(game)) {
+    log(`Unknown game: ${game}`);
+    return;
+  }
+
+  function getCredential() {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      return admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY));
+    }
+    const keyPath =
+      process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+      path.resolve(__dirname, "./serviceAccountKey.json");
+    return admin.credential.cert(keyPath as string);
+  }
+
+  // Each worker gets a unique app name to avoid "already initialized" errors.
+  const appName = `worker-${game}`;
+  const app = admin.initializeApp({ credential: getCredential() }, appName);
+  const db = admin.firestore(app);
+
+  const TIMEZONE = "America/New_York";
   const col = db.collection("games").doc(game).collection("puzzles");
 
-  console.log(`\nMinichess Backfill`);
-  console.log(`  Game    : ${game}`);
-  console.log(`  Count   : ${count}`);
-  console.log(`  Dry run : ${dryRun}\n`);
+  function addDays(date: Date, days: number): Date {
+    const d = new Date(date);
+    d.setUTCDate(d.getUTCDate() + days);
+    return d;
+  }
 
-  // Find the oldest existing puzzle so we can extend backwards from it.
+  function dateToId(date: Date): number {
+    const estStr = date.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+    return parseInt(estStr.replace(/-/g, ""), 10);
+  }
+
+  function todayEST(): Date {
+    return new Date(
+      new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE }) + "T05:00:00.000Z"
+    );
+  }
+
+  function generateUnique(gid: GameId, seen: Set<string>) {
+    for (let attempt = 0; attempt < 50; attempt++) {
+      const result = generatePuzzle(gid, randomDifficulty());
+      const sig = puzzleSignature(gid, result.data);
+      if (!seen.has(sig)) { seen.add(sig); return result; }
+    }
+    return generatePuzzle(gid, randomDifficulty());
+  }
+
   const existingSnap = await col.orderBy("releaseDate", "asc").limit(1).get();
   let oldest: Date;
   if (!existingSnap.empty) {
     const oldestTs = existingSnap.docs[0].data().releaseDate;
     const oldestDate: Date = oldestTs?.toDate?.() ?? new Date(oldestTs);
-    // Anchor the new batch so game #count lands the day before the oldest existing game.
     oldest = addDays(oldestDate, -count);
-    console.log(`  Existing oldest : ${oldestDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}`);
-    console.log(`  Inserting before it, from ${oldest.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}\n`);
   } else {
-    // No existing games — game #count = today, game #1 = (count-1) days ago.
     const today = todayEST();
     oldest = addDays(today, -(count - 1));
-    console.log(`  Game #1  : ${oldest.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}`);
-    console.log(`  Game #${count} : ${today.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}\n`);
   }
 
   let created = 0;
@@ -159,18 +129,17 @@ async function main() {
     const id = dateToId(releaseDate);
     const docRef = col.doc(String(id));
 
-    // Skip if already exists.
     if (!dryRun) {
       const existing = await docRef.get();
       if (existing.exists) {
-        console.log(`  ⏭  ${id} — already exists, skipping`);
+        log(`  ⏭  ${id} — already exists`);
         skipped++;
         continue;
       }
     }
 
     try {
-      const { difficulty, data } = generateUnique(game, seen);
+      const { difficulty, data } = generateUnique(game as GameId, seen);
 
       if (!dryRun) {
         await docRef.set({
@@ -186,11 +155,159 @@ async function main() {
       }
 
       const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-      console.log(`  ✅ #${i + 1} ${dateStr} (id ${id}) — ${difficulty}${dryRun ? " [dry run]" : ""}`);
+      log(`  ✅ ${dateStr} (${id}) — ${difficulty}${dryRun ? " [dry]" : ""}`);
       created++;
     } catch (err) {
       const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-      console.error(`  ❌ #${i + 1} ${dateStr} (id ${id}) — failed:`, err);
+      log(`  ❌ ${dateStr} (${id}) — ${err}`);
+      failed++;
+    }
+  }
+
+  parentPort?.postMessage({ type: "done", game, created, skipped, failed });
+}
+
+// ─── Main thread ──────────────────────────────────────────────────────────────
+
+if (isMainThread) {
+  main().catch((err) => {
+    console.error("\nFatal:", err);
+    process.exit(1);
+  });
+}
+
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const get = (flag: string) =>
+    args.find((a) => a.startsWith(`--${flag}=`))?.split("=")[1];
+  return {
+    game: get("game") ?? "",
+    count: parseInt(get("count") ?? "30", 10),
+    dryRun: args.includes("--dry-run"),
+    all: args.includes("--all"),
+  };
+}
+
+async function main() {
+  const { game, count, dryRun, all } = parseArgs();
+
+  if (all) {
+    await runAllParallel(count, dryRun);
+    return;
+  }
+
+  // Single-game path (original behaviour).
+  const admin = await import("firebase-admin");
+  const { Timestamp } = await import("firebase-admin/firestore");
+  const generate2 = await import("./generate");
+  const { GAME_IDS, isGameId, randomDifficulty, generatePuzzle, puzzleSignature, serializeForFirestore } = generate2;
+  type GameId = import("./generate").GameId;
+
+  if (!game || !isGameId(game)) {
+    console.error(`\nError: --game must be one of:\n  ${GAME_IDS.join(", ")}\n`);
+    console.error(`Or pass --all to generate all games in parallel.\n`);
+    process.exit(1);
+  }
+  if (isNaN(count) || count < 1) {
+    console.error("Error: --count must be a positive integer");
+    process.exit(1);
+  }
+
+  function getCredential() {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      return admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY));
+    }
+    const keyPath =
+      process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+      path.resolve(__dirname, "./serviceAccountKey.json");
+    return admin.credential.cert(keyPath as string);
+  }
+
+  admin.initializeApp({ credential: getCredential() });
+  const db = admin.firestore();
+
+  const TIMEZONE = "America/New_York";
+  const col = db.collection("games").doc(game).collection("puzzles");
+
+  console.log(`\nMinichess Backfill`);
+  console.log(`  Game    : ${game}`);
+  console.log(`  Count   : ${count}`);
+  console.log(`  Dry run : ${dryRun}\n`);
+
+  function addDays(date: Date, days: number): Date {
+    const d = new Date(date);
+    d.setUTCDate(d.getUTCDate() + days);
+    return d;
+  }
+
+  function dateToId(date: Date): number {
+    const estStr = date.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+    return parseInt(estStr.replace(/-/g, ""), 10);
+  }
+
+  function todayEST(): Date {
+    return new Date(
+      new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE }) + "T05:00:00.000Z"
+    );
+  }
+
+  function generateUnique(gid: GameId, seen: Set<string>) {
+    for (let attempt = 0; attempt < 50; attempt++) {
+      const result = generatePuzzle(gid, randomDifficulty());
+      const sig = puzzleSignature(gid, result.data);
+      if (!seen.has(sig)) { seen.add(sig); return result; }
+    }
+    return generatePuzzle(gid, randomDifficulty());
+  }
+
+  const existingSnap = await col.orderBy("releaseDate", "asc").limit(1).get();
+  let oldest: Date;
+  if (!existingSnap.empty) {
+    const oldestTs = existingSnap.docs[0].data().releaseDate;
+    const oldestDate: Date = oldestTs?.toDate?.() ?? new Date(oldestTs);
+    oldest = addDays(oldestDate, -count);
+    console.log(`  Oldest existing : ${oldestDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}`);
+    console.log(`  Inserting before: ${oldest.toLocaleDateString("en-CA", { timeZone: TIMEZONE })}\n`);
+  } else {
+    const today = todayEST();
+    oldest = addDays(today, -(count - 1));
+  }
+
+  let created = 0, skipped = 0, failed = 0;
+  const seen = new Set<string>();
+
+  for (let i = 0; i < count; i++) {
+    const releaseDate = addDays(oldest, i);
+    const id = dateToId(releaseDate);
+    const docRef = col.doc(String(id));
+
+    if (!dryRun) {
+      const existing = await docRef.get();
+      if (existing.exists) {
+        console.log(`  ⏭  ${id} — already exists, skipping`);
+        skipped++;
+        continue;
+      }
+    }
+
+    try {
+      const { difficulty, data } = generateUnique(game as GameId, seen);
+      if (!dryRun) {
+        await docRef.set({
+          id, difficulty, gameType: game,
+          ...serializeForFirestore(data),
+          releaseDate: Timestamp.fromDate(releaseDate),
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          status: "scheduled",
+          autoGenerated: true,
+        });
+      }
+      const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+      console.log(`  ✅ #${i + 1} ${dateStr} (${id}) — ${difficulty}${dryRun ? " [dry]" : ""}`);
+      created++;
+    } catch (err) {
+      const dateStr = releaseDate.toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+      console.error(`  ❌ #${i + 1} ${dateStr} (${id}) — ${err}`);
       failed++;
     }
   }
@@ -199,7 +316,62 @@ async function main() {
   console.log(`Done — created: ${created} | skipped: ${skipped} | failed: ${failed}`);
 }
 
-main().catch((err) => {
-  console.error("\nFatal error:", err);
-  process.exit(1);
-});
+// ─── Parallel runner ──────────────────────────────────────────────────────────
+
+async function runAllParallel(count: number, dryRun: boolean) {
+  const { GAME_IDS } = await import("./generate");
+
+  console.log(`\nMinichess Parallel Backfill`);
+  console.log(`  Games   : all ${GAME_IDS.length}`);
+  console.log(`  Count   : ${count} per game`);
+  console.log(`  Dry run : ${dryRun}`);
+  console.log(`  Threads : ${GAME_IDS.length} (one per game)\n`);
+  console.log(`${"─".repeat(50)}\n`);
+
+  const totals: Record<string, { created: number; skipped: number; failed: number }> = {};
+
+  await Promise.all(
+    GAME_IDS.map(
+      (game) =>
+        new Promise<void>((resolve, reject) => {
+          const worker = new Worker(__filename, {
+            workerData: { game, count, dryRun },
+            // ts-node registers TypeScript so the worker can import .ts files.
+            execArgv: ["--require", "ts-node/register"],
+          });
+
+          worker.on("message", (msg: { type: string; game: string; text?: string; created?: number; skipped?: number; failed?: number }) => {
+            if (msg.type === "log") {
+              console.log(`[${msg.game.padEnd(15)}] ${msg.text}`);
+            } else if (msg.type === "done") {
+              totals[msg.game] = {
+                created: msg.created ?? 0,
+                skipped: msg.skipped ?? 0,
+                failed: msg.failed ?? 0,
+              };
+            } else if (msg.type === "error") {
+              console.error(`[${msg.game.padEnd(15)}] ERROR: ${msg.text}`);
+            }
+          });
+
+          worker.on("error", reject);
+          worker.on("exit", (code) => {
+            if (code !== 0) reject(new Error(`Worker for ${game} exited with code ${code}`));
+            else resolve();
+          });
+        })
+    )
+  );
+
+  console.log(`\n${"─".repeat(50)}`);
+  console.log(`\nSummary:\n`);
+  let totalCreated = 0, totalSkipped = 0, totalFailed = 0;
+  for (const game of GAME_IDS) {
+    const t = totals[game] ?? { created: 0, skipped: 0, failed: 0 };
+    console.log(`  ${game.padEnd(16)} created: ${t.created}  skipped: ${t.skipped}  failed: ${t.failed}`);
+    totalCreated += t.created;
+    totalSkipped += t.skipped;
+    totalFailed += t.failed;
+  }
+  console.log(`\n  ${"TOTAL".padEnd(15)} created: ${totalCreated}  skipped: ${totalSkipped}  failed: ${totalFailed}`);
+}

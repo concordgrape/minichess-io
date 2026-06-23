@@ -167,3 +167,31 @@ button.sidebar-link {
   padding: 4px 8px;
   background: #c0c0c0;
 }
+
+/* ── Blog content ──────────────────────────────────────────────────────────── */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3 {
+  font-weight: 700;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.blog-content h2 { font-size: 1.15rem; }
+.blog-content h3 { font-size: 1rem; }
+.blog-content p { margin-bottom: 1rem; line-height: 1.75; }
+.blog-content ul { padding-left: 1.25rem; margin-bottom: 1rem; }
+.blog-content li { margin-bottom: 0.35rem; line-height: 1.7; }
+.blog-content code {
+  font-size: 0.875em;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--bs-secondary-bg);
+}
+.blog-content blockquote {
+  border-left: 3px solid var(--bs-border-color);
+  padding-left: 1rem;
+  color: var(--bs-secondary-color);
+  margin: 1rem 0;
+  font-style: italic;
+}
+.blog-content a { color: #2563eb; }

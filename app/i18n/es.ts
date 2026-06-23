@@ -44,6 +44,7 @@ const es = {
     statistics: "Estadísticas",
     myProfile: "Mi perfil",
     chat: "Chat (100+)",
+    blog: "Blog",
   },
 
   footer: {
@@ -63,7 +64,7 @@ const es = {
 
   gameTiles: {
     chess:         { title: "Jugar al ajedrez",    description: "Ajedrez completo contra el motor — elige tu nivel de dificultad, desde principiante hasta experto." },
-    minichess:     { title: "Mini ajedrez",         description: "Una batalla de ajedrez compacta 5×5 contra la IA. Las mismas reglas, un tablero más pequeño." },
+    minichess:     { title: "Mini ajedrez",         description: "Una batalla de ajedrez compacta 5x5 contra la IA. Las mismas reglas, un tablero más pequeño." },
     mateIn1:       { title: "Mate en 1",            description: "Encuentra el único movimiento que da jaque mate de inmediato." },
     mateIn2:       { title: "Mate en 2",            description: "Fuerza el jaque mate en dos movimientos contra la mejor defensa de negras." },
     mateIn3:       { title: "Mate en 3",            description: "Calcula un jaque mate forzado a tres movimientos de profundidad." },
@@ -80,7 +81,7 @@ const es = {
   },
 
   gamePages: {
-    takes:         { title: "Capturas",           subtitle: "Captura cada pieza — encuentra el orden correcto para vaciar el tablero." },
+    takes:         { title: "Capturas",            subtitle: "Captura cada pieza — encuentra el orden correcto para vaciar el tablero." },
     solitaire:     { title: "Captura en cadena",   subtitle: "Vacía el tablero en una única cadena de capturas ininterrumpida." },
     check:         { title: "Jaque",               subtitle: "Da jaque mate en el mini tablero dentro del límite de movimientos." },
     smothered:     { title: "Mate ahogado",        subtitle: "Atrapa al rey con sus propias piezas y dale mate ahogado." },
@@ -98,7 +99,7 @@ const es = {
     sectionTitle: "Cómo jugar",
 
     takes: [
-      { heading: "Estudia el tablero",         body: "Todas las piezas enemigas están dispuestas en un campo 4×4. Cada pieza debe ser capturada — no puede quedar ninguna." },
+      { heading: "Estudia el tablero",         body: "Todas las piezas enemigas están dispuestas en un campo 4x4. Cada pieza debe ser capturada — no puede quedar ninguna." },
       { heading: "Elige tu primera captura",   body: "Haz clic en una pieza que tu atacante pueda capturar legalmente. El atacante se mueve a esa casilla." },
       { heading: "Encadena las capturas",      body: "Tras cada captura, tu atacante debe capturar inmediatamente otra pieza. No puedes detenerte a mitad de una cadena." },
       { heading: "El orden importa",           body: "Solo un orden de capturas vaciará el tablero. Si te quedas atascado, deshaz el movimiento y prueba un camino diferente." },
@@ -112,7 +113,7 @@ const es = {
     ] as HowToPlayStep[],
 
     check: [
-      { heading: "Mini tablero de ajedrez",    body: "El juego se disputa en un tablero compacto 4×4 con un conjunto reducido de piezas. Se aplican las reglas normales del ajedrez." },
+      { heading: "Mini tablero de ajedrez",    body: "El juego se disputa en un tablero compacto 4x4 con un conjunto reducido de piezas. Se aplican las reglas normales del ajedrez." },
       { heading: "Juegas con blancas",         body: "Las blancas mueven primero. Tu objetivo es dar jaque mate — poner al rey negro en jaque sin posibilidad de escape." },
       { heading: "Respeta el límite de movimientos", body: "Cada puzzle tiene un límite de movimientos. El jaque mate debe lograrse dentro de los movimientos permitidos o el puzzle se considera fallido." },
       { heading: "Piensa con antelación",      body: "Con menos casillas, cada movimiento cuenta. Busca jaques que corten las vías de escape del rey antes de rodearlo." },
@@ -126,7 +127,7 @@ const es = {
     ] as HowToPlayStep[],
 
     chessSolitaire: [
-      { heading: "Reglas completas, tablero completo", body: "El solitario de ajedrez usa un tablero 8×8 con piezas que se mueven según las reglas normales del ajedrez, incluidos los peones con su dirección." },
+      { heading: "Reglas completas, tablero completo", body: "El solitario de ajedrez usa un tablero 8x8 con piezas que se mueven según las reglas normales del ajedrez, incluidos los peones con su dirección." },
       { heading: "Cualquier pieza para empezar", body: "Haz clic en una pieza para convertirla en tu atacante activo. Debe capturar inmediatamente una pieza enemiga para comenzar la cadena." },
       { heading: "Mantén la cadena",           body: "Tras cada captura, la pieza que captura debe capturar otra pieza enemiga. No puedes pasar ni cambiar de atacante." },
       { heading: "No dejes ninguna pieza",     body: "Cada pieza enemiga debe ser capturada antes de que termine la cadena. Algunos puntos de inicio llevan a callejones sin salida — si te atascas, deshaz e intenta con otra." },
@@ -171,15 +172,23 @@ const es = {
       { heading: "Mate forzado en 2",          body: "Blancas hacen un movimiento, negras responde lo mejor que puede, luego blancas dan jaque mate. La solución debe funcionar contra cualquier respuesta de negras." },
       { heading: "Encuentra el movimiento clave", body: "El primer movimiento establece una amenaza de mate imparable. Puede ser un jaque, un movimiento silencioso o incluso un sacrificio." },
       { heading: "Considera todas las respuestas de negras", body: "Tras tu movimiento clave, negras intentará retrasarlo o escapar. Tu segundo movimiento debe dar jaque mate independientemente de la respuesta de negras." },
-      { heading: "Juegas con blancas",         body: "Las blancas mueven primero. Tras tu movimiento, negras responde una vez y luego debes dar mate. El puzzle falla si no se da mate en el 2.° movimiento." },
+      { heading: "Juegas con blancas",         body: "Las blancas mueven primero. Tras tu movimiento, negras responde una vez y luego debes dar mate. El puzzle falla si no se da mate en el 2o movimiento." },
     ] as HowToPlayStep[],
 
     mateIn3: [
-      { heading: "Mate forzado en 3",          body: "Blancas hace tres movimientos y negras dos. La solución debe forzar jaque mate en el 3.er movimiento independientemente de la mejor defensa de negras." },
+      { heading: "Mate forzado en 3",          body: "Blancas hace tres movimientos y negras dos. La solución debe forzar jaque mate en el 3er movimiento independientemente de la mejor defensa de negras." },
       { heading: "Empieza con el movimiento clave", body: "El primer movimiento crea una amenaza que negras no puede neutralizar por completo — a menudo mejorando una pieza, abriendo una línea o construyendo una red de mate." },
-      { heading: "Lee las defensas de negras", body: "Tras cada movimiento blanco, considera cada respuesta de negras. Tu plan debe tenerlas todas en cuenta y aun así dar mate en el 3.er movimiento." },
+      { heading: "Lee las defensas de negras", body: "Tras cada movimiento blanco, considera cada respuesta de negras. Tu plan debe tenerlas todas en cuenta y aun así dar mate en el 3er movimiento." },
       { heading: "Calcula, no adivines",       body: "El mate en 3 requiere cálculo preciso. Trabaja las variantes principales metódicamente — un solo error deja escapar a negras." },
     ] as HowToPlayStep[],
+  },
+
+  blog: {
+    title: "Blog",
+    subtitle: "Consejos de ajedrez, guías de puzzles y novedades.",
+    backToAll: "Todos los artículos",
+    emptyHeading: "Todavía no hay artículos.",
+    emptyBody: "Vuelve pronto para encontrar consejos de ajedrez, guías de puzzles y actualizaciones.",
   },
 };
 

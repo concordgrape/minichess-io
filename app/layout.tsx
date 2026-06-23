@@ -5,6 +5,7 @@ import "./globals.css";
 import Shell from "./Shell";
 import AuthProvider from "./AuthProvider";
 import { LocaleProvider } from "./i18n/LocaleProvider";
+import { getAllPosts } from "./lib/blog";
 
 const openSans = Open_Sans({ subsets: ["latin"] });
 
@@ -13,17 +14,21 @@ export const metadata: Metadata = {
   description: "Play chess puzzles and mini games online",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const allPosts = await getAllPosts();
+  const shuffled = [...allPosts].sort(() => Math.random() - 0.5);
+  const sidebarPosts = shuffled.slice(0, 4).map((p) => ({ slug: p.slug, title: p.title }));
+
   return (
     <html lang="en" className={openSans.className}>
       <body>
         <LocaleProvider>
           <AuthProvider>
-            <Shell>{children}</Shell>
+            <Shell sidebarPosts={sidebarPosts}>{children}</Shell>
           </AuthProvider>
         </LocaleProvider>
       </body>

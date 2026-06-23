@@ -16,7 +16,7 @@ const LOCALE_OPTIONS: { key: LocaleKey; label: string }[] = [
   { key: "zh", label: "🇨🇳 中文" },
 ];
 
-const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
+const SidebarLinks = ({ onNavigate, sidebarPosts }: { onNavigate?: () => void; sidebarPosts: { slug: string; title: string }[] }) => {
   const { locale: en } = useLocale();
   const [endgamesOpen, setEndgamesOpen] = useState(false);
   return (
@@ -70,14 +70,28 @@ const SidebarLinks = ({ onNavigate }: { onNavigate?: () => void }) => {
       <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.statistics}</a>
       <a href="#" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.myProfile}</a>
     </div>
-    <div>
+    <div className="mb-3">
       <a href="#" className="sidebar-link sidebar-link--chat" onClick={onNavigate}>{en.sidebar.chat}</a>
+    </div>
+    <div>
+      <Link href="/blog" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.blog}</Link>
+      {sidebarPosts.map((post) => (
+        <Link
+          key={post.slug}
+          href={`/blog/${post.slug}`}
+          className="sidebar-link sidebar-link--community"
+          onClick={onNavigate}
+          style={{ whiteSpace: "normal" }}
+        >
+          {post.title}
+        </Link>
+      ))}
     </div>
   </>
   );
 };
 
-export default function Shell({ children }: { children: React.ReactNode }) {
+export default function Shell({ children, sidebarPosts = [] }: { children: React.ReactNode; sidebarPosts?: { slug: string; title: string }[] }) {
   const [dark, setDark] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [score, setScore] = useState(0);
@@ -251,7 +265,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           <span className="fw-bold">{en.nav.menu}</span>
           <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => setMenuOpen(false)}>{en.nav.close}</button>
         </div>
-        <SidebarLinks onNavigate={() => setMenuOpen(false)} />
+        <SidebarLinks onNavigate={() => setMenuOpen(false)} sidebarPosts={sidebarPosts} />
       </div>
 
       {/* Main layout */}
@@ -259,8 +273,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         <div style={{ maxWidth: 1100, margin: "16px auto" }}>
           <div className="row g-0 border">
             {/* Desktop sidebar */}
-            <div className="col-auto border-end d-none d-lg-block" style={{ minWidth: 200, padding: "20px 24px" }}>
-              <SidebarLinks />
+            <div className="col-auto border-end d-none d-lg-block" style={{ minWidth: 200, maxWidth: 200, width: 200, padding: "20px 24px" }}>
+              <SidebarLinks sidebarPosts={sidebarPosts} />
             </div>
 
             {/* Page content */}

@@ -5,7 +5,7 @@ const de = {
   siteDescription: "Schachpuzzle und Minispiele online spielen",
 
   nav: {
-    menu: "Menü",
+    menu: "Menu",
     close: "✕",
     signUp: "Registrieren",
     logIn: "Anmelden",
@@ -44,6 +44,7 @@ const de = {
     statistics: "Statistiken",
     myProfile: "Mein Profil",
     chat: "Chat (100+)",
+    blog: "Blog",
   },
 
   footer: {
@@ -63,13 +64,13 @@ const de = {
 
   gameTiles: {
     chess:         { title: "Schach spielen",      description: "Vollständiges Schach gegen die Engine — wähle deinen Schwierigkeitsgrad, vom Anfänger bis zum Experten." },
-    minichess:     { title: "Mini-Schach",          description: "Ein kompaktes 5×5-Schachgefecht gegen die KI. Gleiche Regeln, kleineres Brett." },
+    minichess:     { title: "Mini-Schach",          description: "Ein kompaktes 5x5-Schachgefecht gegen die KI. Gleiche Regeln, kleineres Brett." },
     mateIn1:       { title: "Matt in 1",            description: "Finde den einzigen Zug, der sofort Schachmatt liefert." },
     mateIn2:       { title: "Matt in 2",            description: "Erzwinge Schachmatt in zwei Zügen gegen die beste Verteidigung von Schwarz." },
     mateIn3:       { title: "Matt in 3",            description: "Berechne ein erzwungenes Schachmatt drei Züge tief." },
     takes:         { title: "Schläge",              description: "Schlage jede Figur auf dem Brett in der richtigen Reihenfolge." },
     check:         { title: "Schach",               description: "Setze Schachmatt auf dem Minibrett innerhalb des Zuglimits." },
-    smothered:     { title: "Ersticktes Matt",      description: "Falle den König mit seinen eigenen Figuren ein und setze ihn erstickend matt." },
+    smothered:     { title: "Ersticktes Matt",      description: "Falle den König mit eigenen Figuren ein und setze ihn erstickend matt." },
     chessSolitaire:{ title: "Schach-Solitär",       description: "Räume das Brett, indem du eine Figur nach der anderen schlägst." },
     solitaire:     { title: "Kettenschlag",         description: "Räume das Brett in einer einzigen ununterbrochenen Schlagkette." },
     survival:      { title: "Überleben",            description: "Schlage Bauern mit deinem Springer so lange wie möglich." },
@@ -98,7 +99,7 @@ const de = {
     sectionTitle: "Spielanleitung",
 
     takes: [
-      { heading: "Das Brett studieren",       body: "Alle feindlichen Figuren sind auf einem 4×4-Feld angeordnet. Jede Figur muss geschlagen werden — keine darf übrig bleiben." },
+      { heading: "Das Brett studieren",       body: "Alle feindlichen Figuren sind auf einem 4x4-Feld angeordnet. Jede Figur muss geschlagen werden — keine darf übrig bleiben." },
       { heading: "Ersten Schlag wählen",      body: "Klicke auf eine Figur, die dein Angreifer legal schlagen kann. Der Angreifer zieht auf das entsprechende Feld." },
       { heading: "Schläge verketten",         body: "Nach jedem Schlag muss dein Angreifer sofort eine weitere Figur schlagen. Du kannst nicht in der Mitte einer Kette stoppen." },
       { heading: "Die Reihenfolge zählt",     body: "Nur eine bestimmte Schlagreihenfolge leert das Brett. Wenn du feststeckst, mache den Zug rückgängig und versuche eine andere Reihenfolge." },
@@ -112,7 +113,7 @@ const de = {
     ] as HowToPlayStep[],
 
     check: [
-      { heading: "Mini-Schachbrett",           body: "Das Spiel wird auf einem kompakten 4×4-Brett mit einer reduzierten Figurenanzahl gespielt. Es gelten die normalen Schachregeln." },
+      { heading: "Mini-Schachbrett",           body: "Das Spiel wird auf einem kompakten 4x4-Brett mit einer reduzierten Figurenanzahl gespielt. Es gelten die normalen Schachregeln." },
       { heading: "Du spielst Weiß",            body: "Weiß zieht zuerst. Dein Ziel ist es, Schachmatt zu setzen — stelle den schwarzen König schach, ohne Fluchtmöglichkeit." },
       { heading: "Zuglimit beachten",          body: "Jedes Puzzle hat ein Zuglimit. Schachmatt muss innerhalb der erlaubten Züge erreicht werden, sonst gilt das Puzzle als gescheitert." },
       { heading: "Vorausdenken",               body: "Mit weniger Feldern zählt jeder Zug. Suche nach Schachgeboten, die die Fluchtwege des Königs abschneiden, bevor du ihn einkreist." },
@@ -126,7 +127,7 @@ const de = {
     ] as HowToPlayStep[],
 
     chessSolitaire: [
-      { heading: "Volle Schachregeln, volles Brett", body: "Schach-Solitär verwendet ein 8×8-Brett mit Figuren, die nach normalen Schachregeln ziehen, einschließlich gerichteter Bauern." },
+      { heading: "Volle Schachregeln, volles Brett", body: "Schach-Solitär verwendet ein 8x8-Brett mit Figuren, die nach normalen Schachregeln ziehen, einschließlich gerichteter Bauern." },
       { heading: "Beliebige Figur zum Start",  body: "Klicke auf eine Figur, um sie zu deinem aktiven Angreifer zu machen. Sie muss sofort eine feindliche Figur schlagen, um die Kette zu beginnen." },
       { heading: "Kette aufrechterhalten",     body: "Nach jedem Schlag muss die schlagende Figur eine weitere feindliche Figur schlagen. Du kannst nicht passen oder Angreifer wechseln." },
       { heading: "Keine Figur übrig lassen",   body: "Jede feindliche Figur muss geschlagen werden, bevor die Kette endet. Manche Startfiguren führen in Sackgassen — wenn feststeckst, mache rückgängig und versuche eine andere." },
@@ -180,6 +181,14 @@ const de = {
       { heading: "Schwarz' Verteidigungen lesen", body: "Nach jedem weißen Zug bedenke jede Antwort von Schwarz. Dein Plan muss alle berücksichtigen und trotzdem Schachmatt im 3. Zug liefern." },
       { heading: "Berechnen, nicht raten",     body: "Matt in 3 erfordert genaue Berechnung. Arbeite die Hauptvarianten methodisch durch — ein einziger Fehler lässt Schwarz entkommen." },
     ] as HowToPlayStep[],
+  },
+
+  blog: {
+    title: "Blog",
+    subtitle: "Schachtipps, Puzzle-Guides und Neuigkeiten.",
+    backToAll: "Alle Beiträge",
+    emptyHeading: "Noch keine Beiträge.",
+    emptyBody: "Schau bald wieder vorbei für Schachtipps, Puzzle-Guides und Updates.",
   },
 };
 

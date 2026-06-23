@@ -47,6 +47,7 @@ const en = {
     statistics: "Statistics",
     myProfile: "My profile",
     chat: "Chat (100+)",
+    blog: "Blog",
   },
 
   // ── Footer ────────────────────────────────────────────────────────────────
@@ -189,6 +190,15 @@ const en = {
       { heading: "Read Black’s defenses", body: "After each White move, consider every Black reply. Your plan must account for all of them and still deliver checkmate on move 3." },
       { heading: "Calculate, don’t guess", body: "Mate in 3 requires accurate calculation. Work through the main lines methodically — a single oversight lets Black escape." },
     ] as HowToPlayStep[],
+  },
+
+  // ── Blog ──────────────────────────────────────────────────────────────────
+  blog: {
+    title: "Blog",
+    subtitle: "Chess tips, puzzle guides, and updates.",
+    backToAll: "All posts",
+    emptyHeading: "No posts yet.",
+    emptyBody: "Check back soon for chess tips, puzzle guides, and updates.",
   },
 };
 
