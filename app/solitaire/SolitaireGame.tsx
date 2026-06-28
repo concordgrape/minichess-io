@@ -180,7 +180,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
       <div>
         <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
           <div style={{ width: sq * 4 }}>
-            <BoardOverlay>
+            <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>

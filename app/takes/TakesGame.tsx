@@ -34,6 +34,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
 
   const { submitScore } = useGameSession("takes", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
+  const invalidateLb = useRef<(() => void) | null>(null);
 
   const [pieces, setPieces] = useState<Piece[]>(() => initialPuzzle ? initialPuzzle.pieces.map((p) => ({ ...p })) : []);
   const [selected, setSelected] = useState<Piece | null>(null);
@@ -75,6 +76,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
       saveScore({ puzzleId: `takes-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
       submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+      invalidateLb.current?.();
       return;
     }
     const king = next.find((p) => p.type === "k")!;
@@ -117,7 +119,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
       <div>
         <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
           <div>
-            <BoardOverlay>
+            <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
@@ -207,6 +209,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
               gameId="takes"
               currentId={puzzle.id}
               getStatus={getStatus}
+              invalidateLbRef={invalidateLb}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as Puzzle;
                 setPuzzle(p);

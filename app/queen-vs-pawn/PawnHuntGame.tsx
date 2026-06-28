@@ -150,7 +150,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
       <div>
         <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
           <div>
-            <BoardOverlay>
+            <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>

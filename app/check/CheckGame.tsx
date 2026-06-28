@@ -71,6 +71,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
 
   const { submitScore } = useGameSession("check", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
+  const invalidateLb = useRef<(() => void) | null>(null);
   const mateIn = puzzle ? MATE_BY_DIFF[puzzle.difficulty] : 1;
 
   const saved = typeof window !== "undefined" && puzzle ? loadSaved(puzzle.id) : null;
@@ -132,6 +133,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           saveScore({ puzzleId: `check-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
           setEarnedPoints(pts);
           submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+          invalidateLb.current?.();
         } else if (isStalemate(next)) { setStatus("stalemate"); }
       }
       setPendingBlack(null); setKingThinking(false);
@@ -206,7 +208,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
       <div>
         <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
           <div>
-            <BoardOverlay>
+            <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
@@ -322,6 +324,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
               gameId="check"
               currentId={puzzle.id}
               getStatus={getStatus}
+              invalidateLbRef={invalidateLb}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as Puzzle;
                 try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}

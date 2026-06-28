@@ -73,6 +73,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
 
   const { submitScore } = useGameSession("smothered", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
+  const invalidateLb = useRef<(() => void) | null>(null);
   const mateIn = puzzle ? MATE_BY_DIFF[puzzle.difficulty] : 1;
 
   const saved = typeof window !== "undefined" && initialPuzzle ? loadSaved(initialPuzzle.id) : null;
@@ -137,6 +138,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
             saveScore({ puzzleId: `smothered-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
             setEarnedPoints(pts);
             submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+          invalidateLb.current?.();
             setStatus("won");
           } else {
             setStatus("lost-wrong-piece");
@@ -241,7 +243,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
       <div>
         <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
           <div>
-            <BoardOverlay>
+            <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
@@ -406,6 +408,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
               gameId="smothered"
               currentId={puzzle.id}
               getStatus={getStatus}
+              invalidateLbRef={invalidateLb}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as Puzzle;
                 try { localStorage.removeItem(storageKey(puzzle.id)); } catch {}

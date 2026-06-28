@@ -9,7 +9,7 @@ const MEDAL = ["🥇", "🥈", "🥉"];
  * Wrap just the <Board> element inside a game component with this.
  * It renders a blurry overlay over the board only — not the info panel.
  */
-export default function BoardOverlay({ children }: { children: React.ReactNode }) {
+export default function BoardOverlay({ children, ready = true }: { children: React.ReactNode; ready?: boolean }) {
   const { phase, leaderboard, loadingLb, handleStart, resetGame } = useGamePhase();
   const [fading, setFading] = useState(false);
 
@@ -48,10 +48,11 @@ export default function BoardOverlay({ children }: { children: React.ReactNode }
             </p>
             <button
               className="btn btn-light rounded-0 px-5 py-2 fw-bold"
-              style={{ fontSize: 15, letterSpacing: 0.5 }}
+              style={{ fontSize: 15, letterSpacing: 0.5, opacity: ready ? 1 : 0.5 }}
               onClick={onStart}
+              disabled={!ready}
             >
-              ▶ Start Game
+              {ready ? "▶ Start Game" : "Loading…"}
             </button>
           </div>
         </div>
