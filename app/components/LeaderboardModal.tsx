@@ -63,6 +63,7 @@ export default function LeaderboardModal({ gameId, puzzleId, onClose, invalidate
 
     // Don't fetch for unauthenticated users
     if (!user || user.isAnonymous) { setLoading(false); return; }
+    const authedUser = user;
 
     let cancelled = false;
     async function load() {
@@ -70,7 +71,7 @@ export default function LeaderboardModal({ gameId, puzzleId, onClose, invalidate
       setError(false);
       try {
         const headers: Record<string, string> = {};
-        const token = await user.getIdToken();
+        const token = await authedUser.getIdToken();
         headers["Authorization"] = `Bearer ${token}`;
         const res = await fetch(
           `/api/scores/leaderboard?game=${encodeURIComponent(gameId)}&puzzle=${puzzleId}`,
