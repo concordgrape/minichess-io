@@ -231,8 +231,8 @@ export async function POST(request: NextRequest) {
     }).catch(() => {});
 
     // ── Bust leaderboard cache ────────────────────────────────────────────────
-    revalidateTag(`lb-${gameId}`);
-    revalidateTag(`puzzle-lb-${gameId}-${puzzleId}`);
+    revalidateTag(`lb-${gameId}`, "default");
+    revalidateTag(`puzzle-lb-${gameId}-${puzzleId}`, "default");
 
     return Response.json({ saved: true, score, normalizedScore });
   } catch (e) {
