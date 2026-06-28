@@ -10,6 +10,7 @@ import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
+import { useTimeLimit } from "../lib/useTimeLimit";
 import { pawnCaptured, pawnPromoted } from "./engine";
 import type { PawnPuzzle, GameStatus } from "./types";
 
@@ -50,6 +51,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
 
   const { submitScore } = useGameSession("queen-vs-pawn", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
+  useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const [defenseTrigger, setDefenseTrigger] = useState(0);
   const pendingDefense = useRef(false);
@@ -152,7 +154,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ maxWidth: 240 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="queen-vs-pawn" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -253,7 +255,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
           </div>
         </div>
 
-        <div style={{ maxWidth: 240 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="queen-vs-pawn"
@@ -309,6 +311,19 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
           )}
         </div>
       </div>
+
+      {status === "timeout" && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1000 }}>
+          <div className="p-4 text-center rounded-0" style={{ backgroundColor: "var(--bs-body-bg)", border: "2px solid #cc4444", minWidth: 280 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 48 }}>⏱</div>
+            <h4 className="fw-bold text-danger mt-2">Time's Up</h4>
+            <p className="text-muted mb-3">You exceeded the 30-minute limit.</p>
+            <div className="d-flex gap-2 justify-content-center">
+              <button className="btn btn-danger rounded-0" onClick={() => puzzle && load(puzzle)}>Try again</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

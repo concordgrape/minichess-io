@@ -123,16 +123,44 @@ export async function POST(request: NextRequest) {
     const topPlayersRef = gameRef.collection("leaderboard").doc("top-players");
     const userRef = db.collection("users").doc(uid);
 
+    // Per-puzzle refs
+    const puzzleRef = gameRef.collection("puzzles").doc(String(puzzleId));
+    const puzzleScoreRef = puzzleRef.collection("scores").doc(uid);
+    const puzzleTopRef = puzzleRef.collection("leaderboard").doc("top-players");
+
     try {
       await db.runTransaction(async (tx) => {
-        const [userScoreSnap, topPlayersSnap, userSnap] = await Promise.all([
+        const [userScoreSnap, topPlayersSnap, userSnap, puzzleScoreSnap, puzzleTopSnap] = await Promise.all([
           tx.get(userScoreRef),
           tx.get(topPlayersRef),
           tx.get(userRef),
+          tx.get(puzzleScoreRef),
+          tx.get(puzzleTopRef),
         ]);
 
         const prevScore = userScoreSnap.data();
         const isNewBest = !prevScore || normalizedScore > (prevScore.normalizedScore as number);
+
+        // Per-puzzle new-best check (independent from per-game)
+        const prevPuzzleScore = puzzleScoreSnap.data();
+        const isNewPuzzleBest = !prevPuzzleScore || score > (prevPuzzleScore.score as number);
+
+        type Player = {
+          rank: number; uid: string; displayName: string;
+          score: number; normalizedScore: number; difficulty: string;
+          updatedAt: string;
+        };
+
+        if (isNewPuzzleBest) {
+          tx.set(puzzleScoreRef, { uid, displayName, gameId, puzzleId, difficulty, score, normalizedScore, updatedAt: completedAt });
+
+          const existingPuzzle: Player[] = puzzleTopSnap.data()?.players ?? [];
+          const withoutPuzzle = existingPuzzle.filter((p) => p.uid !== uid);
+          withoutPuzzle.push({ rank: 0, uid, displayName, score, normalizedScore, difficulty, updatedAt: completedAt.toISOString() });
+          withoutPuzzle.sort((a, b) => b.score - a.score);
+          const puzzleTop100 = withoutPuzzle.slice(0, 100).map((p, i) => ({ ...p, rank: i + 1 }));
+          tx.set(puzzleTopRef, { players: puzzleTop100, totalPlayers: withoutPuzzle.length, updatedAt: completedAt });
+        }
 
         if (isNewBest) {
           tx.set(userScoreRef, {
@@ -143,11 +171,6 @@ export async function POST(request: NextRequest) {
             updatedAt: completedAt,
           });
 
-          type Player = {
-            rank: number; uid: string; displayName: string;
-            score: number; normalizedScore: number; difficulty: string;
-            updatedAt: string;
-          };
           const existing: Player[] = topPlayersSnap.data()?.players ?? [];
           const without = existing.filter((p) => p.uid !== uid);
           without.push({ rank: 0, uid, displayName, score, normalizedScore, difficulty, updatedAt: completedAt.toISOString() });
@@ -208,7 +231,8 @@ export async function POST(request: NextRequest) {
     }).catch(() => {});
 
     // ── Bust leaderboard cache ────────────────────────────────────────────────
-    revalidateTag(`lb-${gameId}`, { expire: 0 });
+    revalidateTag(`lb-${gameId}`);
+    revalidateTag(`puzzle-lb-${gameId}-${puzzleId}`);
 
     return Response.json({ saved: true, score, normalizedScore });
   } catch (e) {

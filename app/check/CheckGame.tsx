@@ -13,6 +13,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
+import { useTimeLimit } from "../lib/useTimeLimit";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 
 const STORAGE_VERSION = "check-v1";
@@ -78,6 +79,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalSquares, setLegalSquares] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>(() => saved?.status ?? "playing");
+  useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
   const [movesLeft, setMovesLeft] = useState(() => saved?.movesLeft ?? mateIn);
   const [history, setHistory] = useState<HistoryEntry[]>(() => saved?.history ?? []);
   const [kingThinking, setKingThinking] = useState(false);
@@ -208,7 +210,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ maxWidth: 240 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="check" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -314,7 +316,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           </div>
         </div>
 
-        <div style={{ maxWidth: 240 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="check"
@@ -370,6 +372,19 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           )}
         </div>
       </div>
+
+      {status === "timeout" && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1000 }}>
+          <div className="p-4 text-center rounded-0" style={{ backgroundColor: "var(--bs-body-bg)", border: "2px solid #cc4444", minWidth: 280 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 48 }}>⏱</div>
+            <h4 className="fw-bold text-danger mt-2">Time's Up</h4>
+            <p className="text-muted mb-3">You exceeded the 30-minute limit.</p>
+            <div className="d-flex gap-2 justify-content-center">
+              <button className="btn btn-danger rounded-0" onClick={reset}>Try again</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

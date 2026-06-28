@@ -26,7 +26,8 @@ export type GameStatus =
   | "won"               // white wins
   | "lost"              // black wins
   | "draw-stalemate"
-  | "draw-insufficient";
+  | "draw-insufficient"
+  | "timeout";
 
 export interface MoveRecord {
   move: Move;

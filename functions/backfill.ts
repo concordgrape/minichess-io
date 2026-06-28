@@ -91,7 +91,8 @@ async function runWorker() {
   }
 
   // Find the current max sequential ID so new puzzles continue from there.
-  const maxSnap = await col.orderBy("id", "desc").limit(1).get();
+  // Filter to IDs below 20000000 to guard against any stray date-based IDs.
+  const maxSnap = await col.where("id", "<", 20000000).orderBy("id", "desc").limit(1).get();
   const maxId = maxSnap.empty ? 0 : (maxSnap.docs[0].data().id as number ?? 0);
 
   let created = 0;
@@ -215,7 +216,8 @@ async function main() {
   }
 
   // Find the current max sequential ID so new puzzles continue from there.
-  const maxSnap = await col.orderBy("id", "desc").limit(1).get();
+  // Filter to IDs below 20000000 to guard against any stray date-based IDs.
+  const maxSnap = await col.where("id", "<", 20000000).orderBy("id", "desc").limit(1).get();
   const maxId = maxSnap.empty ? 0 : (maxSnap.docs[0].data().id as number ?? 0);
   console.log(`  Starting from ID : ${maxId + 1}\n`);
 

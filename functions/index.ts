@@ -21,6 +21,7 @@ async function nextId(gameId: string): Promise<number> {
     .collection("games")
     .doc(gameId)
     .collection("puzzles")
+    .where("id", "<", 20000000)
     .orderBy("id", "desc")
     .limit(1)
     .get();

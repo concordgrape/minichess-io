@@ -11,6 +11,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
+import { useTimeLimit } from "../lib/useTimeLimit";
 
 const PIECE_NAMES: Record<string, string> = {
   p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
@@ -39,6 +40,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   const [targets, setTargets] = useState<Piece[]>([]);
   const [history, setHistory] = useState<MoveRecord[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
+  useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
   useEffect(() => { if (status === "won" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
@@ -119,7 +121,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ maxWidth: 260 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="takes" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => { const p = data as unknown as Puzzle; setPuzzle(p); resetToFresh(p); }} />
@@ -161,7 +163,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   return (
     <div>
       <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
-        <div>
+        <div style={{ width: sq * 4 }}>
           <BoardOverlay>
 <Board
             size={4}
@@ -199,7 +201,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           </div>
         </div>
 
-        <div style={{ maxWidth: 260 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="takes"
@@ -213,8 +215,10 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
             />
           </div>
           <div className="mb-3">
+          <div className="mb-3 d-flex align-items-center gap-2">
             <span className={`badge bg-${DIFFICULTY_COLOR[puzzle.difficulty]} rounded-0`} style={{ fontSize: 13, padding: "6px 10px" }}>{puzzle.difficulty}</span>
             <strong>Puzzle #{puzzle.id}</strong>
+          </div>
           </div>
           <div className="mb-3 small">
             <div className="fw-semibold mb-1">Rules</div>
@@ -238,6 +242,19 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           )}
         </div>
       </div>
+
+      {status === "timeout" && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1000 }}>
+          <div className="p-4 text-center rounded-0" style={{ backgroundColor: "var(--bs-body-bg)", border: "2px solid #cc4444", minWidth: 280 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 48 }}>⏱</div>
+            <h4 className="fw-bold text-danger mt-2">Time's Up</h4>
+            <p className="text-muted mb-3">You exceeded the 30-minute limit.</p>
+            <div className="d-flex gap-2 justify-content-center">
+              <button className="btn btn-danger rounded-0" onClick={() => puzzle && resetToFresh(puzzle)}>Try again</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

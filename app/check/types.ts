@@ -20,4 +20,4 @@ export interface Puzzle {
   board: Board;
 }
 
-export type GameStatus = "playing" | "checkmate" | "stalemate" | "exceeded";
+export type GameStatus = "playing" | "checkmate" | "stalemate" | "exceeded" | "timeout";

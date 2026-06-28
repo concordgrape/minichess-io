@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import LeaderboardModal from "./LeaderboardModal";
 
 interface PuzzleMeta {
   id: number;
@@ -12,6 +13,8 @@ interface Props {
   currentId: number;
   onPuzzleLoaded: (data: Record<string, unknown>) => void;
   getStatus?: (id: number) => "completed" | "inProgress" | null;
+  /** Ref populated with a function that busts the leaderboard cache for the current puzzle */
+  invalidateLbRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 const DIFF_COLOR: Record<string, string> = {
@@ -72,7 +75,7 @@ async function loadPuzzleData(gameId: string, id: number): Promise<Record<string
 
 const SESSION_KEY = (gameId: string) => `rp_${gameId}`;
 
-export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded, getStatus }: Props) {
+export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded, getStatus, invalidateLbRef }: Props) {
   const [open, setOpen] = useState(false);
   const [puzzles, setPuzzles] = useState<PuzzleMeta[]>([]);
   const [maxId, setMaxId] = useState<number | null>(null);
@@ -81,6 +84,7 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
   const [hasMore, setHasMore] = useState(false);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [randomLoading, setRandomLoading] = useState(false);
+  const [lbOpen, setLbOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const fetchingRef = useRef(false);
@@ -240,7 +244,29 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
           )}
           <span>Random</span>
         </button>
+
+        <button
+          className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          onClick={() => setLbOpen(true)}
+          title="Leaderboard"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="14" width="5" height="7" rx="1"/>
+            <rect x="9.5" y="9" width="5" height="12" rx="1"/>
+            <rect x="17" y="3" width="5" height="18" rx="1"/>
+          </svg>
+          <span>Leaderboard</span>
+        </button>
       </div>
+
+      {lbOpen && (
+        <LeaderboardModal
+          gameId={gameId}
+          puzzleId={currentId}
+          onClose={() => setLbOpen(false)}
+          invalidateRef={invalidateLbRef}
+        />
+      )}
 
       {open && (
         <div

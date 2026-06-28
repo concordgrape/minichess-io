@@ -13,4 +13,4 @@ export interface Puzzle {
   pieces: Piece[];
 }
 
-export type GameStatus = "playing" | "won" | "lost";
+export type GameStatus = "playing" | "won" | "lost" | "timeout";

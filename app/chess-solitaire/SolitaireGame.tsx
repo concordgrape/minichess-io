@@ -5,6 +5,7 @@ import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
+import { useTimeLimit } from "../lib/useTimeLimit";
 import { getLegalCaptures, applyCapture, hasAnyCapture } from "./logic";
 import { saveScore } from "../lib/scores";
 import { useGameSession } from "../lib/useGameSession";
@@ -67,6 +68,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
 
   const { submitScore } = useGameSession("chess-solitaire", puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
+  useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -224,7 +226,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ maxWidth: 260 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="chess-solitaire" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -306,7 +308,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
         </div>
 
         {/* Info panel */}
-        <div style={{ maxWidth: 240 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="chess-solitaire"
@@ -398,6 +400,20 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
             )}
             <div className="d-flex gap-2 justify-content-center">
               <button className="btn btn-outline-secondary rounded-0" onClick={() => puzzle && resetPuzzle(puzzle)}>Play again</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Timeout overlay */}
+      {status === "timeout" && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1000 }}>
+          <div className="p-4 text-center rounded-0" style={{ backgroundColor: "var(--bs-body-bg)", border: "2px solid #cc4444", minWidth: 280 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 48 }}>⏱</div>
+            <h4 className="fw-bold text-danger mt-2">Time's Up</h4>
+            <p className="text-muted mb-3">You exceeded the 30-minute limit.</p>
+            <div className="d-flex gap-2 justify-content-center">
+              <button className="btn btn-danger rounded-0" onClick={() => puzzle && resetPuzzle(puzzle)}>Try again</button>
             </div>
           </div>
         </div>

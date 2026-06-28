@@ -5,4 +5,4 @@ export interface PawnPuzzle {
   fen: string;
 }
 
-export type GameStatus = "playing" | "won" | "promoted" | "exceeded" | "draw";
+export type GameStatus = "playing" | "won" | "promoted" | "exceeded" | "draw" | "timeout";

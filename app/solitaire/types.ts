@@ -15,7 +15,7 @@ export interface Puzzle {
   start: Square;
 }
 
-export type GameStatus = "playing" | "won" | "lost";
+export type GameStatus = "playing" | "won" | "lost" | "timeout";
 
 export interface HistoryEntry {
   board: Board;

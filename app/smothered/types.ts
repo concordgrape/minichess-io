@@ -21,4 +21,5 @@ export type GameStatus =
   | "won"               // Knight delivers checkmate
   | "lost-wrong-piece"  // Another piece delivers checkmate
   | "lost-stalemate"
-  | "lost-exceeded";
+  | "lost-exceeded"
+  | "timeout";

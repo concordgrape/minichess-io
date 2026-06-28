@@ -16,7 +16,7 @@ export interface PuzzleDef {
   pieces: { type: PieceType; color: PieceColor; row: number; col: number }[];
 }
 
-export type GameStatus = "playing" | "solved" | "stuck";
+export type GameStatus = "playing" | "solved" | "stuck" | "timeout";
 
 export interface MoveRecord {
   attacker: SolitairePiece;

@@ -10,6 +10,7 @@ import { useGameSession } from "../lib/useGameSession";
 import { useGamePhase } from "../lib/GameStartContext";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
+import { useTimeLimit } from "../lib/useTimeLimit";
 import type { MatePuzzle, GameStatus } from "./types";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
@@ -47,12 +48,14 @@ export default function MateGame({
 
   const { submitScore } = useGameSession(slug as import("../lib/scoring/types").GameId, puzzle?.id ?? 0);
   const { startedAt, resetGame } = useGamePhase();
+  const invalidateLb = useRef<(() => void) | null>(null);
 
   const [chess] = useState(() => new Chess(initialPuzzle?.fen ?? "4k3/8/8/8/8/8/8/4K3 w - - 0 1"));
   const [board, setBoard] = useState(() => initialPuzzle ? chess.board() : []);
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>("playing");
+  useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
   useEffect(() => { if (status === "solved" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [movesLeft, setMovesLeft] = useState(mateIn);
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
@@ -83,6 +86,7 @@ export default function MateGame({
     setEarnedPoints(pts);
     setStatus("solved");
     submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+    invalidateLb.current?.();
   }
 
   // Defender (Black) reply, computed off the main thread.
@@ -166,9 +170,9 @@ export default function MateGame({
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ maxWidth: 240 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div className="mb-3">
-              <PuzzleSelectDropdown gameId={slug} currentId={-1} getStatus={getStatus}
+              <PuzzleSelectDropdown gameId={slug} currentId={-1} getStatus={getStatus} invalidateLbRef={invalidateLb}
                 onPuzzleLoaded={(data) => { const p = data as unknown as MatePuzzle; setPuzzle(p); load(p); }} />
             </div>
             <div className="small">
@@ -272,12 +276,13 @@ export default function MateGame({
           </div>
         </div>
 
-        <div style={{ maxWidth: 240 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId={slug}
               currentId={puzzle.id}
               getStatus={getStatus}
+              invalidateLbRef={invalidateLb}
               onPuzzleLoaded={(data) => {
                 const p = data as unknown as MatePuzzle;
                 setPuzzle(p);
@@ -328,6 +333,19 @@ export default function MateGame({
           )}
         </div>
       </div>
+
+      {status === "timeout" && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1000 }}>
+          <div className="p-4 text-center rounded-0" style={{ backgroundColor: "var(--bs-body-bg)", border: "2px solid #cc4444", minWidth: 280 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ fontSize: 48 }}>⏱</div>
+            <h4 className="fw-bold text-danger mt-2">Time's Up</h4>
+            <p className="text-muted mb-3">You exceeded the 30-minute limit.</p>
+            <div className="d-flex gap-2 justify-content-center">
+              <button className="btn btn-danger rounded-0" onClick={() => puzzle && load(puzzle)}>Try again</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

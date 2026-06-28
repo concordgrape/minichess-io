@@ -5,4 +5,4 @@ export interface MatePuzzle {
   fen: string;
 }
 
-export type GameStatus = "playing" | "solved" | "stalemate" | "exceeded";
+export type GameStatus = "playing" | "solved" | "stalemate" | "exceeded" | "timeout";
