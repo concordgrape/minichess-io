@@ -142,12 +142,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
                 ☰
               </button>
               <Link className="navbar-brand d-flex align-items-center fw-bold mb-0" href="/">
-                <span
-                  className="me-2 bg-secondary d-inline-flex align-items-center justify-content-center text-white"
-                  style={{ width: 32, height: 32, fontSize: 14 }}
-                >
-                  ♟
-                </span>
+                <img src="/og-logo-img.png" alt="" width={32} height={32} className="me-2" style={{ objectFit: "contain" }} />
                 {en.siteName}
               </Link>
             </div>
