@@ -231,8 +231,12 @@ export async function POST(request: NextRequest) {
     }).catch(() => {});
 
     // ── Bust leaderboard cache ────────────────────────────────────────────────
-    revalidateTag(`lb-${gameId}`, "default");
-    revalidateTag(`puzzle-lb-${gameId}-${puzzleId}`, "default");
+    try {
+      revalidateTag(`lb-${gameId}`, "max");
+      revalidateTag(`puzzle-lb-${gameId}-${puzzleId}`, "max");
+    } catch (e) {
+      console.warn("[submit] revalidateTag failed (non-fatal):", e);
+    }
 
     return Response.json({ saved: true, score, normalizedScore });
   } catch (e) {
