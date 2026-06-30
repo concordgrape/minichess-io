@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/bootstrap": "^5.2.10",
+    "@vercel/analytics": "^2.0.1",
     "bootstrap": "^5.3.8",
     "chess.js": "^1.4.0",
     "firebase": "^12.15.0",

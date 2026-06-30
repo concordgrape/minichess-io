@@ -6,6 +6,7 @@ import Shell from "./Shell";
 import AuthProvider from "./AuthProvider";
 import { LocaleProvider } from "./i18n/LocaleProvider";
 import { getAllPosts } from "./lib/blog";
+import { Analytics } from "@vercel/analytics/next"
 
 const openSans = Open_Sans({ subsets: ["latin"] });
 
@@ -56,6 +57,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={openSans.className}>
       <body>
+        <Analytics />
         <LocaleProvider>
           <AuthProvider>
             <Shell sidebarPosts={sidebarPosts}>{children}</Shell>
