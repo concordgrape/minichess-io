@@ -2,7 +2,7 @@ import type { HowToPlayStep } from "@/app/components/HowToPlay";
 
 const en = {
   // ── Site ──────────────────────────────────────────────────────────────────
-  siteName: "DailyCheckmate",
+  siteName: "Daily Checkmate",
   siteDescription: "Play chess puzzles and mini games online",
 
   // ── Nav ───────────────────────────────────────────────────────────────────
