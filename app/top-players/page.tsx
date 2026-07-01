@@ -11,7 +11,6 @@ export const metadata = {
   },
 };
 
-// Revalidate every 2 hours at the page level (ISR fallback)
 export const revalidate = 7200;
 
 interface TopPlayer {
@@ -22,7 +21,7 @@ interface TopPlayer {
 }
 
 const fetchTopPlayers = unstable_cache(
-  async (): Promise<TopPlayer[]> => {
+  async (): Promise<{ players: TopPlayer[]; fetchedAt: string }> => {
     try {
       const snap = await getAdminDb()
         .collection("users")
@@ -30,7 +29,7 @@ const fetchTopPlayers = unstable_cache(
         .limit(50)
         .get();
 
-      return snap.docs.map((doc) => {
+      const players = snap.docs.map((doc) => {
         const d = doc.data();
         const gamesBest = (d.gamesBest ?? {}) as Record<string, unknown>;
         return {
@@ -40,9 +39,11 @@ const fetchTopPlayers = unstable_cache(
           gamesPlayed: Object.keys(gamesBest).length,
         };
       });
+
+      return { players, fetchedAt: new Date().toISOString() };
     } catch (e) {
       console.error("[top-players] Firestore error:", e);
-      return [];
+      return { players: [], fetchedAt: new Date().toISOString() };
     }
   },
   ["top-players-global"],
@@ -52,13 +53,21 @@ const fetchTopPlayers = unstable_cache(
 const MEDAL = ["🥇", "🥈", "🥉"];
 
 export default async function TopPlayersPage() {
-  const players = await fetchTopPlayers();
+  const { players, fetchedAt } = await fetchTopPlayers();
+
+  const lastUpdated = new Date(fetchedAt).toLocaleString("en-US", {
+    month: "short", day: "numeric", year: "numeric",
+    hour: "numeric", minute: "2-digit", timeZoneName: "short",
+  });
 
   return (
     <div>
       <h1 className="h4 mb-1">Top Players</h1>
-      <p className="text-muted mb-4">
-        All-time rankings by total score across every puzzle game. Updated every 2 hours.
+      <p className="text-muted mb-1">
+        All-time rankings by total score across every puzzle game.
+      </p>
+      <p className="text-muted mb-4" style={{ fontSize: 12 }}>
+        Last updated: {lastUpdated}
       </p>
 
       {players.length === 0 ? (
