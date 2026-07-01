@@ -37,7 +37,6 @@ export default function AuthModal({
   const isSignup = mode === "signup";
   const { signUp, logIn, logInWithGoogle, logInAnon, enabled } = useAuth();
 
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeat, setRepeat] = useState("");
@@ -71,7 +70,7 @@ export default function AuthModal({
     }
     setBusy(true);
     try {
-      if (isSignup) await signUp(username.trim(), email.trim(), password);
+      if (isSignup) await signUp(email.trim(), password);
       else await logIn(email.trim(), password);
       onClose();
     } catch (err) {
@@ -181,22 +180,6 @@ export default function AuthModal({
               : "Or log in with email and password"}
           </div>
 
-          {isSignup && (
-            <div className="mb-3">
-              <label className="form-label fw-semibold mb-1">
-                Username <span className="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                className="form-control rounded-0"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                autoFocus
-              />
-            </div>
-          )}
-
           <div className="mb-3">
             <label className="form-label fw-semibold mb-1">
               Email <span className="text-danger">*</span>
@@ -207,7 +190,7 @@ export default function AuthModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoFocus={!isSignup}
+              autoFocus
             />
           </div>
 

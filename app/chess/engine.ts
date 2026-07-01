@@ -143,9 +143,14 @@ function minimax(
   }
 }
 
-export function getBotMove(chess: Chess, depth = 3): Move | null {
+export function getBotMove(chess: Chess, depth = 3, randomFraction = 0): Move | null {
   const moves = chess.moves({ verbose: true });
   if (moves.length === 0) return null;
+
+  // Play a random move with probability randomFraction (simulates lower-ELO blunders)
+  if (randomFraction > 0 && Math.random() < randomFraction) {
+    return moves[Math.floor(Math.random() * moves.length)];
+  }
 
   const isMaximizing = chess.turn() === "w";
   let bestScore = isMaximizing ? -Infinity : Infinity;

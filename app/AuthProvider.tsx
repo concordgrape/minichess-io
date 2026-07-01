@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  getAdditionalUserInfo,
   signInAnonymously,
   updateProfile,
   signOut,
@@ -34,6 +35,16 @@ async function saveCountryIfMissing(uid: string, country: string) {
   await setDoc(ref, { country, updatedAt: serverTimestamp() }, { merge: true });
 }
 
+const ADJS = ["Bold","Swift","Sharp","Brave","Clever","Dark","Silent","Iron","Golden","Steel","Cunning","Fierce","Nimble","Quiet","Royal","Silver","Ancient","Hidden","Quick","Wise"];
+const NOUNS = ["Knight","Bishop","Rook","Queen","Pawn","King","Gambit","Fork","Pin","Castle","Rank","Tempo","Fianchetto","Endgame","Tactic","Blunder","Sacrifice","Checkmate"];
+
+function generateUsername(): string {
+  const adj = ADJS[Math.floor(Math.random() * ADJS.length)];
+  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+  const num = (Date.now() % 9000) + 1000;
+  return `${adj}${noun}${num}`;
+}
+
 /** Deterministic guest display name seeded by the user's UID, e.g. "playerKxqwza". */
 export function guestName(uid: string): string {
   let h = 0;
@@ -51,7 +62,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   enabled: boolean;
-  signUp: (username: string, email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   logIn: (email: string, password: string) => Promise<void>;
   logInWithGoogle: () => Promise<void>;
   logInAnon: () => Promise<void>;
@@ -86,10 +97,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     return unsub;
   }, []);
 
-  async function signUp(username: string, email: string, password: string) {
+  async function signUp(email: string, password: string) {
     if (!auth) throw new Error("Authentication isn't configured.");
     const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(cred.user, { displayName: username });
+    await updateProfile(cred.user, { displayName: generateUsername() });
     await cred.user.reload();
     setUser(auth.currentUser);
     detectCountry().then((country) => {
@@ -105,6 +116,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   async function logInWithGoogle() {
     if (!auth) throw new Error("Authentication isn't configured.");
     const cred = await signInWithPopup(auth, googleProvider);
+    if (getAdditionalUserInfo(cred)?.isNewUser) {
+      await updateProfile(cred.user, { displayName: generateUsername() });
+      await cred.user.reload();
+      setUser(auth.currentUser);
+    }
     detectCountry().then((country) => {
       if (country) saveCountryIfMissing(cred.user.uid, country);
     });

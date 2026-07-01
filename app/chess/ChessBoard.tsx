@@ -23,11 +23,15 @@ function rowColToSq(row: number, col: number): Square {
 type GameStatus = "playing" | "checkmate" | "draw" | "stalemate";
 
 const DIFFICULTIES = [
-  { label: "Newborn",   rating: "~300",  depth: 1 },
-  { label: "Club Kid",  rating: "~800",  depth: 2 },
-  { label: "Patzer",    rating: "~1200", depth: 3 },
-  { label: "Hustler",   rating: "~1600", depth: 4 },
-  { label: "The Beast", rating: "~2000", depth: 5 },
+  { label: "Drunk Rook",      rating: "~100",  depth: 1, randomFraction: 1.00 },
+  { label: "Newborn",         rating: "~300",  depth: 1, randomFraction: 0.60 },
+  { label: "Club Kid",        rating: "~600",  depth: 1, randomFraction: 0.25 },
+  { label: "Patzer",          rating: "~800",  depth: 2, randomFraction: 0.15 },
+  { label: "Weekend Warrior", rating: "~1000", depth: 2, randomFraction: 0.05 },
+  { label: "Hustler",         rating: "~1200", depth: 3, randomFraction: 0    },
+  { label: "Club Champion",   rating: "~1600", depth: 4, randomFraction: 0    },
+  { label: "The Beast",       rating: "~2000", depth: 5, randomFraction: 0    },
+  { label: "GrandMaster",     rating: "~2400", depth: 6, randomFraction: 0    },
 ];
 
 const PLAYER: Color = "w";
@@ -60,7 +64,8 @@ export default function ChessBoard() {
     if (chess.turn() === PLAYER || chess.isGameOver()) return;
     setBotThinking(true);
     const worker = new Worker(new URL("./engine.worker.ts", import.meta.url));
-    worker.postMessage({ fen: chess.fen(), depth: DIFFICULTIES[difficulty].depth });
+    const d = DIFFICULTIES[difficulty];
+    worker.postMessage({ fen: chess.fen(), depth: d.depth, randomFraction: d.randomFraction });
     worker.onmessage = (e) => {
       const move = e.data;
       if (move) { chess.move(move); setLastMove({ from: move.from, to: move.to }); }

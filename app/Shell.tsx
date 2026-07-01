@@ -16,41 +16,35 @@ const LOCALE_OPTIONS: { key: LocaleKey; label: string; flag: string }[] = [
   { key: "zh", label: "🇨🇳 中文", flag: "🇨🇳" },
 ];
 
+const SidebarSection = ({ label }: { label: string }) => (
+  <div className="text-muted fw-semibold" style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", padding: "10px 0 2px" }}>
+    {label}
+  </div>
+);
+
 const SidebarLinks = ({ onNavigate, sidebarPosts }: { onNavigate?: () => void; sidebarPosts: { slug: string; title: string }[] }) => {
   const { locale: en } = useLocale();
-  const [endgamesOpen, setEndgamesOpen] = useState(false);
   return (
   <>
     <div className="mb-3">
-      <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.playChess}</Link>
-      <Link href="/minichess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.miniChess}</Link>
+      <SidebarSection label="Daily Puzzles" />
       <Link href="/takes" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.takes}</Link>
       <Link href="/check" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.check}</Link>
       <Link href="/smothered" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.smothered}</Link>
-      <Link href="/chess-solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.chessSolitaire}</Link>
-      <Link href="/solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.chainCapture}</Link>
-      <Link href="/survival" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.survival}</Link>
       <Link href="/mate-in-1" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.mateIn1}</Link>
       <Link href="/mate-in-2" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.mateIn2}</Link>
       <Link href="/mate-in-3" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.mateIn3}</Link>
+      <Link href="/chess-solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.chessSolitaire}</Link>
+      <Link href="/solitaire" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.chainCapture}</Link>
+      <Link href="/king-and-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.kingAndPawn}</Link>
+      <Link href="/rook-endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.rookEndgame}</Link>
+      <Link href="/zugzwang" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.zugzwang}</Link>
+      <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.queenVsPawn}</Link>
 
-      {/* Endgame puzzles dropdown */}
-      <button
-        type="button"
-        className="sidebar-link sidebar-link--games sidebar-group"
-        aria-expanded={endgamesOpen}
-        onClick={() => setEndgamesOpen((o) => !o)}
-      >
-        {en.sidebar.endgamePuzzles} <span className="ms-auto">{endgamesOpen ? "▾" : "▸"}</span>
-      </button>
-      {endgamesOpen && (
-        <div style={{ paddingLeft: 14 }}>
-          <Link href="/king-and-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.kingAndPawn}</Link>
-          <Link href="/rook-endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.rookEndgame}</Link>
-          <Link href="/zugzwang" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.zugzwang}</Link>
-          <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.queenVsPawn}</Link>
-        </div>
-      )}
+      <SidebarSection label="Play" />
+      <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.playChess}</Link>
+      <Link href="/minichess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.miniChess}</Link>
+      <Link href="/survival" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.survival}</Link>
     </div>
     <div>
       <Link href="/blog" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.blog}</Link>
