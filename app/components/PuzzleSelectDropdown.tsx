@@ -214,11 +214,12 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
       {/* Button row */}
       <div className="d-flex gap-2">
         <button
-          className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          className="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          style={{ fontSize: 11, padding: "3px 8px", whiteSpace: "nowrap" }}
           onClick={() => setOpen(true)}
           title="Previous puzzles"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
             <line x1="8" y1="2" x2="8" y2="6"/>
@@ -228,7 +229,8 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
         </button>
 
         <button
-          className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          className="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          style={{ fontSize: 11, padding: "3px 8px", whiteSpace: "nowrap" }}
           onClick={pickRandom}
           disabled={randomLoading}
           title="Load a random puzzle"
@@ -236,7 +238,7 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
           {randomLoading ? (
             <span className="spinner-border spinner-border-sm" style={{ width: 12, height: 12 }} />
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="16 3 21 3 21 8"/>
               <line x1="4" y1="20" x2="21" y2="3"/>
               <polyline points="21 16 21 21 16 21"/>
@@ -247,11 +249,12 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
         </button>
 
         <button
-          className="btn btn-sm btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          className="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-1"
+          style={{ fontSize: 11, padding: "3px 8px", whiteSpace: "nowrap" }}
           onClick={() => setLbOpen(true)}
           title="Leaderboard"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="14" width="5" height="7" rx="1"/>
             <rect x="9.5" y="9" width="5" height="12" rx="1"/>
             <rect x="17" y="3" width="5" height="18" rx="1"/>

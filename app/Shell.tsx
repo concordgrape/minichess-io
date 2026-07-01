@@ -27,7 +27,6 @@ const SidebarLinks = ({ onNavigate, sidebarPosts }: { onNavigate?: () => void; s
   return (
   <>
     <div className="mb-3">
-      <SidebarSection label="Daily Puzzles" />
       <Link href="/takes" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.takes}</Link>
       <Link href="/check" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.check}</Link>
       <Link href="/smothered" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.smothered}</Link>
@@ -135,7 +134,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
               >
                 ☰
               </button>
-              <Link className="navbar-brand fw-bold mb-0 d-none d-lg-inline" href="/">
+              <Link className="navbar-brand fw-bold mb-0 d-none d-lg-inline" href="/" style={{ fontSize: "1.35rem" }}>
                 {en.siteName}
               </Link>
             </div>
