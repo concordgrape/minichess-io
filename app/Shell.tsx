@@ -27,6 +27,9 @@ const SidebarLinks = ({ onNavigate, sidebarPosts }: { onNavigate?: () => void; s
   return (
   <>
     <div className="mb-3">
+      <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.playChess}</Link>
+      <Link href="/minichess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.miniChess}</Link>
+      <Link href="/survival" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.survival}</Link>
       <Link href="/takes" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.takes}</Link>
       <Link href="/check" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.check}</Link>
       <Link href="/smothered" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.smothered}</Link>
@@ -39,13 +42,9 @@ const SidebarLinks = ({ onNavigate, sidebarPosts }: { onNavigate?: () => void; s
       <Link href="/rook-endgame" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.rookEndgame}</Link>
       <Link href="/zugzwang" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.zugzwang}</Link>
       <Link href="/queen-vs-pawn" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.queenVsPawn}</Link>
-
-      <SidebarSection label="Play" />
-      <Link href="/chess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.playChess}</Link>
-      <Link href="/minichess" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.miniChess}</Link>
-      <Link href="/survival" className="sidebar-link sidebar-link--games" onClick={onNavigate}>{en.sidebar.survival}</Link>
     </div>
     <div>
+      <Link href="/top-players" className="sidebar-link sidebar-link--ranks" onClick={onNavigate}>Top Players</Link>
       <Link href="/blog" className="sidebar-link sidebar-link--community" onClick={onNavigate}>{en.sidebar.blog}</Link>
       {sidebarPosts.map((post) => (
         <Link
