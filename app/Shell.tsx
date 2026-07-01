@@ -251,7 +251,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
             </div>
 
             {/* Page content */}
-            <div className="col p-4">
+            <div className="col p-4" style={{ minWidth: 0 }}>
               {children}
             </div>
           </div>
