@@ -9,11 +9,11 @@ import Footer from "./components/Footer";
 import { useLocale } from "@/app/i18n/LocaleProvider";
 import { type LocaleKey } from "@/app/i18n/index";
 
-const LOCALE_OPTIONS: { key: LocaleKey; label: string }[] = [
-  { key: "en", label: "🇺🇸 English" },
-  { key: "de", label: "🇩🇪 Deutsch" },
-  { key: "es", label: "🇪🇸 Español" },
-  { key: "zh", label: "🇨🇳 中文" },
+const LOCALE_OPTIONS: { key: LocaleKey; label: string; flag: string }[] = [
+  { key: "en", label: "🇺🇸 English", flag: "🇺🇸" },
+  { key: "de", label: "🇩🇪 Deutsch", flag: "🇩🇪" },
+  { key: "es", label: "🇪🇸 Español", flag: "🇪🇸" },
+  { key: "zh", label: "🇨🇳 中文", flag: "🇨🇳" },
 ];
 
 const SidebarLinks = ({ onNavigate, sidebarPosts }: { onNavigate?: () => void; sidebarPosts: { slug: string; title: string }[] }) => {
@@ -149,7 +149,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
             {/* Right: action buttons */}
             <div className="d-flex align-items-center gap-2">
               {user ? (
-                <UserMenu user={user} />
+                <UserMenu user={user} dark={dark} onToggleDark={() => setDark((d) => !d)} />
               ) : (
                 <>
                   <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => openAuth("signup")}>{en.nav.signUp}</button>
@@ -157,7 +157,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
                 </>
               )}
               <button
-                className="btn btn-outline-secondary rounded-0 d-inline-flex align-items-center justify-content-center"
+                className="btn btn-outline-secondary rounded-0 d-none d-md-inline-flex align-items-center justify-content-center"
                 onClick={() => setDark((d) => !d)}
                 title={dark ? en.nav.switchToLight : en.nav.switchToDark}
                 aria-label={dark ? en.nav.switchToLight : en.nav.switchToDark}
@@ -180,13 +180,17 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
               )}
 
               {/* Language dropdown */}
-              <div style={{ position: "relative" }} ref={langRef} className="d-none d-sm-block">
+              <div style={{ position: "relative" }} ref={langRef}>
                 <button
                   className="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-1 text-muted small"
                   onClick={() => setLangOpen((o) => !o)}
                   aria-expanded={langOpen}
+                  aria-label="Select language"
                 >
-                  {en.nav.language}
+                  <span>{LOCALE_OPTIONS.find((o) => o.key === localeKey)?.flag ?? "🇺🇸"}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
                 </button>
                 {langOpen && (
                   <div

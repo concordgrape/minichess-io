@@ -7,6 +7,7 @@ import AuthProvider from "./AuthProvider";
 import { LocaleProvider } from "./i18n/LocaleProvider";
 import { getAllPosts } from "./lib/blog";
 import { Analytics } from "@vercel/analytics/next"
+import JsonLd from "./components/JsonLd"
 
 const openSans = Open_Sans({ subsets: ["latin"] });
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | Daily Checkmate",
   },
   description:
-    "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more | a new challenge every day.",
+    "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
   keywords: [
     "chess puzzles",
     "daily chess puzzle",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     siteName: "Daily Checkmate",
     title: "Daily Checkmate | Daily Chess Puzzles",
     description:
-      "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more | a new challenge every day.",
+      "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
     url: "https://dailycheckmate.com",
   },
   twitter: {
@@ -57,6 +58,16 @@ export default async function RootLayout({
   return (
     <html lang="en" className={openSans.className}>
       <body>
+        <JsonLd data={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "Daily Checkmate",
+          url: "https://dailycheckmate.com",
+          applicationCategory: "GameApplication",
+          operatingSystem: "Web",
+          description: "Free daily chess puzzles — mate-in-1, mate-in-2, endgame puzzles, and more.",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        }} />
         <Analytics />
         <LocaleProvider>
           <AuthProvider>

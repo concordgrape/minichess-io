@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { getPostBySlug, getAllPosts } from "@/app/lib/blog";
 import { getLocale, LOCALE_COOKIE } from "@/app/i18n/index";
+import JsonLd from "@/app/components/JsonLd";
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -22,6 +23,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: post.excerpt,
       url: `https://dailycheckmate.com/blog/${slug}`,
       type: "article",
+      publishedTime: post.date,
+      authors: [post.author],
+      images: [{ url: "https://dailycheckmate.com/og-img.png", width: 1200, height: 630, alt: "Daily Checkmate" }],
     },
   };
 }
@@ -37,6 +41,17 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   return (
     <div style={{ maxWidth: 680 }}>
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date,
+        author: { "@type": "Person", name: post.author },
+        publisher: { "@type": "Organization", name: "Daily Checkmate", url: "https://dailycheckmate.com" },
+        url: `https://dailycheckmate.com/blog/${slug}`,
+        image: "https://dailycheckmate.com/og-img.png",
+      }} />
       <Link href="/blog" className="text-muted small text-decoration-none d-inline-flex align-items-center gap-1 mb-4">
         ← {t.blog.backToAll}
       </Link>
