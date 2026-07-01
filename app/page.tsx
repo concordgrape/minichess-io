@@ -4,6 +4,7 @@ import { getLocale } from "@/app/i18n";
 
 const PLACEHOLDER = "/og-img.png";
 const GAME_IMAGES: Record<string, string> = {
+  "/chess":     "/images/chess.png",
   "/mate-in-1": "/images/mate_in_1.webp",
   "/mate-in-2": "/images/mate_in_2.webp",
   "/mate-in-3": "/images/mate_in_3.webp",
