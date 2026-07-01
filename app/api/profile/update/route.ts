@@ -4,7 +4,7 @@ import {
   englishDataset,
   englishRecommendedTransformers,
 } from "obscenity";
-import { getAdminAuth, getAdminDb } from "@/app/lib/firebase-admin";
+import { verifyFirebaseToken, getAdminDb } from "@/app/lib/firebase-admin";
 
 const matcher = new RegExpMatcher({
   ...englishDataset.build(),
@@ -19,8 +19,7 @@ export async function POST(request: NextRequest) {
   }
   let uid: string;
   try {
-    const adminAuth = await getAdminAuth();
-    const decoded = await adminAuth.verifyIdToken(authHeader.slice(7));
+    const decoded = await verifyFirebaseToken(authHeader.slice(7));
     uid = decoded.uid;
   } catch {
     return Response.json({ error: "unauthenticated" }, { status: 401 });

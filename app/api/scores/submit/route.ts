@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { revalidateTag } from "next/cache";
-import { getAdminAuth, getAdminDb } from "@/app/lib/firebase-admin";
+import { verifyFirebaseToken, getAdminDb } from "@/app/lib/firebase-admin";
 import { GAME_FORMULAS, getPuzzleDifficulty, computeScore } from "@/app/lib/scoring/formulas";
 import type { GameId, PuzzleRawData } from "@/app/lib/scoring/types";
 
@@ -17,16 +17,16 @@ export async function POST(request: NextRequest) {
     let uid: string;
     let displayName: string;
     try {
-      const adminAuth = await getAdminAuth();
-      const decoded = await adminAuth.verifyIdToken(authHeader.slice(7));
+      const decoded = await verifyFirebaseToken(authHeader.slice(7));
       uid = decoded.uid;
-      displayName = decoded.name ?? decoded.email ?? `user_${decoded.uid.slice(0, 6)}`;
+      displayName = decoded.name ?? decoded.email ?? `user_${uid.slice(0, 6)}`;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      // Distinguish a bad/expired token from an admin SDK init failure
-      const isAuthError = msg.includes("Firebase ID token") || msg.includes("auth/") || msg.includes("invalid-argument");
       console.error("[submit] auth error:", msg);
-      if (isAuthError) {
+      // JWT verification errors (expired, bad sig, wrong audience) → 401
+      const isTokenError = msg.includes("JWTExpired") || msg.includes("JWSSignatureVerification")
+        || msg.includes("JWTClaimValidation") || msg.includes("JWSInvalid");
+      if (isTokenError) {
         return Response.json({ saved: false, reason: "unauthenticated" }, { status: 401 });
       }
       return Response.json({ saved: false, reason: "auth_init_failed", detail: msg }, { status: 500 });

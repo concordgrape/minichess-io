@@ -1,4 +1,4 @@
-import { getAdminDb, getAdminAuth } from "@/app/lib/firebase-admin";
+import { getAdminDb } from "@/app/lib/firebase-admin";
 import { getPuzzleDifficulty } from "@/app/lib/scoring/formulas";
 
 /** GET /api/health
@@ -35,9 +35,9 @@ export async function GET() {
     results.firestore_write = { ok: false, error: String(e) };
   }
 
-  // 5. Auth SDK init
+  // 5. jose JWKS import (replaces firebase-admin/auth)
   try {
-    await getAdminAuth();
+    await import("jose");
     results.firebase_auth = { ok: true };
   } catch (e) {
     results.firebase_auth = { ok: false, error: String(e) };

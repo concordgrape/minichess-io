@@ -1,9 +1,7 @@
 import { getApps, initializeApp, cert, type App } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
-import type { Auth } from "firebase-admin/auth";
 
 let _app: App | undefined;
-let _auth: Auth | undefined;
 
 function getAdminApp(): App {
   if (_app) return _app;
@@ -17,12 +15,24 @@ function getAdminApp(): App {
 
 export const getAdminDb = (): Firestore => getFirestore(getAdminApp());
 
-// Dynamic import avoids pulling jwks-rsa → jose v5 (ESM-only) at module
-// evaluation time, which crashes Vercel's CJS serverless runtime.
-export async function getAdminAuth(): Promise<Auth> {
-  if (!_auth) {
-    const { getAuth } = await import("firebase-admin/auth");
-    _auth = getAuth(getAdminApp());
-  }
-  return _auth;
+// Verify a Firebase ID token without touching firebase-admin/auth (which pulls
+// jwks-rsa → jose ESM, crashing Vercel's CJS runtime). Firebase tokens are
+// standard RS256 JWTs — we verify them directly via jose + Google's public JWKS.
+export async function verifyFirebaseToken(token: string): Promise<{ uid: string; name?: string; email?: string }> {
+  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  if (!projectId) throw new Error("NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set");
+  const { createRemoteJWKSet, jwtVerify } = await import("jose");
+  const JWKS = createRemoteJWKSet(
+    new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
+  );
+  const { payload } = await jwtVerify(token, JWKS, {
+    issuer: `https://securetoken.google.com/${projectId}`,
+    audience: projectId,
+    algorithms: ["RS256"],
+  });
+  return {
+    uid: payload.sub as string,
+    name: payload["name"] as string | undefined,
+    email: payload["email"] as string | undefined,
+  };
 }

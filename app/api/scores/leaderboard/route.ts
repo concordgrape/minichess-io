@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { unstable_cache } from "next/cache";
-import { getAdminAuth, getAdminDb } from "@/app/lib/firebase-admin";
+import { verifyFirebaseToken, getAdminDb } from "@/app/lib/firebase-admin";
 import type { LeaderboardEntry } from "@/app/lib/scoring/types";
 
 interface PuzzleLeaderboardEntry extends LeaderboardEntry {
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
   let displayName: string | null = null;
   if (authHeader?.startsWith("Bearer ")) {
     try {
-      const decoded = await (await getAdminAuth()).verifyIdToken(authHeader.slice(7));
+      const decoded = await verifyFirebaseToken(authHeader.slice(7));
       uid = decoded.uid;
       displayName = decoded.name ?? decoded.email ?? null;
     } catch {

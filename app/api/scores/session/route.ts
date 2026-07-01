@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { NextRequest } from "next/server";
-import { getAdminAuth, getAdminDb } from "@/app/lib/firebase-admin";
+import { verifyFirebaseToken, getAdminDb } from "@/app/lib/firebase-admin";
 import { GAME_FORMULAS, getPuzzleDifficulty } from "@/app/lib/scoring/formulas";
 import type { GameId } from "@/app/lib/scoring/types";
 
@@ -14,10 +14,9 @@ export async function POST(request: NextRequest) {
     let uid: string;
     let displayName: string;
     try {
-      const auth = await getAdminAuth();
-      const decoded = await auth.verifyIdToken(authHeader.slice(7));
+      const decoded = await verifyFirebaseToken(authHeader.slice(7));
       uid = decoded.uid;
-      displayName = decoded.name ?? decoded.email ?? `user_${decoded.uid.slice(0, 6)}`;
+      displayName = decoded.name ?? decoded.email ?? `user_${uid.slice(0, 6)}`;
     } catch (e) {
       console.error("[session] token verify failed:", e);
       return Response.json({ error: "unauthenticated" }, { status: 401 });
