@@ -5,7 +5,7 @@ export const metadata = {
   description: "Play chess online for free against a computer opponent. Choose your difficulty from beginner to advanced and improve your game.",
   keywords: ["play chess online", "chess vs computer", "free chess game", "chess online"],
   openGraph: {
-    title: "Play Chess Online Free | DailyCheckmate",
+    title: "Play Chess Online Free | Daily Checkmate",
     description: "Play chess online for free against a computer opponent. Choose your difficulty from beginner to advanced.",
     url: "https://dailycheckmate.com/chess",
   },

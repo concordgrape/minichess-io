@@ -149,7 +149,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
 
   function handleSquareClick(row: number, col: number) {
     if (status !== "playing") return;
-    // Clicking the current piece — no-op (already selected)
+    // Clicking the current piece | no-op (already selected)
     if (row === pos.row && col === pos.col) return;
     // Clicking a legal capture target
     const isTarget = legalCaptures.some((s) => s.row === row && s.col === col);
@@ -178,13 +178,13 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div style={{ width: sq * 4 }}>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="solitaire" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -254,7 +254,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
         {/* Board + status */}
         <div style={{ width: sq * 4 }}>
           <BoardOverlay>
@@ -290,7 +290,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
             )}
             {status === "lost" && (
               <span className="fw-bold text-danger">
-                ✗ No captures available — {remaining} piece{remaining !== 1 ? "s" : ""} remain.
+                ✗ No captures available | {remaining} piece{remaining !== 1 ? "s" : ""} remain.
               </span>
             )}
 
@@ -318,7 +318,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
         </div>
 
         {/* Sidebar */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="solitaire"

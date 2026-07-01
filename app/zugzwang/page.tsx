@@ -4,11 +4,11 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
-  title: "Zugzwang Puzzle — Force Your Opponent Into a Losing Move",
+  title: "Zugzwang Puzzle | Force Your Opponent Into a Losing Move",
   description: "Solve a zugzwang chess puzzle: find the quiet waiting move that forces your opponent into a losing position. Free daily chess endgame puzzle.",
   keywords: ["zugzwang", "zugzwang chess puzzle", "chess waiting move", "chess endgame puzzle", "chess strategy"],
   openGraph: {
-    title: "Zugzwang Puzzle | DailyCheckmate",
+    title: "Zugzwang Puzzle | Daily Checkmate",
     description: "Find the quiet waiting move that forces your opponent into a losing position. Free daily chess endgame puzzle.",
     url: "https://dailycheckmate.com/zugzwang",
   },

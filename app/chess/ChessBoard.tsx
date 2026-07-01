@@ -173,7 +173,7 @@ export default function ChessBoard() {
             <>
               <span className="text-muted small">
                 {botThinking ? "Bot is thinking…" : chess.turn() === PLAYER ? "Your turn" : "Bot's turn"}
-                {check && " — Check!"}
+                {check && " | Check!"}
               </span>
               {chess.turn() === PLAYER && moveHistory.length >= 2 && !botThinking && (
                 <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={undoLastMove}>Undo</button>
@@ -181,9 +181,9 @@ export default function ChessBoard() {
             </>
           )}
           {status === "checkmate" && (
-            <span className="fw-bold text-danger">Checkmate — {chess.turn() === PLAYER ? "Bot wins!" : "You win!"}</span>
+            <span className="fw-bold text-danger">Checkmate | {chess.turn() === PLAYER ? "Bot wins!" : "You win!"}</span>
           )}
-          {status === "stalemate" && <span className="fw-bold text-warning">Stalemate — Draw!</span>}
+          {status === "stalemate" && <span className="fw-bold text-warning">Stalemate | Draw!</span>}
           {status === "draw" && <span className="fw-bold text-warning">Draw!</span>}
           <button className="btn btn-sm btn-outline-secondary rounded-0 ms-auto" onClick={resetGame}>New game</button>
         </div>

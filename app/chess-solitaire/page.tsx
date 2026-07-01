@@ -4,11 +4,11 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
-  title: "Chess Solitaire — Capture All Pieces on the Full Board",
+  title: "Chess Solitaire | Capture All Pieces on the Full Board",
   description: "Capture every piece on a full 8x8 chess board in one continuous sequence. A daily chess puzzle for all skill levels. Free online.",
   keywords: ["chess solitaire", "chess solitaire puzzle", "capture all pieces chess", "daily chess puzzle"],
   openGraph: {
-    title: "Chess Solitaire — Capture All Pieces | DailyCheckmate",
+    title: "Chess Solitaire | Capture All Pieces | Daily Checkmate",
     description: "Capture every piece on a full 8x8 chess board in one continuous sequence.",
     url: "https://dailycheckmate.com/chess-solitaire",
   },

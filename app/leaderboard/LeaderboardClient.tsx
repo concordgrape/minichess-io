@@ -23,7 +23,7 @@ function RankCell({ rank }: { rank: number }) {
 }
 
 function GameTable({ entries }: { entries: LeaderboardEntry[] }) {
-  const ROW_H = 41; // px — keeps table height stable between tabs
+  const ROW_H = 41; // px | keeps table height stable between tabs
   const ROWS = 10;
 
   return (
@@ -83,7 +83,7 @@ export default function LeaderboardClient({ boards }: { boards: GameLeaderboard[
 
   return (
     <div>
-      {/* Tab bar — scrolls horizontally on mobile */}
+      {/* Tab bar | scrolls horizontally on mobile */}
       <div
         className="d-flex gap-1 mb-3 pb-1"
         style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}

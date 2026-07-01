@@ -7,7 +7,7 @@ const MEDAL = ["🥇", "🥈", "🥉"];
 
 /**
  * Wrap just the <Board> element inside a game component with this.
- * It renders a blurry overlay over the board only — not the info panel.
+ * It renders a blurry overlay over the board only | not the info panel.
  */
 export default function BoardOverlay({ children, ready = true }: { children: React.ReactNode; ready?: boolean }) {
   const { phase, leaderboard, loadingLb, handleStart, resetGame } = useGamePhase();
@@ -87,7 +87,7 @@ export default function BoardOverlay({ children, ready = true }: { children: Rea
 
               {!loadingLb && leaderboard && leaderboard.length === 0 && (
                 <p className="text-muted text-center py-2 mb-0" style={{ fontSize: 12 }}>
-                  No scores yet — be the first!
+                  No scores yet | be the first!
                 </p>
               )}
 

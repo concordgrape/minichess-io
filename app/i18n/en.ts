@@ -52,7 +52,7 @@ const en = {
 
   // ── Footer ────────────────────────────────────────────────────────────────
   footer: {
-    copyright: (year: number) => `© ${year} Minichess`,
+    copyright: (year: number) => `© ${year} Daily Checkmate`,
   },
 
   // ── User menu ─────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ const en = {
 
   // ── Home page ─────────────────────────────────────────────────────────────
   home: {
-    title: "DailyCheckmate",
+    title: "Daily Checkmate",
     subtitle: "A new chess puzzle every day. Sharpen your tactics, train your endgames, and play for free.",
   },
 

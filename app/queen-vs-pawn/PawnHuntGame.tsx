@@ -148,13 +148,13 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="queen-vs-pawn" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -167,7 +167,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
               <div className="fw-semibold mb-1">Rules</div>
               <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
                 <li>You play White (king and queen).</li>
-                <li>Black races to promote — if it queens, you lose.</li>
+                <li>Black races to promote | if it queens, you lose.</li>
                 <li>Use checks to win a tempo and round up the pawn.</li>
               </ul>
             </div>
@@ -211,7 +211,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
         <div>
           <BoardOverlay>
 <Board
@@ -228,7 +228,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (
               <span className="text-muted small">
-                {defending ? "Black is pushing…" : `Move ${moveNum} of ${winIn} — win the pawn`}
+                {defending ? "Black is pushing…" : `Move ${moveNum} of ${winIn} | win the pawn`}
               </span>
             )}
             {status === "won" && (
@@ -237,9 +237,9 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
                 {earnedPoints !== null && <span className="ms-2 badge text-bg-warning rounded-0">+{earnedPoints} pts</span>}
               </span>
             )}
-            {status === "promoted" && <span className="fw-bold text-danger">✗ The pawn promoted — try again.</span>}
-            {status === "draw" && <span className="fw-bold text-danger">✗ Stalemate — try again.</span>}
-            {status === "exceeded" && <span className="fw-bold text-danger">✗ Out of moves — try again.</span>}
+            {status === "promoted" && <span className="fw-bold text-danger">✗ The pawn promoted | try again.</span>}
+            {status === "draw" && <span className="fw-bold text-danger">✗ Stalemate | try again.</span>}
+            {status === "exceeded" && <span className="fw-bold text-danger">✗ Out of moves | try again.</span>}
             {status !== "won" && (
               <span className="badge text-bg-warning rounded-0 ms-auto me-1"
                 style={{ opacity: status === "playing" ? 1 : 0.4 }}>
@@ -255,7 +255,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="queen-vs-pawn"
@@ -288,7 +288,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
             <ul className="ps-3 text-muted" style={{ lineHeight: 1.6 }}>
               <li>You play White (king and queen).</li>
               <li>Capture the Black pawn within {winIn} move{winIn > 1 ? "s" : ""}.</li>
-              <li>Black races to promote — if it queens, you lose.</li>
+              <li>Black races to promote | if it queens, you lose.</li>
               <li>Use checks to win a tempo and round up the pawn.</li>
             </ul>
           </div>

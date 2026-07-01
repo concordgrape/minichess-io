@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { GameStartContext } from "../lib/GameStartContext";
 import type { GameId } from "../lib/scoring/types";
 
-/** Context provider only — renders no UI. Wrap the whole game section in pages. */
+/** Context provider only | renders no UI. Wrap the whole game section in pages. */
 export default function GameStartOverlay({
   gameId,
   children,

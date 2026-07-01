@@ -4,11 +4,11 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
-  title: "Chain Capture — Chess Puzzle Game",
+  title: "Chain Capture | Chess Puzzle Game",
   description: "Capture every piece on the board in one unbroken chain. A daily chess puzzle that trains calculation and piece mobility. Free online.",
   keywords: ["chain capture chess", "chess capture chain puzzle", "chess solitaire puzzle", "daily chess puzzle"],
   openGraph: {
-    title: "Chain Capture — Chess Puzzle Game | DailyCheckmate",
+    title: "Chain Capture | Chess Puzzle Game | Daily Checkmate",
     description: "Capture every piece on the board in one unbroken chain. Trains calculation and piece mobility.",
     url: "https://dailycheckmate.com/solitaire",
   },

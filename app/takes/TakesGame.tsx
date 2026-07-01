@@ -117,13 +117,13 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="takes" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => { const p = data as unknown as Puzzle; setPuzzle(p); resetToFresh(p); }} />
@@ -164,7 +164,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
         <div style={{ width: sq * 4 }}>
           <BoardOverlay>
 <Board
@@ -180,7 +180,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
 
           <div className="mt-2 d-flex align-items-center gap-2">
             {status === "playing" && (
-              <span className="text-muted small">{nonKingCount} piece{nonKingCount !== 1 ? "s" : ""} left — every move must capture</span>
+              <span className="text-muted small">{nonKingCount} piece{nonKingCount !== 1 ? "s" : ""} left | every move must capture</span>
             )}
             {status === "won" && (
               <span className="fw-bold text-success">
@@ -188,7 +188,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
                 {earnedPoints !== null && <span className="ms-2 badge text-bg-warning rounded-0">+{earnedPoints} pts</span>}
               </span>
             )}
-            {status === "lost" && <span className="fw-bold text-danger">✗ Stuck — no captures available.</span>}
+            {status === "lost" && <span className="fw-bold text-danger">✗ Stuck | no captures available.</span>}
             {status !== "won" && (
               <span className="badge text-bg-warning rounded-0 ms-auto me-1" style={{ opacity: status === "lost" ? 0.4 : 1 }}>
                 ★ {potentialPoints} pts
@@ -203,7 +203,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="takes"

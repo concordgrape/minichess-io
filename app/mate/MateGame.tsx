@@ -164,13 +164,13 @@ export default function MateGame({
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId={slug} currentId={-1} getStatus={getStatus} invalidateLbRef={invalidateLb}
                 onPuzzleLoaded={(data) => { const p = data as unknown as MatePuzzle; setPuzzle(p); load(p); }} />
@@ -232,7 +232,7 @@ export default function MateGame({
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
         <div>
           <BoardOverlay>
 <Board
@@ -249,7 +249,7 @@ export default function MateGame({
           <div className="mt-2 d-flex align-items-center gap-2" style={{ minHeight: 32 }}>
             {status === "playing" && (
               <span className="text-muted small">
-                {defending ? "Black is defending…" : `Move ${moveNum} of ${mateIn} — your turn`}
+                {defending ? "Black is defending…" : `Move ${moveNum} of ${mateIn} | your turn`}
                 {inCheck && !defending && " · Check!"}
               </span>
             )}
@@ -259,8 +259,8 @@ export default function MateGame({
                 {earnedPoints !== null && <span className="ms-2 badge text-bg-warning rounded-0">+{earnedPoints} pts</span>}
               </span>
             )}
-            {status === "stalemate" && <span className="fw-bold text-danger">✗ Stalemate — try again.</span>}
-            {status === "exceeded" && <span className="fw-bold text-danger">✗ Out of moves — try again.</span>}
+            {status === "stalemate" && <span className="fw-bold text-danger">✗ Stalemate | try again.</span>}
+            {status === "exceeded" && <span className="fw-bold text-danger">✗ Out of moves | try again.</span>}
             {status !== "solved" && (
               <span className="badge text-bg-warning rounded-0 ms-auto me-1"
                 style={{ opacity: status === "playing" ? 1 : 0.4 }}>
@@ -276,7 +276,7 @@ export default function MateGame({
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId={slug}

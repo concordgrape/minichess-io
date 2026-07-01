@@ -148,7 +148,7 @@ export default function LeaderboardModal({ gameId, puzzleId, onClose, invalidate
           {!loading && !error && isAuthed && data && (
             <>
               {data.players.length === 0 ? (
-                <div className="text-center text-muted small py-5">No scores yet — be the first!</div>
+                <div className="text-center text-muted small py-5">No scores yet | be the first!</div>
               ) : (
                 <>
                   {/* Scrollable table */}

@@ -241,13 +241,13 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="smothered" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -333,7 +333,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
         {/* Board + status bar */}
         <div>
           <BoardOverlay>
@@ -353,7 +353,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
               <span className="text-muted small">
                 {kingThinking
                   ? "King is thinking…"
-                  : `Move ${moveNum} of ${mateIn} — your turn`}
+                  : `Move ${moveNum} of ${mateIn} | your turn`}
                 {kingInCheck && !kingThinking && (
                   <span className="ms-1 fw-semibold" style={{ color: "#ff9900" }}>· Check!</span>
                 )}
@@ -371,10 +371,10 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
               </span>
             )}
             {status === "lost-wrong-piece" && (
-              <span className="fw-bold text-danger">✗ Checkmate — but the Knight must finish it.</span>
+              <span className="fw-bold text-danger">✗ Checkmate | but the Knight must finish it.</span>
             )}
             {status === "lost-stalemate" && (
-              <span className="fw-bold text-danger">✗ Stalemate — the King escapes.</span>
+              <span className="fw-bold text-danger">✗ Stalemate | the King escapes.</span>
             )}
             {status === "lost-exceeded" && (
               <span className="fw-bold text-danger">✗ Out of moves.</span>
@@ -402,7 +402,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
         </div>
 
         {/* Sidebar */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="smothered"

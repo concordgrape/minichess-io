@@ -220,13 +220,13 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="chess-solitaire" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -256,7 +256,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
         {/* Board column */}
         <div>
           <BoardOverlay>
@@ -277,7 +277,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
           <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
             {status === "playing" && (
               <span className="text-muted small">
-                {selected ? `${PIECE_NAMES[selected.type]} selected — click a highlighted piece` : "Click a piece to see captures"}
+                {selected ? `${PIECE_NAMES[selected.type]} selected | click a highlighted piece` : "Click a piece to see captures"}
                 {" · "}{remaining} piece{remaining !== 1 ? "s" : ""} left
               </span>
             )}
@@ -308,7 +308,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
         </div>
 
         {/* Info panel */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="chess-solitaire"

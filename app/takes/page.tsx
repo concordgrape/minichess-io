@@ -4,11 +4,11 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
-  title: "Takes — Capture All Pieces Chess Puzzle",
+  title: "Takes | Capture All Pieces Chess Puzzle",
   description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything. Free to play online.",
   keywords: ["chess capture puzzle", "takes chess game", "capture all pieces chess", "daily chess puzzle"],
   openGraph: {
-    title: "Takes — Capture All Pieces Chess Puzzle | DailyCheckmate",
+    title: "Takes | Capture All Pieces Chess Puzzle | Daily Checkmate",
     description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything.",
     url: "https://dailycheckmate.com/takes",
   },

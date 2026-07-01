@@ -209,22 +209,22 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
 
   // Status message
   const statusMsg =
-    status === "won" ? "Checkmate — you win! 🎉" :
-    status === "lost" ? "Checkmate — you lose" :
-    status === "draw-stalemate" ? "Stalemate — draw" :
-    status === "draw-insufficient" ? "Draw — insufficient material" :
+    status === "won" ? "Checkmate | you win! 🎉" :
+    status === "lost" ? "Checkmate | you lose" :
+    status === "draw-stalemate" ? "Stalemate | draw" :
+    status === "draw-insufficient" ? "Draw | insufficient material" :
     null;
 
   return (
     <div>
-      <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
         {/* Board column */}
         <div>
           {/* Orientation label */}
           <div className="d-flex justify-content-between mb-1 px-1" style={{ width: SIZE * sq }}>
             <span className="small text-muted">
               {aiThinking ? <span>⏳ AI thinking<span className="ms-1" style={{ letterSpacing: 2 }}>…</span></span>
-                : isReview ? <span className="text-warning small">Review mode — <button className="btn btn-sm btn-outline-warning rounded-0 py-0 px-1" onClick={() => setReviewIdx(null)}>Resume</button></span>
+                : isReview ? <span className="text-warning small">Review mode | <button className="btn btn-sm btn-outline-warning rounded-0 py-0 px-1" onClick={() => setReviewIdx(null)}>Resume</button></span>
                 : status === "playing" ? <span>{turn === "white" ? "♟ Your turn (White)" : "⏳ Black thinking…"}</span>
                 : null}
             </span>

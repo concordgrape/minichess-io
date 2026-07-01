@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "404 — Page Not Found | DailyCheckmate",
+  title: "404 | Page Not Found | Daily Checkmate",
   description: "This page is off the board. Head back home or jump into a chess puzzle.",
 };
 
@@ -9,7 +9,7 @@ export default function NotFound() {
   return (
     <div className="text-center py-5">
       <div className="d-inline-flex flex-column align-items-center" style={{ maxWidth: 460 }}>
-        {/* 4 ♞ 4 — the knight stands in for the zero */}
+        {/* 4 ♞ 4 | the knight stands in for the zero */}
         <div
           className="fw-bold lh-1 mb-3"
           style={{ fontSize: "clamp(72px, 18vw, 140px)", letterSpacing: 6 }}

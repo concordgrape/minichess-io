@@ -6,6 +6,7 @@ import LeaderboardModal from "./LeaderboardModal";
 interface PuzzleMeta {
   id: number;
   difficulty: string;
+  releaseDate: string | null;
 }
 
 interface Props {
@@ -322,7 +323,10 @@ export default function PuzzleSelectDropdown({ gameId, currentId, onPuzzleLoaded
                     disabled={isLoading}
                   >
                     <StatusDot status={status} />
-                    <span className="flex-grow-1">Game #{p.id}</span>
+                    <span className="flex-grow-1">
+                      <span>Game #{p.id}</span>
+                      {p.releaseDate && <span className="d-block text-muted" style={{ fontSize: 11, fontWeight: "normal" }}>{new Date(p.releaseDate + "T12:00:00").toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</span>}
+                    </span>
                     {isCurrent && (
                       <span className="text-muted" style={{ fontSize: 11 }}>▶</span>
                     )}

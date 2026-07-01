@@ -4,8 +4,8 @@ import LeaderboardClient from "./LeaderboardClient";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "Leaderboard — DailyCheckmate",
-  description: "Top 10 players for each chess puzzle game on DailyCheckmate.",
+  title: "Leaderboard | Daily Checkmate",
+  description: "Top 10 players for each chess puzzle game on Daily Checkmate.",
 };
 
 export default async function LeaderboardPage() {

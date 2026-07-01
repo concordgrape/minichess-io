@@ -4,11 +4,11 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
-  title: "Rook Endgame Puzzle — King and Rook vs King",
+  title: "Rook Endgame Puzzle | King and Rook vs King",
   description: "Solve a rook endgame: use king and rook to cut off the enemy king and force checkmate. Free daily chess endgame puzzle.",
   keywords: ["rook endgame", "king rook vs king", "rook checkmate", "chess endgame puzzle", "rook endgame technique"],
   openGraph: {
-    title: "Rook Endgame Puzzle | DailyCheckmate",
+    title: "Rook Endgame Puzzle | Daily Checkmate",
     description: "Use king and rook to cut off the enemy king and force checkmate. Free daily chess endgame puzzle.",
     url: "https://dailycheckmate.com/rook-endgame",
   },

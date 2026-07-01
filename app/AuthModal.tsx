@@ -6,7 +6,7 @@ import { useAuth } from "./AuthProvider";
 export type AuthMode = "signup" | "login";
 
 function friendlyError(err: unknown): string {
-  // Never surface raw Firebase error codes/messages to the user — log them for
+  // Never surface raw Firebase error codes/messages to the user | log them for
   // debugging and return a generic, human-friendly message instead.
   if (process.env.NODE_ENV !== "production") console.error(err);
   const code = (err as { code?: string })?.code ?? "";
@@ -150,7 +150,7 @@ export default function AuthModal({
           <p className="text-muted text-center mb-3">
             {isSignup
               ? "You won't lose your current results after registration"
-              : "Welcome back — pick up right where you left off"}
+              : "Welcome back | pick up right where you left off"}
           </p>
 
           {error && (

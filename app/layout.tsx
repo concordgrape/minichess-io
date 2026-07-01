@@ -13,11 +13,11 @@ const openSans = Open_Sans({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL("https://dailycheckmate.com"),
   title: {
-    default: "DailyCheckmate — Daily Chess Puzzles",
-    template: "%s | DailyCheckmate",
+    default: "Daily Checkmate | Daily Chess Puzzles",
+    template: "%s | Daily Checkmate",
   },
   description:
-    "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
+    "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more | a new challenge every day.",
   keywords: [
     "chess puzzles",
     "daily chess puzzle",
@@ -27,18 +27,18 @@ export const metadata: Metadata = {
     "free chess games online",
     "chess tactics",
   ],
-  authors: [{ name: "DailyCheckmate" }],
+  authors: [{ name: "Daily Checkmate" }],
   openGraph: {
     type: "website",
-    siteName: "DailyCheckmate",
-    title: "DailyCheckmate — Daily Chess Puzzles",
+    siteName: "Daily Checkmate",
+    title: "Daily Checkmate | Daily Chess Puzzles",
     description:
-      "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
+      "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more | a new challenge every day.",
     url: "https://dailycheckmate.com",
   },
   twitter: {
     card: "summary",
-    title: "DailyCheckmate — Daily Chess Puzzles",
+    title: "Daily Checkmate | Daily Chess Puzzles",
     description:
       "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more.",
   },

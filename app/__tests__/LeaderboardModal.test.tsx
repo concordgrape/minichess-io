@@ -75,7 +75,7 @@ function renderModal(puzzleId: number, onClose = vi.fn()) {
 // Tests
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — loading state", () => {
+describe("LeaderboardModal | loading state", () => {
   beforeEach(() => {
     currentUser = mockAuthedUser;
     // fetch never resolves → stays in loading
@@ -98,7 +98,7 @@ describe("LeaderboardModal — loading state", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — unauthenticated user", () => {
+describe("LeaderboardModal | unauthenticated user", () => {
   beforeEach(() => { currentUser = null; });
 
   it("prompts to sign in instead of fetching", async () => {
@@ -116,7 +116,7 @@ describe("LeaderboardModal — unauthenticated user", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — anonymous user", () => {
+describe("LeaderboardModal | anonymous user", () => {
   beforeEach(() => {
     currentUser = { ...mockAuthedUser, isAnonymous: true };
   });
@@ -136,7 +136,7 @@ describe("LeaderboardModal — anonymous user", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — fetch error", () => {
+describe("LeaderboardModal | fetch error", () => {
   beforeEach(() => {
     currentUser = mockAuthedUser;
     vi.stubGlobal("fetch", () => Promise.reject(new Error("Network error")));
@@ -153,7 +153,7 @@ describe("LeaderboardModal — fetch error", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — empty leaderboard", () => {
+describe("LeaderboardModal | empty leaderboard", () => {
   beforeEach(() => {
     currentUser = mockAuthedUser;
     vi.stubGlobal("fetch", () =>
@@ -172,7 +172,7 @@ describe("LeaderboardModal — empty leaderboard", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — data display", () => {
+describe("LeaderboardModal | data display", () => {
   const players: Player[] = [
     makePlayer({ rank: 1, uid: "u1", displayName: "Alice",   score: 900 }),
     makePlayer({ rank: 2, uid: "u2", displayName: "Bob",     score: 750 }),
@@ -225,7 +225,7 @@ describe("LeaderboardModal — data display", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — current user in top 100", () => {
+describe("LeaderboardModal | current user in top 100", () => {
   const players: Player[] = [
     makePlayer({ rank: 1, uid: "u1",           displayName: "Alice",       score: 900 }),
     makePlayer({ rank: 2, uid: "current-user", displayName: "CurrentUser", score: 750 }),
@@ -256,7 +256,7 @@ describe("LeaderboardModal — current user in top 100", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — current user outside top 100", () => {
+describe("LeaderboardModal | current user outside top 100", () => {
   const top3: Player[] = [
     makePlayer({ rank: 1, uid: "u1", displayName: "Alice", score: 900 }),
     makePlayer({ rank: 2, uid: "u2", displayName: "Bob",   score: 750 }),
@@ -307,7 +307,7 @@ describe("LeaderboardModal — current user outside top 100", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — caching", () => {
+describe("LeaderboardModal | caching", () => {
   beforeEach(() => { currentUser = mockAuthedUser; });
   afterEach(() => vi.unstubAllGlobals());
 
@@ -379,7 +379,7 @@ describe("LeaderboardModal — caching", () => {
     await userEvent.click(screen.getByText("Bust cache"));
     unmount();
 
-    // Re-open — should fetch again
+    // Re-open | should fetch again
     render(<LeaderboardModal gameId="mate-in-1" puzzleId={puzzleId} onClose={vi.fn()} />);
     await waitFor(() => expect(screen.getByText("Player-u1")).toBeInTheDocument());
 
@@ -389,7 +389,7 @@ describe("LeaderboardModal — caching", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — dismiss behaviour", () => {
+describe("LeaderboardModal | dismiss behaviour", () => {
   beforeEach(() => {
     currentUser = mockAuthedUser;
     vi.stubGlobal("fetch", () => new Promise(() => {})); // stays loading
@@ -423,7 +423,7 @@ describe("LeaderboardModal — dismiss behaviour", () => {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe("LeaderboardModal — API request", () => {
+describe("LeaderboardModal | API request", () => {
   beforeEach(() => { currentUser = mockAuthedUser; });
   afterEach(() => vi.unstubAllGlobals());
 

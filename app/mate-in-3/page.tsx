@@ -4,11 +4,11 @@ import HowToPlay from "@/app/components/HowToPlay";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
-  title: "Mate in 3 Chess Puzzles — Calculate Checkmate in Three Moves",
+  title: "Mate in 3 Chess Puzzles | Calculate Checkmate in Three Moves",
   description: "Solve mate in 3 chess puzzles. Calculate a forced checkmate in three moves against the best defense. Free daily chess puzzles.",
   keywords: ["mate in 3", "mate in three", "checkmate in three moves", "chess puzzles", "chess calculation"],
   openGraph: {
-    title: "Mate in 3 Chess Puzzles | DailyCheckmate",
+    title: "Mate in 3 Chess Puzzles | Daily Checkmate",
     description: "Calculate a forced checkmate in three moves against the best defense. Free daily chess puzzles.",
     url: "https://dailycheckmate.com/mate-in-3",
   },

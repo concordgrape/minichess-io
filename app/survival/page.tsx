@@ -3,11 +3,11 @@ import SurvivalGame from "./SurvivalGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 
 export const metadata = {
-  title: "Survival Chess — How Long Can You Last?",
+  title: "Survival Chess | How Long Can You Last?",
   description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game. Free to play online.",
   keywords: ["survival chess", "chess survival game", "chess endurance", "free chess game online"],
   openGraph: {
-    title: "Survival Chess — How Long Can You Last? | DailyCheckmate",
+    title: "Survival Chess | How Long Can You Last? | Daily Checkmate",
     description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game.",
     url: "https://dailycheckmate.com/survival",
   },

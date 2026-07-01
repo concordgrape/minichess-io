@@ -43,9 +43,12 @@ export async function GET(
 
     const puzzles = snap.docs.map((d) => {
       const data = d.data();
+      const ts = data.releaseDate;
+      const releaseDate: string | null = ts?.toDate ? ts.toDate().toISOString().slice(0, 10) : null;
       return {
         id: data.id as number,
         difficulty: data.difficulty as string,
+        releaseDate,
       };
     });
 

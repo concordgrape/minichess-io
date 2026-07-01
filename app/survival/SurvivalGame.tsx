@@ -133,7 +133,7 @@ export default function SurvivalGame() {
   const spawnsNext = spawnCount(score + 1);
 
   return (
-    <div className="d-flex flex-wrap gap-4 align-items-start" ref={boardRef}>
+    <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
       <div>
         <BoardOverlay>
           <Board
