@@ -59,6 +59,14 @@ body {
 .sidebar-link.sidebar-link--community { color: #2e8a51; }  /* community */
 .sidebar-link.sidebar-link--chat { color: #c43e5b; }       /* chat */
 
+@media (max-width: 991.98px) {
+  .sidebar-link,
+  button.sidebar-link {
+    font-size: 1.1rem;
+    padding: 4px 0;
+  }
+}
+
 /* Dropdown toggle rendered as a <button> — strip native button chrome. */
 button.sidebar-link {
   background: none;

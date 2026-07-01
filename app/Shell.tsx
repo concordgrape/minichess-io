@@ -141,7 +141,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
               >
                 ☰
               </button>
-              <Link className="navbar-brand fw-bold mb-0" href="/">
+              <Link className="navbar-brand fw-bold mb-0 d-none d-lg-inline" href="/">
                 {en.siteName}
               </Link>
             </div>
@@ -239,7 +239,9 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <span className="fw-bold">{en.nav.menu}</span>
+          <Link href="/" className="fw-bold text-decoration-none text-body" style={{ fontSize: "1.1rem" }} onClick={() => setMenuOpen(false)}>
+            {en.siteName}
+          </Link>
           <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => setMenuOpen(false)}>{en.nav.close}</button>
         </div>
         <SidebarLinks onNavigate={() => setMenuOpen(false)} sidebarPosts={sidebarPosts} />
