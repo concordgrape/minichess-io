@@ -89,6 +89,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [undoCount, setUndoCount] = useState(() => saved?.undoCount ?? 0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [rank, setRank] = useState<number | null>(null);
   const [pendingBlack, setPendingBlack] = useState<BoardType | null>(null);
   const [wrongPieceFlash, setWrongPieceFlash] = useState(false);
   const isFirstRender = useRef(true);
@@ -110,7 +111,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
     setKingThinking(false);
     setLastMove(null);
     setUndoCount(0);
-    setEarnedPoints(null); setPendingBlack(null); setWrongPieceFlash(false);
+    setEarnedPoints(null); setRank(null); setPendingBlack(null); setWrongPieceFlash(false);
     isFirstRender.current = true;
     resetGame();
   }, [resetGame]);
@@ -137,7 +138,8 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
             const pts = smotheredPoints(mateIn, puzzle!.difficulty, undoCount);
             saveScore({ puzzleId: `smothered-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
             setEarnedPoints(pts);
-            submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+            submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+              .then(({ rank: r }) => setRank(r));
           invalidateLb.current?.();
             setStatus("won");
           } else {
@@ -181,7 +183,8 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
         const pts = smotheredPoints(mateIn, puzzle!.difficulty, undoCount);
         saveScore({ puzzleId: `smothered-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
         setEarnedPoints(pts);
-        submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+        submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+          .then(({ rank: r }) => setRank(r));
         setBoard(next); setStatus("won");
       } else {
         setBoard(next); setStatus("lost-wrong-piece");
@@ -446,6 +449,21 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
               </li>
               <li>Stalemate counts as a loss.</li>
             </ul>
+            {status === "playing" && (
+              <div className="mt-2 d-flex align-items-center gap-2">
+                <span className="text-muted">Score:</span>
+                <span className="badge text-bg-warning rounded-0">★ {potentialPoints} pts</span>
+                {undoCount > 0 && <span className="text-muted">({undoCount} undo{undoCount > 1 ? "s" : ""})</span>}
+              </div>
+            )}
+            {status === "won" && earnedPoints !== null && (
+              <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge text-bg-warning rounded-0">★ {earnedPoints} pts earned</span>
+                {rank !== null
+                  ? <span className="text-muted">#{rank} on the leaderboard</span>
+                  : <span className="text-muted" style={{ fontSize: 11 }}>Submitting…</span>}
+              </div>
+            )}
           </div>
 
           {history.length > 0 && (

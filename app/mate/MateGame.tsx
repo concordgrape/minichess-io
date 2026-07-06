@@ -62,6 +62,7 @@ export default function MateGame({
   const [defending, setDefending] = useState(false);
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [rank, setRank] = useState<number | null>(null);
   const [defenseTrigger, setDefenseTrigger] = useState(0);
   const pendingDefense = useRef(false);
 
@@ -75,18 +76,19 @@ export default function MateGame({
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setMovesLeft(mateIn);
     setLastMove(null); setDefending(false);
-    setUndoCount(0); setEarnedPoints(null);
+    setUndoCount(0); setEarnedPoints(null); setRank(null);
     pendingDefense.current = false;
     resetGame();
   }, [chess, mateIn, resetGame]);
 
-  function award() {
+  async function award() {
     const pts = matePoints(mateIn, puzzle!.difficulty, undoCount);
     saveScore({ puzzleId: `${slug}-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("solved");
-    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
     invalidateLb.current?.();
+    const { rank: r } = await submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+    setRank(r);
   }
 
   // Defender (Black) reply, computed off the main thread.
@@ -313,6 +315,21 @@ export default function MateGame({
               <li>Black always plays its best defense.</li>
               <li>Stalemate counts as a loss.</li>
             </ul>
+            {status === "playing" && (
+              <div className="mt-2 d-flex align-items-center gap-2">
+                <span className="text-muted">Score:</span>
+                <span className="badge text-bg-warning rounded-0">★ {potentialPoints} pts</span>
+                {undoCount > 0 && <span className="text-muted">({undoCount} undo{undoCount > 1 ? "s" : ""})</span>}
+              </div>
+            )}
+            {status === "solved" && earnedPoints !== null && (
+              <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge text-bg-warning rounded-0">★ {earnedPoints} pts earned</span>
+                {rank !== null
+                  ? <span className="text-muted">#{rank} on the leaderboard</span>
+                  : <span className="text-muted" style={{ fontSize: 11 }}>Submitting…</span>}
+              </div>
+            )}
           </div>
           {history.length > 0 && (
             <div className="small mt-2">

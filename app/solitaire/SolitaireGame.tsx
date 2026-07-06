@@ -81,6 +81,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
   const [history, setHistory] = useState<HistoryEntry[]>(() => saved?.history ?? []);
   const [undoCount, setUndoCount] = useState(() => saved?.undoCount ?? 0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [rank, setRank] = useState<number | null>(null);
   const [justTransformed, setJustTransformed] = useState(false);
   const isFirstRender = useRef(true);
 
@@ -104,7 +105,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
     setStatus("playing");
     setHistory([]);
     setUndoCount(0);
-    setEarnedPoints(null);
+    setEarnedPoints(null); setRank(null);
     setJustTransformed(false);
     isFirstRender.current = true;
     resetGame();
@@ -133,7 +134,8 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
       const pts = solitairePoints(puzzle!.difficulty, pieceCount(puzzle!.board.map((r) => [...r])), undoCount);
       saveScore({ puzzleId: `solitaire-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
-      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+        .then(({ rank: r }) => setRank(r));
       // markComplete();
       return;
     }
@@ -358,6 +360,21 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
               <li>If you have no captures, you lose.</li>
               <li>The King is just another piece to capture.</li>
             </ul>
+            {status === "playing" && (
+              <div className="mt-2 d-flex align-items-center gap-2">
+                <span className="text-muted">Score:</span>
+                <span className="badge text-bg-warning rounded-0">★ {potentialPoints} pts</span>
+                {undoCount > 0 && <span className="text-muted">({undoCount} undo{undoCount > 1 ? "s" : ""})</span>}
+              </div>
+            )}
+            {status === "won" && earnedPoints !== null && (
+              <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge text-bg-warning rounded-0">★ {earnedPoints} pts earned</span>
+                {rank !== null
+                  ? <span className="text-muted">#{rank} on the leaderboard</span>
+                  : <span className="text-muted" style={{ fontSize: 11 }}>Submitting…</span>}
+              </div>
+            )}
           </div>
 
           {/* Transformation chain */}

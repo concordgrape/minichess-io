@@ -53,6 +53,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
   const { startedAt, resetGame } = useGamePhase();
   useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [rank, setRank] = useState<number | null>(null);
   const [defenseTrigger, setDefenseTrigger] = useState(0);
   const pendingDefense = useRef(false);
 
@@ -64,7 +65,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
     setSelected(null); setLegalMoves([]);
     setStatus("playing"); setMovesLeft(winIn);
     setLastMove(null); setDefending(false);
-    setUndoCount(0); setEarnedPoints(null);
+    setUndoCount(0); setEarnedPoints(null); setRank(null);
     pendingDefense.current = false;
     resetGame();
   }, [chess, winIn, resetGame]);
@@ -74,7 +75,8 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
     saveScore({ puzzleId: `queen-vs-pawn-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setStatus("won");
-    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+      .then(({ rank: r }) => setRank(r));
   }
 
   // Black's reply, computed off the main thread.
@@ -291,6 +293,21 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
               <li>Black races to promote | if it queens, you lose.</li>
               <li>Use checks to win a tempo and round up the pawn.</li>
             </ul>
+            {status === "playing" && (
+              <div className="mt-2 d-flex align-items-center gap-2">
+                <span className="text-muted">Score:</span>
+                <span className="badge text-bg-warning rounded-0">★ {potentialPoints} pts</span>
+                {undoCount > 0 && <span className="text-muted">({undoCount} undo{undoCount > 1 ? "s" : ""})</span>}
+              </div>
+            )}
+            {status === "won" && earnedPoints !== null && (
+              <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge text-bg-warning rounded-0">★ {earnedPoints} pts earned</span>
+                {rank !== null
+                  ? <span className="text-muted">#{rank} on the leaderboard</span>
+                  : <span className="text-muted" style={{ fontSize: 11 }}>Submitting…</span>}
+              </div>
+            )}
           </div>
           {history.length > 0 && (
             <div className="small mt-2">

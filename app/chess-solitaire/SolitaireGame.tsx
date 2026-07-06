@@ -70,6 +70,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
   const { startedAt, resetGame } = useGamePhase();
   useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [rank, setRank] = useState<number | null>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -84,7 +85,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
     setFlash(null);
     setHintId(null);
     setUndoCount(0);
-    setEarnedPoints(null);
+    setEarnedPoints(null); setRank(null);
     resetGame();
   }, [resetGame]);
 
@@ -110,7 +111,8 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
       const updated = markCompleted(puzzle!.id, pts);
       setEarnedPoints(pts);
       saveScore({ puzzleId: `chess-solitaire-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
-      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+        .then(({ rank: r }) => setRank(r));
       // markComplete();
       setCompleted(updated);
     } else if (!hasAnyCapture(next)) {
@@ -375,6 +377,21 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
               <li>Every move must be a capture.</li>
               <li>Leave only one piece to win.</li>
             </ul>
+            {status === "playing" && (
+              <div className="mt-2 d-flex align-items-center gap-2">
+                <span className="text-muted">Score:</span>
+                <span className="badge text-bg-warning rounded-0">★ {potentialPts} pts</span>
+                {undoCount > 0 && <span className="text-muted">({undoCount} undo{undoCount > 1 ? "s" : ""})</span>}
+              </div>
+            )}
+            {status === "solved" && earnedPoints !== null && (
+              <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge text-bg-warning rounded-0">★ {earnedPoints} pts earned</span>
+                {rank !== null
+                  ? <span className="text-muted">#{rank} on the leaderboard</span>
+                  : <span className="text-muted" style={{ fontSize: 11 }}>Submitting…</span>}
+              </div>
+            )}
           </div>
         </div>
       </div>

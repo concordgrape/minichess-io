@@ -45,12 +45,13 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   useEffect(() => { if (status === "won" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [undoCount, setUndoCount] = useState(0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [rank, setRank] = useState<number | null>(null);
 
   const resetToFresh = useCallback((p: Puzzle) => {
     setPieces(p.pieces.map((x) => ({ ...x })));
     setSelected(null); setTargets([]);
     setHistory([]); setStatus("playing");
-    setUndoCount(0); setEarnedPoints(null);
+    setUndoCount(0); setEarnedPoints(null); setRank(null);
     resetGame();
   }, [resetGame]);
 
@@ -75,8 +76,9 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
       const pts = takesPoints(puzzle!.difficulty, undoCount);
       saveScore({ puzzleId: `takes-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
       setEarnedPoints(pts);
-      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
       invalidateLb.current?.();
+      submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+        .then(({ rank: r }) => setRank(r));
       return;
     }
     const king = next.find((p) => p.type === "k")!;
@@ -232,6 +234,21 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
               <li>Pawns capture diagonally in all 4 directions.</li>
               <li>Win by leaving only the King.</li>
             </ul>
+            {status === "playing" && (
+              <div className="mt-2 d-flex align-items-center gap-2">
+                <span className="text-muted">Score:</span>
+                <span className="badge text-bg-warning rounded-0">★ {potentialPoints} pts</span>
+                {undoCount > 0 && <span className="text-muted">({undoCount} undo{undoCount > 1 ? "s" : ""})</span>}
+              </div>
+            )}
+            {status === "won" && earnedPoints !== null && (
+              <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge text-bg-warning rounded-0">★ {earnedPoints} pts earned</span>
+                {rank !== null
+                  ? <span className="text-muted">#{rank} on the leaderboard</span>
+                  : <span className="text-muted" style={{ fontSize: 11 }}>Submitting…</span>}
+              </div>
+            )}
           </div>
           {history.length > 0 && (
             <div className="small">

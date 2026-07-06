@@ -87,6 +87,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [undoCount, setUndoCount] = useState(() => saved?.undoCount ?? 0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);
+  const [rank, setRank] = useState<number | null>(null);
   const [pendingBlack, setPendingBlack] = useState<BoardType | null>(null);
   const isFirstRender = useRef(true);
 
@@ -107,7 +108,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
     setKingThinking(false);
     setLastMove(null);
     setUndoCount(0);
-    setEarnedPoints(null); setPendingBlack(null);
+    setEarnedPoints(null); setRank(null); setPendingBlack(null);
     isFirstRender.current = true;
     resetGame();
   }, [resetGame]);
@@ -132,7 +133,8 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           const pts = checkPoints(mateIn, puzzle!.difficulty, undoCount);
           saveScore({ puzzleId: `check-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
           setEarnedPoints(pts);
-          submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+          submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+            .then(({ rank: r }) => setRank(r));
           invalidateLb.current?.();
         } else if (isStalemate(next)) { setStatus("stalemate"); }
       }
@@ -147,7 +149,8 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
     saveScore({ puzzleId: `check-${puzzle!.id}`, points: pts, earnedAt: Date.now() });
     setEarnedPoints(pts);
     setBoard(b); setStatus("checkmate");
-    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 });
+    submitScore({ timeSeconds: Math.round((Date.now() - startedAt) / 1000), undoCount, totalAttempts: 1 })
+      .then(({ rank: r }) => setRank(r));
   }
 
   function applyWhiteTurn(from: Square, to: Square) {
@@ -356,6 +359,21 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
               <li>The black King plays its best move automatically.</li>
               <li>Stalemate counts as a loss.</li>
             </ul>
+            {status === "playing" && (
+              <div className="mt-2 d-flex align-items-center gap-2">
+                <span className="text-muted">Score:</span>
+                <span className="badge text-bg-warning rounded-0">★ {potentialPoints} pts</span>
+                {undoCount > 0 && <span className="text-muted">({undoCount} undo{undoCount > 1 ? "s" : ""})</span>}
+              </div>
+            )}
+            {status === "checkmate" && earnedPoints !== null && (
+              <div className="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge text-bg-warning rounded-0">★ {earnedPoints} pts earned</span>
+                {rank !== null
+                  ? <span className="text-muted">#{rank} on the leaderboard</span>
+                  : <span className="text-muted" style={{ fontSize: 11 }}>Submitting…</span>}
+              </div>
+            )}
           </div>
           {history.length > 0 && (
             <div className="small mt-2">

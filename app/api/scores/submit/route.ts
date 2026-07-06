@@ -128,6 +128,8 @@ export async function POST(request: NextRequest) {
     const puzzleScoreRef = puzzleRef.collection("scores").doc(uid);
     const puzzleTopRef = puzzleRef.collection("leaderboard").doc("top-players");
 
+    let computedRank: number | null = null;
+
     try {
       await db.runTransaction(async (tx) => {
         const [userScoreSnap, topPlayersSnap, userSnap, puzzleScoreSnap, puzzleTopSnap] = await Promise.all([
@@ -159,6 +161,8 @@ export async function POST(request: NextRequest) {
           withoutPuzzle.push({ rank: 0, uid, displayName, score, normalizedScore, difficulty, updatedAt: completedAt.toISOString() });
           withoutPuzzle.sort((a, b) => b.score - a.score);
           const puzzleTop100 = withoutPuzzle.slice(0, 100).map((p, i) => ({ ...p, rank: i + 1 }));
+          const myPuzzleEntry = puzzleTop100.find((p) => p.uid === uid);
+          if (myPuzzleEntry) computedRank = myPuzzleEntry.rank;
           tx.set(puzzleTopRef, { players: puzzleTop100, totalPlayers: withoutPuzzle.length, updatedAt: completedAt });
         }
 
@@ -238,7 +242,7 @@ export async function POST(request: NextRequest) {
       console.warn("[submit] revalidateTag failed (non-fatal):", e);
     }
 
-    return Response.json({ saved: true, score, normalizedScore });
+    return Response.json({ saved: true, score, normalizedScore, rank: computedRank });
   } catch (e) {
     console.error("[submit] unhandled error:", e);
     return Response.json({ saved: false, reason: "internal" }, { status: 500 });

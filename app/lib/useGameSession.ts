@@ -10,10 +10,10 @@ export function useGameSession(gameId: GameId, puzzleId: number) {
   const { user } = useAuth();
 
   const submitScore = useCallback(
-    async (rawData: PuzzleRawData) => {
+    async (rawData: PuzzleRawData): Promise<{ rank: number | null }> => {
       if (!user || user.isAnonymous) {
         if (DEV) console.warn(`[score] skipped — not signed in (user=${user ? "anonymous" : "null"})`);
-        return;
+        return { rank: null };
       }
       try {
         const token = await user.getIdToken();
@@ -22,16 +22,18 @@ export function useGameSession(gameId: GameId, puzzleId: number) {
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ gameId, puzzleId, rawData }),
         });
+        const body = await res.json().catch(() => ({}));
         if (DEV) {
-          const body = await res.clone().json().catch(() => ({}));
           if (res.ok && body.saved) {
-            console.log(`[score] ✓ saved ${gameId} puzzle ${puzzleId} — score=${body.score} norm=${body.normalizedScore}`);
+            console.log(`[score] ✓ saved ${gameId} puzzle ${puzzleId} — score=${body.score} norm=${body.normalizedScore} rank=${body.rank}`);
           } else {
             console.error(`[score] ✗ failed ${res.status}:`, body);
           }
         }
+        return { rank: typeof body.rank === "number" ? body.rank : null };
       } catch (e) {
         if (DEV) console.error(`[score] fetch threw:`, e);
+        return { rank: null };
       }
     },
     [user, gameId, puzzleId]

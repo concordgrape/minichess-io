@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
+import path from "path";
+import sharp from "sharp";
 import { getLocale } from "@/app/i18n";
 
 const PLACEHOLDER = "/og-img.png";
@@ -9,6 +11,16 @@ const GAME_IMAGES: Record<string, string> = {
   "/mate-in-2": "/images/mate_in_2.webp",
   "/mate-in-3": "/images/mate_in_3.webp",
 };
+
+async function getDominantColor(publicPath: string): Promise<string> {
+  try {
+    const fullPath = path.join(process.cwd(), "public", publicPath);
+    const { dominant } = await sharp(fullPath).stats();
+    return `rgb(${dominant.r}, ${dominant.g}, ${dominant.b})`;
+  } catch {
+    return "transparent";
+  }
+}
 
 export default async function Home() {
   const en = await getLocale();
@@ -31,33 +43,43 @@ export default async function Home() {
     { href: "/queen-vs-pawn",  ...gameTiles.queenVsPawn },
   ];
 
+  // Extract dominant colors for all tiles that have a custom image, in parallel
+  const colorEntries = await Promise.all(
+    Object.entries(GAME_IMAGES).map(async ([href, src]) => [href, await getDominantColor(src)] as const)
+  );
+  const dominantColors = Object.fromEntries(colorEntries);
+
   return (
     <div>
       <h1 className="fw-bold mb-1">{home.title}</h1>
       <p className="text-muted mb-4">{home.subtitle}</p>
 
       <div className="row g-3">
-        {GAMES.map((g) => (
-          <div key={g.href} className="col-12 col-sm-6 col-lg-4">
-            <Link href={g.href} className="text-decoration-none text-reset">
-              <div className="card rounded-0 h-100 game-tile">
-                <div style={{ position: "relative", aspectRatio: "16 / 9", overflow: "hidden" }}>
-                  <Image
-                    src={GAME_IMAGES[g.href] ?? PLACEHOLDER}
-                    alt={g.title}
-                    fill
-                    sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
-                    style={{ objectFit: "contain" }}
-                  />
+        {GAMES.map((g) => {
+          const imgSrc = GAME_IMAGES[g.href] ?? PLACEHOLDER;
+          const bgColor = dominantColors[g.href] ?? "transparent";
+          return (
+            <div key={g.href} className="col-12 col-sm-6 col-lg-4">
+              <Link href={g.href} className="text-decoration-none text-reset">
+                <div className="card rounded-0 h-100 game-tile">
+                  <div style={{ position: "relative", aspectRatio: "16 / 9", overflow: "hidden", backgroundColor: bgColor }}>
+                    <Image
+                      src={imgSrc}
+                      alt={g.title}
+                      fill
+                      sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
+                      style={{ objectFit: "contain" }}
+                    />
+                  </div>
+                  <div className="card-body">
+                    <h2 className="h6 fw-bold mb-1 card-title">{g.title}</h2>
+                    <p className="card-text text-muted small mb-0">{g.description}</p>
+                  </div>
                 </div>
-                <div className="card-body">
-                  <h2 className="h6 fw-bold mb-1 card-title">{g.title}</h2>
-                  <p className="card-text text-muted small mb-0">{g.description}</p>
-                </div>
-              </div>
-            </Link>
-          </div>
-        ))}
+              </Link>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
