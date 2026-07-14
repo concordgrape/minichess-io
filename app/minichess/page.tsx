@@ -8,7 +8,7 @@ export const metadata = {
   description: "Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics. Free daily puzzle online.",
   keywords: ["mini chess", "5x5 chess", "small chess board", "chess variant", "chess puzzle game"],
   openGraph: {
-    title: "Mini Chess | 5x5 Chess Puzzle Game | Daily Checkmate",
+    title: "Mini Chess | 5x5 Chess Puzzle Game | Chess Puzzles",
     description: "Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics.",
     url: "https://dailycheckmate.com/minichess",
   },

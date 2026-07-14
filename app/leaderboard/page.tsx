@@ -5,7 +5,7 @@ export const revalidate = 3600;
 
 export const metadata = {
   title: "Leaderboard",
-  description: "Top 10 players for each chess puzzle game on Daily Checkmate.",
+  description: "Top 10 players for each chess puzzle game on Chess Puzzles.",
 };
 
 export default async function LeaderboardPage() {

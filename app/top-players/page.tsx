@@ -3,10 +3,10 @@ import { getAdminDb } from "@/app/lib/firebase-admin";
 
 export const metadata = {
   title: "Top Players",
-  description: "The highest-scoring players on Daily Checkmate, ranked by total score across all puzzle games.",
+  description: "The highest-scoring players on Chess Puzzles, ranked by total score across all puzzle games.",
   openGraph: {
-    title: "Top Players | Daily Checkmate",
-    description: "See who's leading the all-time rankings across every chess puzzle on Daily Checkmate.",
+    title: "Top Players | Chess Puzzles",
+    description: "See who's leading the all-time rankings across every chess puzzle on Chess Puzzles.",
     url: "https://dailycheckmate.com/top-players",
   },
 };

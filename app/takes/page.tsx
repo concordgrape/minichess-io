@@ -8,7 +8,7 @@ export const metadata = {
   description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything. Free to play online.",
   keywords: ["chess capture puzzle", "takes chess game", "capture all pieces chess", "daily chess puzzle"],
   openGraph: {
-    title: "Takes | Capture All Pieces Chess Puzzle | Daily Checkmate",
+    title: "Takes | Capture All Pieces Chess Puzzle | Chess Puzzles",
     description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything.",
     url: "https://dailycheckmate.com/takes",
   },

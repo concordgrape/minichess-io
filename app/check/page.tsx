@@ -8,7 +8,7 @@ export const metadata = {
   description: "Find the move that puts the king in check while keeping your piece safe. A daily chess tactics puzzle. Free to play online.",
   keywords: ["chess check puzzle", "give check chess", "chess tactics puzzle", "daily chess puzzle"],
   openGraph: {
-    title: "Check Puzzle | Give Check Without Losing Your Piece | Daily Checkmate",
+    title: "Check Puzzle | Give Check Without Losing Your Piece | Chess Puzzles",
     description: "Find the move that puts the king in check while keeping your piece safe.",
     url: "https://dailycheckmate.com/check",
   },

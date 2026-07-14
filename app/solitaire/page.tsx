@@ -8,7 +8,7 @@ export const metadata = {
   description: "Capture every piece on the board in one unbroken chain. A daily chess puzzle that trains calculation and piece mobility. Free online.",
   keywords: ["chain capture chess", "chess capture chain puzzle", "chess solitaire puzzle", "daily chess puzzle"],
   openGraph: {
-    title: "Chain Capture | Chess Puzzle Game | Daily Checkmate",
+    title: "Chain Capture | Chess Puzzle Game | Chess Puzzles",
     description: "Capture every piece on the board in one unbroken chain. Trains calculation and piece mobility.",
     url: "https://dailycheckmate.com/solitaire",
   },

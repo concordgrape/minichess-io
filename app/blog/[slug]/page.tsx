@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: "article",
       publishedTime: post.date,
       authors: [post.author],
-      images: [{ url: "https://dailycheckmate.com/og-img.png", width: 1200, height: 630, alt: "Daily Checkmate" }],
+      images: [{ url: "https://dailycheckmate.com/og-img.png", width: 1200, height: 630, alt: "Chess Puzzles" }],
     },
   };
 }
@@ -48,7 +48,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         description: post.excerpt,
         datePublished: post.date,
         author: { "@type": "Person", name: post.author },
-        publisher: { "@type": "Organization", name: "Daily Checkmate", url: "https://dailycheckmate.com" },
+        publisher: { "@type": "Organization", name: "Chess Puzzles", url: "https://dailycheckmate.com" },
         url: `https://dailycheckmate.com/blog/${slug}`,
         image: "https://dailycheckmate.com/og-img.png",
       }} />

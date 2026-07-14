@@ -2,7 +2,7 @@ import type { HowToPlayStep } from "@/app/components/HowToPlay";
 
 const en = {
   // ── Site ──────────────────────────────────────────────────────────────────
-  siteName: "Daily Checkmate",
+  siteName: "Chess Puzzles",
   siteDescription: "Play chess puzzles and mini games online",
 
   // ── Nav ───────────────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@ const en = {
 
   // ── Footer ────────────────────────────────────────────────────────────────
   footer: {
-    copyright: (year: number) => `© ${year} Daily Checkmate`,
+    copyright: (year: number) => `© ${year} Chess Puzzles`,
   },
 
   // ── User menu ─────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ const en = {
 
   // ── Home page ─────────────────────────────────────────────────────────────
   home: {
-    title: "Daily Checkmate",
+    title: "Chess Puzzles",
     subtitle: "A new chess puzzle every day. Sharpen your tactics, train your endgames, and play for free.",
   },
 

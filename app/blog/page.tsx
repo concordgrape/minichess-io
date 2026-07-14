@@ -6,10 +6,10 @@ import { cookies } from "next/headers";
 
 export const metadata = {
   title: "Chess Blog | Tips, Puzzle Guides, and Strategy",
-  description: "Read chess tips, puzzle guides, endgame techniques, and strategy articles from Daily Checkmate. Improve your game one post at a time.",
+  description: "Read chess tips, puzzle guides, endgame techniques, and strategy articles from Chess Puzzles. Improve your game one post at a time.",
   keywords: ["chess blog", "chess tips", "chess strategy", "chess puzzle guide", "improve at chess"],
   openGraph: {
-    title: "Chess Blog | Daily Checkmate",
+    title: "Chess Blog | Chess Puzzles",
     description: "Chess tips, puzzle guides, endgame techniques, and strategy articles to help you improve.",
     url: "https://dailycheckmate.com/blog",
   },

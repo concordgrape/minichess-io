@@ -14,8 +14,8 @@ const openSans = Open_Sans({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL("https://dailycheckmate.com"),
   title: {
-    default: "Daily Checkmate | Daily Chess Puzzles",
-    template: "%s | Daily Checkmate",
+    default: "Chess Puzzles",
+    template: "%s | Chess Puzzles",
   },
   description:
     "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
@@ -28,18 +28,18 @@ export const metadata: Metadata = {
     "free chess games online",
     "chess tactics",
   ],
-  authors: [{ name: "Daily Checkmate" }],
+  authors: [{ name: "Chess Puzzles" }],
   openGraph: {
     type: "website",
-    siteName: "Daily Checkmate",
-    title: "Daily Checkmate | Daily Chess Puzzles",
+    siteName: "Chess Puzzles",
+    title: "Chess Puzzles",
     description:
       "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
     url: "https://dailycheckmate.com",
   },
   twitter: {
     card: "summary",
-    title: "Daily Checkmate | Daily Chess Puzzles",
+    title: "Chess Puzzles",
     description:
       "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more.",
   },
@@ -61,7 +61,7 @@ export default async function RootLayout({
         <JsonLd data={{
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          name: "Daily Checkmate",
+          name: "Chess Puzzles",
           url: "https://dailycheckmate.com",
           applicationCategory: "GameApplication",
           operatingSystem: "Web",

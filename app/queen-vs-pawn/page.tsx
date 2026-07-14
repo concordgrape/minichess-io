@@ -8,7 +8,7 @@ export const metadata = {
   description: "Stop a passed pawn from promoting with just your queen. A precise daily chess endgame puzzle that tests queen technique. Free online.",
   keywords: ["queen vs pawn", "queen versus pawn endgame", "stop passed pawn chess", "chess endgame puzzle"],
   openGraph: {
-    title: "Queen vs Pawn Puzzle | Daily Checkmate",
+    title: "Queen vs Pawn Puzzle | Chess Puzzles",
     description: "Stop a passed pawn from promoting with just your queen. Tests precise queen technique.",
     url: "https://dailycheckmate.com/queen-vs-pawn",
   },

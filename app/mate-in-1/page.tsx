@@ -8,7 +8,7 @@ export const metadata = {
   description: "Solve mate in 1 chess puzzles. Find the one move that delivers checkmate. Free daily chess tactics for all skill levels.",
   keywords: ["mate in 1", "mate in one", "checkmate in one move", "chess puzzles", "chess tactics"],
   openGraph: {
-    title: "Mate in 1 Chess Puzzles | Daily Checkmate",
+    title: "Mate in 1 Chess Puzzles | Chess Puzzles",
     description: "Find the one move that delivers checkmate. Free daily chess tactics for all skill levels.",
     url: "https://dailycheckmate.com/mate-in-1",
   },

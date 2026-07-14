@@ -7,7 +7,7 @@ export const metadata = {
   description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game. Free to play online.",
   keywords: ["survival chess", "chess survival game", "chess endurance", "free chess game online"],
   openGraph: {
-    title: "Survival Chess | How Long Can You Last? | Daily Checkmate",
+    title: "Survival Chess | How Long Can You Last? | Chess Puzzles",
     description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game.",
     url: "https://dailycheckmate.com/survival",
   },

@@ -8,7 +8,7 @@ export const metadata = {
   description: "Capture every piece on a full 8x8 chess board in one continuous sequence. A daily chess puzzle for all skill levels. Free online.",
   keywords: ["chess solitaire", "chess solitaire puzzle", "capture all pieces chess", "daily chess puzzle"],
   openGraph: {
-    title: "Chess Solitaire | Capture All Pieces | Daily Checkmate",
+    title: "Chess Solitaire | Capture All Pieces | Chess Puzzles",
     description: "Capture every piece on a full 8x8 chess board in one continuous sequence.",
     url: "https://dailycheckmate.com/chess-solitaire",
   },

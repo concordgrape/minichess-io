@@ -8,7 +8,7 @@ export const metadata = {
   description: "Solve mate in 2 chess puzzles. Force checkmate in two moves against the best defense. Free daily chess tactics training.",
   keywords: ["mate in 2", "mate in two", "checkmate in two moves", "chess puzzles", "chess tactics training"],
   openGraph: {
-    title: "Mate in 2 Chess Puzzles | Daily Checkmate",
+    title: "Mate in 2 Chess Puzzles | Chess Puzzles",
     description: "Force checkmate in two moves against the best defense. Free daily chess tactics training.",
     url: "https://dailycheckmate.com/mate-in-2",
   },

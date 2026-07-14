@@ -8,7 +8,7 @@ export const metadata = {
   description: "Solve mate in 3 chess puzzles. Calculate a forced checkmate in three moves against the best defense. Free daily chess puzzles.",
   keywords: ["mate in 3", "mate in three", "checkmate in three moves", "chess puzzles", "chess calculation"],
   openGraph: {
-    title: "Mate in 3 Chess Puzzles | Daily Checkmate",
+    title: "Mate in 3 Chess Puzzles | Chess Puzzles",
     description: "Calculate a forced checkmate in three moves against the best defense. Free daily chess puzzles.",
     url: "https://dailycheckmate.com/mate-in-3",
   },
