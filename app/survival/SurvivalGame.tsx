@@ -7,6 +7,7 @@ import { getCaptures, spawnPawns, spawnCount, type Pawn, type Pos } from "./logi
 import { useGamePhase } from "../lib/GameStartContext";
 // import { useGameSession } from "../lib/useGameSession";
 import BoardOverlay from "../components/BoardOverlay";
+import GuideLink from "../components/GuideLink";
 
 const PIECE_IMAGE = "/piece-knight-white.svg";
 
@@ -164,6 +165,7 @@ export default function SurvivalGame() {
             </div>
           )}
         </div>
+        <GuideLink gameId="survival" />
       </div>
 
       <div style={{ minWidth: 180 }}>

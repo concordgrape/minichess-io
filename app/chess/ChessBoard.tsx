@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Chess, type Square, type Move, type PieceSymbol, type Color } from "chess.js";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
+import { BOT_DIFFICULTIES, DEFAULT_DIFFICULTY } from "../lib/botDifficulties";
 
 const PIECE_NAMES: Record<PieceSymbol, string> = {
   p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
@@ -22,17 +23,7 @@ function rowColToSq(row: number, col: number): Square {
 
 type GameStatus = "playing" | "checkmate" | "draw" | "stalemate";
 
-const DIFFICULTIES = [
-  { label: "Drunk Rook",      rating: "~100",  depth: 1, randomFraction: 1.00 },
-  { label: "Newborn",         rating: "~300",  depth: 1, randomFraction: 0.60 },
-  { label: "Club Kid",        rating: "~600",  depth: 1, randomFraction: 0.25 },
-  { label: "Patzer",          rating: "~800",  depth: 2, randomFraction: 0.15 },
-  { label: "Weekend Warrior", rating: "~1000", depth: 2, randomFraction: 0.05 },
-  { label: "Hustler",         rating: "~1200", depth: 3, randomFraction: 0    },
-  { label: "Club Champion",   rating: "~1600", depth: 4, randomFraction: 0    },
-  { label: "The Beast",       rating: "~2000", depth: 5, randomFraction: 0    },
-  { label: "GrandMaster",     rating: "~2400", depth: 6, randomFraction: 0    },
-];
+const DIFFICULTIES = BOT_DIFFICULTIES;
 
 const PLAYER: Color = "w";
 
@@ -46,7 +37,7 @@ export default function ChessBoard() {
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [botThinking, setBotThinking] = useState(false);
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
-  const [difficulty, setDifficulty] = useState(2);
+  const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY);
   const [turnTrigger, setTurnTrigger] = useState(0);
   const { ref: rootRef, size: squareSize } = useResponsiveSquare(64, 8);
 
@@ -62,7 +53,6 @@ export default function ChessBoard() {
 
   useEffect(() => {
     if (chess.turn() === PLAYER || chess.isGameOver()) return;
-    setBotThinking(true);
     const worker = new Worker(new URL("./engine.worker.ts", import.meta.url));
     const d = DIFFICULTIES[difficulty];
     worker.postMessage({ fen: chess.fen(), depth: d.depth, randomFraction: d.randomFraction });
@@ -81,7 +71,9 @@ export default function ChessBoard() {
     try { chess.move({ from, to, promotion }); } catch { return false; }
     setLastMove({ from, to });
     setSelected(null); setLegalMoves([]);
-    refresh(); setTurnTrigger((n) => n + 1);
+    refresh();
+    if (!chess.isGameOver()) setBotThinking(true);
+    setTurnTrigger((n) => n + 1);
     return true;
   }
 

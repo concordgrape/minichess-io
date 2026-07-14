@@ -30,7 +30,6 @@ export default async function MiniChessPage() {
         name="Mini Chess"
         description="Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics."
         url="https://dailycheckmate.com/minichess"
-        guide={{ href: "/blog/mini-chess-strategy", title: "How to Win at Mini Chess" }}
       />
     </div>
   );

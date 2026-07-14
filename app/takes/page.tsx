@@ -31,7 +31,6 @@ export default async function TakesPage() {
         description={subtitle}
         url="https://dailycheckmate.com/takes"
         steps={t.howToPlay.takes}
-        guide={{ href: "/blog/takes", title: "How to Solve the Takes Puzzle" }}
       />
     </div>
   );

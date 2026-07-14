@@ -31,7 +31,6 @@ export default async function KingAndPawnPage() {
         description={subtitle}
         url="https://dailycheckmate.com/king-and-pawn"
         steps={t.howToPlay.kingAndPawn}
-        guide={{ href: "/blog/king-and-pawn-endgame", title: "Understanding the King and Pawn Endgame" }}
       />
     </div>
   );

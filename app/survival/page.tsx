@@ -27,7 +27,6 @@ export default function SurvivalPage() {
         name="Survival Chess"
         description="Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game."
         url="https://dailycheckmate.com/survival"
-        guide={{ href: "/blog/survival-chess-tips", title: "Survival Chess: How to Keep Your Knight Alive" }}
       />
     </div>
   );

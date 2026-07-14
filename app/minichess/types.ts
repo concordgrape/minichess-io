@@ -42,4 +42,5 @@ export interface SavedGame {
   history: MoveRecord[];
   turn: Turn;
   status: GameStatus;
+  difficulty?: number; // index into BOT_DIFFICULTIES
 }

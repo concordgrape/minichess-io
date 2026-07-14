@@ -31,7 +31,6 @@ export default async function RookEndgamePage() {
         description={subtitle}
         url="https://dailycheckmate.com/rook-endgame"
         steps={t.howToPlay.rookEndgame}
-        guide={{ href: "/blog/rook-endgame", title: "How to Win the Rook Endgame" }}
       />
     </div>
   );

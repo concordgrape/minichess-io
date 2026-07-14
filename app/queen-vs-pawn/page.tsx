@@ -31,7 +31,6 @@ export default async function QueenPawnPage() {
         description={subtitle}
         url="https://dailycheckmate.com/queen-vs-pawn"
         steps={t.howToPlay.queenVsPawn}
-        guide={{ href: "/blog/queen-vs-pawn", title: "How to Stop a Passed Pawn With the Queen" }}
       />
     </div>
   );

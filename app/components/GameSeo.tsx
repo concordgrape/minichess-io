@@ -1,4 +1,3 @@
-import Link from "next/link";
 import JsonLd from "./JsonLd";
 import Breadcrumbs from "./Breadcrumbs";
 import type { HowToPlayStep } from "./HowToPlay";
@@ -8,11 +7,9 @@ interface GameSeoProps {
   description: string;
   url: string;
   steps?: HowToPlayStep[];
-  guide?: { href: string; title: string };
-  guideLabel?: string;
 }
 
-export default function GameSeo({ name, description, url, steps, guide, guideLabel }: GameSeoProps) {
+export default function GameSeo({ name, description, url, steps }: GameSeoProps) {
   return (
     <>
       <Breadcrumbs items={[
@@ -44,12 +41,6 @@ export default function GameSeo({ name, description, url, steps, guide, guideLab
             text: s.body,
           })),
         }} />
-      )}
-      {guide && (
-        <p className="mt-4 small text-muted">
-          {guideLabel ?? "Want to go deeper?"}{" "}
-          <Link href={guide.href}>{guide.title}</Link>
-        </p>
       )}
     </>
   );

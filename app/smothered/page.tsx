@@ -31,7 +31,6 @@ export default async function SmotheredPage() {
         description={subtitle}
         url="https://dailycheckmate.com/smothered"
         steps={t.howToPlay.smothered}
-        guide={{ href: "/blog/smothered-mate", title: "The Art of the Smothered Mate" }}
       />
     </div>
   );

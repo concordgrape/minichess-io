@@ -31,7 +31,6 @@ export default async function SolitairePage() {
         description={subtitle}
         url="https://dailycheckmate.com/solitaire"
         steps={t.howToPlay.solitaire}
-        guide={{ href: "/blog/chain-capture", title: "Mastering Chain Capture" }}
       />
     </div>
   );

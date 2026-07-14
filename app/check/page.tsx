@@ -31,7 +31,6 @@ export default async function CheckPage() {
         description={subtitle}
         url="https://dailycheckmate.com/check"
         steps={t.howToPlay.check}
-        guide={{ href: "/blog/check-puzzle", title: "How to Win at the Check Puzzle" }}
       />
     </div>
   );

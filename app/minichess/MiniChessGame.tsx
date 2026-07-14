@@ -3,12 +3,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Board as BoardType, DailyPosition, GameStatus, Move, MoveRecord, Turn, SavedGame } from "./types";
 import {
-  cloneBoard, applyMove, getMovesForSquare, getLegalMoves, getBestMove,
+  applyMove, getMovesForSquare,
   isInCheck, isCheckmate, isStalemate, isInsufficientMaterial,
-  moveNotation, squareName, SIZE,
+  moveNotation, SIZE,
 } from "./logic";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import GuideLink from "../components/GuideLink";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
+import { BOT_DIFFICULTIES, DEFAULT_DIFFICULTY } from "../lib/botDifficulties";
 
 const STORAGE_VERSION = "minichess-v1";
 const SQ = 75; // max square size px (shrinks to fit on mobile)
@@ -56,27 +58,30 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
   const [aiThinking, setAiThinking] = useState(false);
   const [pendingAI, setPendingAI] = useState<BoardType | null>(null);
   const [reviewIdx, setReviewIdx] = useState<number | null>(null);
+  const [difficulty, setDifficulty] = useState<number>(() => saved?.difficulty ?? DEFAULT_DIFFICULTY);
   const isFirstRender = useRef(true);
   const historyEndRef = useRef<HTMLDivElement>(null);
 
   // Persist
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
-    writeSaved({ positionId: position.id, board, history, turn, status });
+    writeSaved({ positionId: position.id, board, history, turn, status, difficulty });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [board, turn, status]);
+  }, [board, turn, status, difficulty]);
 
   // Auto-scroll history
   useEffect(() => {
     historyEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [history.length]);
 
-  // AI move after white plays
+  // AI move after white plays — runs in a web worker so deep searches don't block the UI
   useEffect(() => {
     if (!pendingAI) return;
-    setAiThinking(true);
-    const id = setTimeout(() => {
-      const move = getBestMove(pendingAI);
+    const worker = new Worker(new URL("./engine.worker.ts", import.meta.url));
+    const d = BOT_DIFFICULTIES[difficulty];
+    worker.postMessage({ board: pendingAI, depth: d.depth, randomFraction: d.randomFraction });
+    worker.onmessage = (e: MessageEvent<Move | null>) => {
+      const move = e.data;
       if (move) {
         const next = applyMove(pendingAI, move);
         const notation = moveNotation(pendingAI, move);
@@ -96,8 +101,10 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
       }
       setPendingAI(null);
       setAiThinking(false);
-    }, 300);
-    return () => clearTimeout(id);
+      worker.terminate();
+    };
+    return () => worker.terminate();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingAI]);
 
   const executeWhiteMove = useCallback((move: Move) => {
@@ -113,7 +120,7 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
     if (isCheckmate(next, false)) { setStatus("won"); }
     else if (isStalemate(next, false)) { setStatus("draw-stalemate"); }
     else if (isInsufficientMaterial(next)) { setStatus("draw-insufficient"); }
-    else { setTurn("black"); setPendingAI(next); }
+    else { setTurn("black"); setAiThinking(true); setPendingAI(next); }
   }, [board]);
 
   function handleSquareClick(row: number, col: number) {
@@ -156,6 +163,12 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
     setLastMove(null); setAiThinking(false); setPendingAI(null);
     setReviewIdx(null);
     isFirstRender.current = true;
+  }
+
+  /** Changing difficulty restarts the game against the new bot (same as /chess). */
+  function changeDifficulty(idx: number) {
+    setDifficulty(idx);
+    restartGame();
   }
 
   // ── Derived display state ───────────────────────────────────────────────────
@@ -260,10 +273,24 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
               <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={restartGame}>Restart</button>
             </div>
           </div>
+          <GuideLink gameId="minichess" />
         </div>
 
         {/* Move history & info */}
         <div style={{ minWidth: 200, maxWidth: 260 }}>
+          <div className="d-flex align-items-center gap-2 mb-3">
+            <label className="text-muted small mb-0">Difficulty:</label>
+            <select
+              className="form-select form-select-sm rounded-0 w-100"
+              value={difficulty}
+              onChange={(e) => changeDifficulty(Number(e.target.value))}
+            >
+              {BOT_DIFFICULTIES.map((d, i) => (
+                <option key={i} value={i}>{d.label} ({d.rating} ELO)</option>
+              ))}
+            </select>
+          </div>
+
           <div className="fw-semibold mb-2 small text-uppercase" style={{ letterSpacing: 1 }}>Moves</div>
 
           {pairs.length === 0 && (

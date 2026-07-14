@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
+import GuideLink from "../components/GuideLink";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { useTimeLimit } from "../lib/useTimeLimit";
@@ -227,6 +228,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
             <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
+            <GuideLink gameId="chess-solitaire" />
           </div>
           <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
@@ -307,6 +309,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
               <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => puzzle && resetPuzzle(puzzle)}>Restart</button>
             </div>
           </div>
+          <GuideLink gameId="chess-solitaire" />
         </div>
 
         {/* Info panel */}

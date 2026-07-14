@@ -266,12 +266,18 @@ function minimax(board: Board, depth: number, alpha: number, beta: number, black
   }
 }
 
-const AI_DEPTH = 3;
-
-/** Return the best move for black, or null if no legal moves. */
-export function getBestMove(board: Board): Move | null {
+/**
+ * Return the best move for black, or null if no legal moves.
+ * `depth` controls minimax search depth; `randomFraction` is the probability
+ * of playing a random move instead (simulates lower-ELO blunders).
+ */
+export function getBestMove(board: Board, depth = 3, randomFraction = 0): Move | null {
   const moves = getLegalMoves(board, false);
   if (moves.length === 0) return null;
+
+  if (randomFraction > 0 && Math.random() < randomFraction) {
+    return moves[Math.floor(Math.random() * moves.length)];
+  }
 
   moves.sort((a, b) => moveOrderScore(b) - moveOrderScore(a));
 
@@ -280,7 +286,7 @@ export function getBestMove(board: Board): Move | null {
 
   for (const move of moves) {
     const next = applyMove(board, move);
-    const score = minimax(next, AI_DEPTH - 1, -Infinity, Infinity, false);
+    const score = minimax(next, depth - 1, -Infinity, Infinity, false);
     if (score > bestScore) {
       bestScore = score;
       bestMove = move;

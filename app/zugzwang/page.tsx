@@ -31,7 +31,6 @@ export default async function ZugzwangPage() {
         description={subtitle}
         url="https://dailycheckmate.com/zugzwang"
         steps={t.howToPlay.zugzwang}
-        guide={{ href: "/blog/zugzwang-explained", title: "What Is Zugzwang and How Do You Use It?" }}
       />
     </div>
   );

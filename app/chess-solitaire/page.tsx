@@ -31,7 +31,6 @@ export default async function ChessSolitairePage() {
         description={subtitle}
         url="https://dailycheckmate.com/chess-solitaire"
         steps={t.howToPlay.chessSolitaire}
-        guide={{ href: "/blog/chess-solitaire", title: "A Guide to Chess Solitaire" }}
       />
     </div>
   );

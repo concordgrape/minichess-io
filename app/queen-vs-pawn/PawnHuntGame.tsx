@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Chess, type Square, type Move, type PieceSymbol, type Color } from "chess.js";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
+import GuideLink from "../components/GuideLink";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, pawnPoints } from "../lib/scores";
 import { useGameSession } from "../lib/useGameSession";
@@ -155,6 +156,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
             <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
+            <GuideLink gameId="queen-vs-pawn" />
           </div>
           <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
             <div className="mb-3">
@@ -255,6 +257,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
               <button className="btn btn-sm btn-outline-secondary rounded-0" onClick={() => load(puzzle)}>Reset</button>
             </div>
           </div>
+          <GuideLink gameId="queen-vs-pawn" />
         </div>
 
         <div style={{ flex: 1, minWidth: 0, width: "100%" }}>

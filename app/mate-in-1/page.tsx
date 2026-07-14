@@ -32,7 +32,6 @@ export default async function MateIn1Page() {
         description={subtitle}
         url="https://dailycheckmate.com/mate-in-1"
         steps={t.howToPlay.mateIn1}
-        guide={{ href: "/blog/mate-in-1", title: "How to Solve Mate in 1 Puzzles Every Time" }}
       />
     </div>
   );
