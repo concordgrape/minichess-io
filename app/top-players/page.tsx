@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { getAdminDb } from "@/app/lib/firebase-admin";
+import Breadcrumbs from "@/app/components/Breadcrumbs";
 
 export const metadata = {
   title: "Top Players",
@@ -62,6 +63,10 @@ export default async function TopPlayersPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[
+        { name: "Home", url: "https://dailycheckmate.com" },
+        { name: "Top Players", url: "https://dailycheckmate.com/top-players" },
+      ]} />
       <h1 className="h4 mb-1">Top Players</h1>
       <p className="text-muted mb-1">
         All-time rankings by total score across every puzzle game.

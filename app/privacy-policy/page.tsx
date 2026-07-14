@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Breadcrumbs from "@/app/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -38,6 +39,10 @@ function StorageTable({ rows, headers }: { rows: [string, string, string?][]; he
 export default function PrivacyPolicy() {
   return (
     <div style={{ maxWidth: 720 }}>
+      <Breadcrumbs items={[
+        { name: "Home", url: "https://dailycheckmate.com" },
+        { name: "Privacy Policy", url: "https://dailycheckmate.com/privacy-policy" },
+      ]} />
       <h1 className="fw-bold mb-1">Privacy Policy</h1>
       <p className="text-muted small mb-4">Last updated: 07/14/2026</p>
 

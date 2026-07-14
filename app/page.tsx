@@ -12,6 +12,12 @@ const GAME_IMAGES: Record<string, string> = {
   "/mate-in-3": "/images/mate_in_3.webp",
 };
 
+// Exact background colors, used in place of the sharp-computed dominant color
+// when the approximation doesn't match the image's true background pixel.
+const BG_OVERRIDES: Record<string, string> = {
+  "/chess": "#47bf55",
+};
+
 async function getDominantColor(publicPath: string): Promise<string> {
   try {
     const fullPath = path.join(process.cwd(), "public", publicPath);
@@ -57,7 +63,7 @@ export default async function Home() {
       <div className="row g-3">
         {GAMES.map((g) => {
           const imgSrc = GAME_IMAGES[g.href] ?? PLACEHOLDER;
-          const bgColor = dominantColors[g.href] ?? "transparent";
+          const bgColor = BG_OVERRIDES[g.href] ?? dominantColors[g.href] ?? "transparent";
           return (
             <div key={g.href} className="col-12 col-sm-6 col-lg-4">
               <Link href={g.href} className="text-decoration-none text-reset">

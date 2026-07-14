@@ -1,5 +1,6 @@
 import Link from "next/link";
 import JsonLd from "./JsonLd";
+import Breadcrumbs from "./Breadcrumbs";
 import type { HowToPlayStep } from "./HowToPlay";
 
 interface GameSeoProps {
@@ -14,6 +15,10 @@ interface GameSeoProps {
 export default function GameSeo({ name, description, url, steps, guide, guideLabel }: GameSeoProps) {
   return (
     <>
+      <Breadcrumbs items={[
+        { name: "Home", url: "https://dailycheckmate.com" },
+        { name, url },
+      ]} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "VideoGame",

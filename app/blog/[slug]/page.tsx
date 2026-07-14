@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { getPostBySlug, getAllPosts } from "@/app/lib/blog";
 import { getLocale, LOCALE_COOKIE } from "@/app/i18n/index";
 import JsonLd from "@/app/components/JsonLd";
+import Breadcrumbs from "@/app/components/Breadcrumbs";
 
 /** Extract FAQ pairs from question-style H2 headings and the paragraph that follows. */
 function extractFaq(contentHtml: string): { question: string; answer: string }[] {
@@ -53,6 +54,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   return (
     <div style={{ maxWidth: 680 }}>
+      <Breadcrumbs items={[
+        { name: "Home", url: "https://dailycheckmate.com" },
+        { name: "Blog", url: "https://dailycheckmate.com/blog" },
+        { name: post.title, url: `https://dailycheckmate.com/blog/${slug}` },
+      ]} />
       {faq.length > 0 && (
         <JsonLd data={{
           "@context": "https://schema.org",

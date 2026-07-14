@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { updateProfile, sendPasswordResetEmail } from "firebase/auth";
 import { useAuth } from "../AuthProvider";
@@ -494,9 +494,8 @@ function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresRespo
               const maxCount = Math.max(...playedDiffs.map((d) => diffCounts[d] ?? 0), 1);
 
               return (
-                <>
+                <Fragment key={gameId}>
                   <tr
-                    key={gameId}
                     style={playedDiffs.length > 1 ? { cursor: "pointer" } : undefined}
                     onClick={playedDiffs.length > 1 ? () => toggleExpanded(gameId) : undefined}
                   >
@@ -532,7 +531,7 @@ function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresRespo
                     </td>
                   </tr>
                   {isExpanded && playedDiffs.length > 1 && (
-                    <tr key={`${gameId}-breakdown`} className="table-light">
+                    <tr className="table-light">
                       <td colSpan={4} className="py-2 px-3">
                         <div className="d-flex flex-column gap-1" style={{ fontSize: "0.82em" }}>
                           {DIFFICULTIES.map((diff) => {
@@ -566,7 +565,7 @@ function ScoresPanel({ scores, scoresError, isGuest }: { scores: UserScoresRespo
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               );
             })}
           </tbody>

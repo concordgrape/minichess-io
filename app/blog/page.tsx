@@ -3,6 +3,7 @@ import { getAllPosts, type BlogPost } from "@/app/lib/blog";
 import { getLocale } from "@/app/i18n";
 import { LOCALE_COOKIE } from "@/app/i18n/index";
 import { cookies } from "next/headers";
+import Breadcrumbs from "@/app/components/Breadcrumbs";
 
 export const metadata = {
   title: "Chess Blog | Tips, Puzzle Guides, and Strategy",
@@ -52,6 +53,10 @@ export default async function BlogIndex() {
 
   return (
     <div>
+      <Breadcrumbs items={[
+        { name: "Home", url: "https://dailycheckmate.com" },
+        { name: "Blog", url: "https://dailycheckmate.com/blog" },
+      ]} />
       <h1 className="h4 mb-1">{t.blog.title}</h1>
       <p className="text-muted mb-4">{t.blog.subtitle}</p>
 

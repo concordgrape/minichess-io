@@ -1,5 +1,6 @@
 import { getAllLeaderboards } from "../lib/leaderboardData";
 import LeaderboardClient from "./LeaderboardClient";
+import Breadcrumbs from "@/app/components/Breadcrumbs";
 
 export const revalidate = 3600;
 
@@ -13,6 +14,10 @@ export default async function LeaderboardPage() {
 
   return (
     <div>
+      <Breadcrumbs items={[
+        { name: "Home", url: "https://dailycheckmate.com" },
+        { name: "Leaderboard", url: "https://dailycheckmate.com/leaderboard" },
+      ]} />
       <h1 className="h4 mb-1">Leaderboard</h1>
       <p className="text-muted mb-4">Top 10 players per puzzle game, updated every hour.</p>
       <LeaderboardClient boards={boards} />
