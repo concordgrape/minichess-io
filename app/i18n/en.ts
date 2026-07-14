@@ -53,6 +53,7 @@ const en = {
   // ── Footer ────────────────────────────────────────────────────────────────
   footer: {
     copyright: (year: number) => `© ${year} Chess Puzzles`,
+    privacy: "Privacy Policy",
   },
 
   // ── User menu ─────────────────────────────────────────────────────────────

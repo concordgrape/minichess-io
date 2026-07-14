@@ -13,6 +13,7 @@ const openSans = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dailycheckmate.com"),
+  alternates: { canonical: "./" },
   title: {
     default: "Chess Puzzles",
     template: "%s | Chess Puzzles",

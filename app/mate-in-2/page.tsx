@@ -1,6 +1,7 @@
 import MateGame from "../mate/MateGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -11,6 +12,7 @@ export const metadata = {
     title: "Mate in 2 Chess Puzzles | Chess Puzzles",
     description: "Force checkmate in two moves against the best defense. Free daily chess tactics training.",
     url: "https://dailycheckmate.com/mate-in-2",
+    images: [{ url: "/images/mate_in_2.webp", alt: "Mate in 2 Chess Puzzles" }],
   },
 };
 
@@ -25,6 +27,13 @@ export default async function MateIn2Page() {
         <MateGame mateIn={2} slug="mate-in-2" />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.mateIn2} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/mate-in-2"
+        steps={t.howToPlay.mateIn2}
+        guide={{ href: "/blog/mate-in-2", title: "How to Solve Mate in 2 Puzzles" }}
+      />
     </div>
   );
 }

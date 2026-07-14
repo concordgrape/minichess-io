@@ -1,6 +1,7 @@
 import MateGame from "../mate/MateGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function RookEndgamePage() {
         <MateGame mateIn={2} slug="rook-endgame" />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.rookEndgame} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/rook-endgame"
+        steps={t.howToPlay.rookEndgame}
+        guide={{ href: "/blog/rook-endgame", title: "How to Win the Rook Endgame" }}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import PawnHuntGame from "./PawnHuntGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function QueenPawnPage() {
         <PawnHuntGame />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.queenVsPawn} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/queen-vs-pawn"
+        steps={t.howToPlay.queenVsPawn}
+        guide={{ href: "/blog/queen-vs-pawn", title: "How to Stop a Passed Pawn With the Queen" }}
+      />
     </div>
   );
 }

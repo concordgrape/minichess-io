@@ -1,6 +1,7 @@
 import MateGame from "../mate/MateGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function ZugzwangPage() {
         <MateGame mateIn={2} slug="zugzwang" />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.zugzwang} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/zugzwang"
+        steps={t.howToPlay.zugzwang}
+        guide={{ href: "/blog/zugzwang-explained", title: "What Is Zugzwang and How Do You Use It?" }}
+      />
     </div>
   );
 }

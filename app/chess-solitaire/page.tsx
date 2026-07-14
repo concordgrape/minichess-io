@@ -1,6 +1,7 @@
 import SolitaireGame from "./SolitaireGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function ChessSolitairePage() {
         <SolitaireGame />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.chessSolitaire} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/chess-solitaire"
+        steps={t.howToPlay.chessSolitaire}
+        guide={{ href: "/blog/chess-solitaire", title: "A Guide to Chess Solitaire" }}
+      />
     </div>
   );
 }

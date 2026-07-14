@@ -1,6 +1,7 @@
 import MateGame from "../mate/MateGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -11,6 +12,7 @@ export const metadata = {
     title: "Mate in 3 Chess Puzzles | Chess Puzzles",
     description: "Calculate a forced checkmate in three moves against the best defense. Free daily chess puzzles.",
     url: "https://dailycheckmate.com/mate-in-3",
+    images: [{ url: "/images/mate_in_3.webp", alt: "Mate in 3 Chess Puzzles" }],
   },
 };
 
@@ -25,6 +27,13 @@ export default async function MateIn3Page() {
         <MateGame mateIn={3} slug="mate-in-3" />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.mateIn3} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/mate-in-3"
+        steps={t.howToPlay.mateIn3}
+        guide={{ href: "/blog/mate-in-3", title: "Thinking Three Moves Ahead in the Mate in 3 Puzzle" }}
+      />
     </div>
   );
 }

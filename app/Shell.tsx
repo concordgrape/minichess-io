@@ -175,12 +175,13 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
               <div style={{ position: "relative" }} ref={langRef}>
                 <button
                   className="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-1 text-muted small"
+                  style={{ padding: "3px 8px" }}
                   onClick={() => setLangOpen((o) => !o)}
                   aria-expanded={langOpen}
                   aria-label="Select language"
                 >
-                  <span>{LOCALE_OPTIONS.find((o) => o.key === localeKey)?.flag ?? "🇺🇸"}</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <span style={{ fontSize: 18 }}>{LOCALE_OPTIONS.find((o) => o.key === localeKey)?.flag ?? "🇺🇸"}</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
@@ -193,6 +194,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
                       <button
                         key={opt.key}
                         className={`dropdown-item${localeKey === opt.key ? " active" : ""}`}
+                        style={{ padding: "4px 12px" }}
                         onClick={() => { setLocale(opt.key); setLangOpen(false); }}
                       >
                         {opt.label}

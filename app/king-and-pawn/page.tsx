@@ -1,6 +1,7 @@
 import MateGame from "../mate/MateGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function KingAndPawnPage() {
         <MateGame mateIn={2} slug="king-and-pawn" />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.kingAndPawn} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/king-and-pawn"
+        steps={t.howToPlay.kingAndPawn}
+        guide={{ href: "/blog/king-and-pawn-endgame", title: "Understanding the King and Pawn Endgame" }}
+      />
     </div>
   );
 }

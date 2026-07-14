@@ -24,12 +24,18 @@ const GAME_ROUTES = [
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts();
 
+  // Daily puzzle deploys rebuild the site each day, so build time ≈ puzzle date.
+  const today = new Date();
+
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: BASE, changeFrequency: "daily", priority: 1.0 },
+    { url: BASE, lastModified: today, changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE}/leaderboard`, changeFrequency: "hourly", priority: 0.6 },
+    { url: `${BASE}/top-players`, changeFrequency: "daily", priority: 0.6 },
     { url: `${BASE}/blog`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE}/privacy-policy`, changeFrequency: "yearly", priority: 0.2 },
     ...GAME_ROUTES.map((r) => ({
       url: `${BASE}${r}`,
+      lastModified: today,
       changeFrequency: "daily" as const,
       priority: 0.8,
     })),

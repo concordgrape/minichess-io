@@ -49,6 +49,7 @@ const es = {
 
   footer: {
     copyright: (year: number) => `© ${year} Minichess`,
+    privacy: "Política de privacidad",
   },
 
   userMenu: {

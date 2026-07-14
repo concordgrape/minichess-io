@@ -1,6 +1,7 @@
 import CheckGame from "./CheckGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function CheckPage() {
         <CheckGame />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.check} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/check"
+        steps={t.howToPlay.check}
+        guide={{ href: "/blog/check-puzzle", title: "How to Win at the Check Puzzle" }}
+      />
     </div>
   );
 }

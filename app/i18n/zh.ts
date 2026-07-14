@@ -49,6 +49,7 @@ const zh = {
 
   footer: {
     copyright: (year: number) => `© ${year} Minichess`,
+    privacy: "隐私政策",
   },
 
   userMenu: {

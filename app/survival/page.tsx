@@ -1,6 +1,7 @@
 import SurvivalGame from "./SurvivalGame";
 // import GameLeaderboard from "@/app/components/GameLeaderboard";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
+import GameSeo from "@/app/components/GameSeo";
 
 export const metadata = {
   title: "Survival Chess | How Long Can You Last?",
@@ -22,6 +23,12 @@ export default function SurvivalPage() {
         <SurvivalGame />
 {/*         <GameLeaderboard gameId="survival" />*/}
       </GameStartOverlay>
+      <GameSeo
+        name="Survival Chess"
+        description="Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game."
+        url="https://dailycheckmate.com/survival"
+        guide={{ href: "/blog/survival-chess-tips", title: "Survival Chess: How to Keep Your Knight Alive" }}
+      />
     </div>
   );
 }

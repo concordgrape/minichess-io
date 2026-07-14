@@ -5,6 +5,17 @@ import { getPostBySlug, getAllPosts } from "@/app/lib/blog";
 import { getLocale, LOCALE_COOKIE } from "@/app/i18n/index";
 import JsonLd from "@/app/components/JsonLd";
 
+/** Extract FAQ pairs from question-style H2 headings and the paragraph that follows. */
+function extractFaq(contentHtml: string): { question: string; answer: string }[] {
+  const faq: { question: string; answer: string }[] = [];
+  const re = /<h2>([^<]*\?)<\/h2>(?:<\/p>)?\s*<p>([\s\S]*?)<\/p>/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(contentHtml)) !== null) {
+    faq.push({ question: m[1].trim(), answer: m[2].replace(/<[^>]+>/g, "").trim() });
+  }
+  return faq;
+}
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((p) => ({ slug: p.slug }));
@@ -38,9 +49,21 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   if (!post) notFound();
 
   const t = await getLocale();
+  const faq = extractFaq(post.contentHtml);
 
   return (
     <div style={{ maxWidth: 680 }}>
+      {faq.length > 0 && (
+        <JsonLd data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        }} />
+      )}
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Article",

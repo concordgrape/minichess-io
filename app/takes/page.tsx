@@ -1,6 +1,7 @@
 import TakesGame from "./TakesGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function TakesPage() {
         <TakesGame />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.takes} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/takes"
+        steps={t.howToPlay.takes}
+        guide={{ href: "/blog/takes", title: "How to Solve the Takes Puzzle" }}
+      />
     </div>
   );
 }

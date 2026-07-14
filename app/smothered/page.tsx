@@ -1,6 +1,7 @@
 import SmotheredGame from "./SmotheredGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
+import GameSeo from "@/app/components/GameSeo";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -25,6 +26,13 @@ export default async function SmotheredPage() {
         <SmotheredGame />
       </GameStartOverlay>
       <HowToPlay title={t.howToPlay.sectionTitle} steps={t.howToPlay.smothered} />
+      <GameSeo
+        name={title}
+        description={subtitle}
+        url="https://dailycheckmate.com/smothered"
+        steps={t.howToPlay.smothered}
+        guide={{ href: "/blog/smothered-mate", title: "The Art of the Smothered Mate" }}
+      />
     </div>
   );
 }
