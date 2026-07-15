@@ -84,6 +84,8 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
   const [legalSquares, setLegalSquares] = useState<Square[]>([]);
   const [status, setStatus] = useState<GameStatus>(() => saved?.status ?? "playing");
   useTimeLimit(startedAt, status === "playing", () => setStatus("timeout"));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (status === "won" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [movesLeft, setMovesLeft] = useState(() => saved?.movesLeft ?? mateIn);
   const [history, setHistory] = useState<HistoryEntry[]>(() => saved?.history ?? []);
   const [kingThinking, setKingThinking] = useState(false);

@@ -146,6 +146,9 @@ export async function POST(request: NextRequest) {
         // Per-puzzle new-best check (independent from per-game)
         const prevPuzzleScore = puzzleScoreSnap.data();
         const isNewPuzzleBest = !prevPuzzleScore || score > (prevPuzzleScore.score as number);
+        // First time this user completes this specific puzzle → counts as one "solve".
+        // Replays and improvements of an already-completed puzzle do not add solves.
+        const isFirstCompletion = !prevPuzzleScore;
 
         type Player = {
           rank: number; uid: string; displayName: string;
@@ -181,24 +184,35 @@ export async function POST(request: NextRequest) {
           without.sort((a, b) => b.normalizedScore - a.normalizedScore);
           const top100 = without.slice(0, 100).map((p, i) => ({ ...p, rank: i + 1 }));
           tx.set(topPlayersRef, { players: top100, updatedAt: completedAt });
+        }
 
-          const userData = userSnap.data() ?? {};
+        // User aggregate doc: completions count on every first completion,
+        // best/globalScore only when the game best improves.
+        const userData = userSnap.data() ?? {};
+        const userUpdate: Record<string, unknown> = {};
+
+        if (isFirstCompletion) {
+          const diffComp = (userData.difficultyCompletions ?? {}) as Record<string, Record<string, number>>;
+          const gameDiff = diffComp[gameId] ?? {};
+          userUpdate.difficultyCompletions = {
+            ...diffComp,
+            [gameId]: { ...gameDiff, [difficulty]: (gameDiff[difficulty] ?? 0) + 1 },
+          };
+        }
+
+        if (isNewBest) {
           const gamesBest: Record<string, unknown> = userData.gamesBest ?? {};
           const currentGlobalScore: number = userData.globalScore ?? 0;
           const prevNorm: number = (gamesBest[gameId] as { normalizedScore?: number } | undefined)?.normalizedScore ?? 0;
-          const diffComp = (userData.difficultyCompletions ?? {}) as Record<string, Record<string, number>>;
-          const gameDiff = diffComp[gameId] ?? {};
-          tx.set(userRef, {
-            globalScore: Math.max(0, currentGlobalScore - prevNorm + normalizedScore),
-            gamesBest: {
-              ...gamesBest,
-              [gameId]: { score, normalizedScore, difficulty, puzzleId, updatedAt: completedAt.toISOString() },
-            },
-            difficultyCompletions: {
-              ...diffComp,
-              [gameId]: { ...gameDiff, [difficulty]: (gameDiff[difficulty] ?? 0) + 1 },
-            },
-          }, { merge: true });
+          userUpdate.globalScore = Math.max(0, currentGlobalScore - prevNorm + normalizedScore);
+          userUpdate.gamesBest = {
+            ...gamesBest,
+            [gameId]: { score, normalizedScore, difficulty, puzzleId, updatedAt: completedAt.toISOString() },
+          };
+        }
+
+        if (Object.keys(userUpdate).length > 0) {
+          tx.set(userRef, userUpdate, { merge: true });
         }
       });
     } catch (e) {
@@ -234,10 +248,11 @@ export async function POST(request: NextRequest) {
       }
     }).catch(() => {});
 
-    // ── Bust leaderboard cache ────────────────────────────────────────────────
+    // ── Bust leaderboard + user-scores caches ─────────────────────────────────
     try {
       revalidateTag(`lb-${gameId}`, "max");
       revalidateTag(`puzzle-lb-${gameId}-${puzzleId}`, "max");
+      revalidateTag(`user-scores-${uid}`, "max");
     } catch (e) {
       console.warn("[submit] revalidateTag failed (non-fatal):", e);
     }

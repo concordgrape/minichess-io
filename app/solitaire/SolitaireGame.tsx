@@ -79,6 +79,8 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
     initialPuzzle ? (() => { const b = saved?.board ?? initialPuzzle.board.map((r) => [...r]); const p = saved?.pos ?? initialPuzzle.start; return getLegalCaptures(b, p.row, p.col); })() : []
   );
   const [status, setStatus] = useState<GameStatus>(() => saved?.status ?? "playing");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (status === "won" && puzzle) markCompleted(puzzle.id); }, [status, puzzle?.id]);
   const [history, setHistory] = useState<HistoryEntry[]>(() => saved?.history ?? []);
   const [undoCount, setUndoCount] = useState(() => saved?.undoCount ?? 0);
   const [earnedPoints, setEarnedPoints] = useState<number | null>(null);

@@ -189,6 +189,72 @@ describe("score attachment to user and puzzle", () => {
   });
 });
 
+describe("difficultyCompletions (profile solve counts)", () => {
+  function completions() {
+    return (store.get("users/user-abc")?.difficultyCompletions ?? {}) as Record<string, Record<string, number>>;
+  }
+
+  it("counts the first completion of a puzzle as one solve", async () => {
+    await submit({});
+    expect(completions()[GAME]?.easy).toBe(1);
+  });
+
+  it("counts a second, different puzzle even when the score is NOT a new game best", async () => {
+    seedPuzzle(store, GAME, 8);
+    await submit({ timeSeconds: 5 });                    // puzzle 7, high score → game best
+    await submit({ timeSeconds: 55 }, { puzzleId: 8 });  // puzzle 8, lower score → not a new game best
+    expect(completions()[GAME]?.easy).toBe(2);           // regression test for the old isNewBest-gated bug
+  });
+
+  it("does not double-count replaying or improving the same puzzle", async () => {
+    await submit({ timeSeconds: 55 });  // first completion
+    await submit({ timeSeconds: 5 });   // improvement, same puzzle
+    await submit({ timeSeconds: 60 });  // worse replay, same puzzle
+    expect(completions()[GAME]?.easy).toBe(1);
+  });
+
+  it("buckets solves by difficulty", async () => {
+    seedPuzzle(store, GAME, 9, "hard");
+    await submit({});                        // puzzle 7, easy
+    await submit({}, { puzzleId: 9 });       // puzzle 9, hard
+    expect(completions()[GAME]).toEqual({ easy: 1, hard: 1 });
+  });
+
+  it("buckets solves by game", async () => {
+    seedPuzzle(store, "takes", 3);
+    await submit({});
+    await submit({}, { gameId: "takes", puzzleId: 3 });
+    expect(completions()[GAME]?.easy).toBe(1);
+    expect(completions()["takes"]?.easy).toBe(1);
+  });
+
+  it("still updates completions when gamesBest is untouched, and vice versa", async () => {
+    seedPuzzle(store, GAME, 8);
+    const best = await submit({ timeSeconds: 5 });        // game best via puzzle 7
+    await submit({ timeSeconds: 55 }, { puzzleId: 8 });   // adds solve, does not touch best
+    const userDoc = store.get("users/user-abc");
+    expect((userDoc?.gamesBest as Record<string, { score: number }>)[GAME].score).toBe(best.body.score);
+    expect(userDoc?.globalScore).toBe(best.body.normalizedScore);
+    expect(completions()[GAME]?.easy).toBe(2);
+  });
+});
+
+describe("user-scores cache invalidation", () => {
+  it("busts the per-user scores tag on every submit", async () => {
+    await submit({});
+    const tags = h.revalidateTag.mock.calls.map((c) => c[0]);
+    expect(tags).toContain("user-scores-user-abc");
+  });
+
+  it("busts the tag for the submitting user, not others", async () => {
+    h.currentUser = { uid: "user-xyz", name: "Bob" };
+    await submit({});
+    const tags = h.revalidateTag.mock.calls.map((c) => c[0]);
+    expect(tags).toContain("user-scores-user-xyz");
+    expect(tags).not.toContain("user-scores-user-abc");
+  });
+});
+
 describe("puzzle leaderboard and rank", () => {
   it("returns rank 1 for the first player on a puzzle", async () => {
     const { body } = await submit({});
