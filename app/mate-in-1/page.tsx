@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Mate in 1 Chess Puzzles | Chess Puzzles",
     description: "Find the one move that delivers checkmate. Free daily chess tactics for all skill levels.",
-    url: "https://dailycheckmate.com/mate-in-1",
+    url: "https://chesspuzzles.online/mate-in-1",
     images: [{ url: "/images/mate_in_1.webp", alt: "Mate in 1 Chess Puzzles" }],
   },
 };
@@ -30,7 +30,7 @@ export default async function MateIn1Page() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/mate-in-1"
+        url="https://chesspuzzles.online/mate-in-1"
         steps={t.howToPlay.mateIn1}
       />
     </div>

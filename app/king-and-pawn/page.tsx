@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "King and Pawn Endgame Puzzle | Chess Puzzles",
     description: "Escort the pawn to promotion and deliver checkmate. Free daily chess endgame puzzle.",
-    url: "https://dailycheckmate.com/king-and-pawn",
+    url: "https://chesspuzzles.online/king-and-pawn",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function KingAndPawnPage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/king-and-pawn"
+        url="https://chesspuzzles.online/king-and-pawn"
         steps={t.howToPlay.kingAndPawn}
       />
     </div>

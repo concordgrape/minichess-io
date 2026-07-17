@@ -12,7 +12,7 @@ export const metadata = {
   openGraph: {
     title: "Chess Blog | Chess Puzzles",
     description: "Chess tips, puzzle guides, endgame techniques, and strategy articles to help you improve.",
-    url: "https://dailycheckmate.com/blog",
+    url: "https://chesspuzzles.online/blog",
   },
 };
 
@@ -54,8 +54,8 @@ export default async function BlogIndex() {
   return (
     <div>
       <Breadcrumbs items={[
-        { name: "Home", url: "https://dailycheckmate.com" },
-        { name: "Blog", url: "https://dailycheckmate.com/blog" },
+        { name: "Home", url: "https://chesspuzzles.online" },
+        { name: "Blog", url: "https://chesspuzzles.online/blog" },
       ]} />
       <h1 className="h4 mb-1">{t.blog.title}</h1>
       <p className="text-muted mb-4">{t.blog.subtitle}</p>

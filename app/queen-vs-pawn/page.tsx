@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Queen vs Pawn Puzzle | Chess Puzzles",
     description: "Stop a passed pawn from promoting with just your queen. Tests precise queen technique.",
-    url: "https://dailycheckmate.com/queen-vs-pawn",
+    url: "https://chesspuzzles.online/queen-vs-pawn",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function QueenPawnPage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/queen-vs-pawn"
+        url="https://chesspuzzles.online/queen-vs-pawn"
         steps={t.howToPlay.queenVsPawn}
       />
     </div>

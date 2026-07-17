@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: "Play Chess Online Free | Chess Puzzles",
     description: "Play chess online for free against a computer opponent. Choose your difficulty from beginner to advanced.",
-    url: "https://dailycheckmate.com/chess",
+    url: "https://chesspuzzles.online/chess",
     images: [{ url: "/images/chess.png", alt: "Play Chess Online" }],
   },
 };
@@ -20,7 +20,7 @@ export default function ChessPage() {
       <GameSeo
         name="Play Chess Online"
         description="Play chess online for free against a computer opponent. Choose your difficulty from beginner to advanced."
-        url="https://dailycheckmate.com/chess"
+        url="https://chesspuzzles.online/chess"
       />
     </div>
   );

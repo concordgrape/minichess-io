@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Takes | Capture All Pieces Chess Puzzle | Chess Puzzles",
     description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything.",
-    url: "https://dailycheckmate.com/takes",
+    url: "https://chesspuzzles.online/takes",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function TakesPage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/takes"
+        url="https://chesspuzzles.online/takes"
         steps={t.howToPlay.takes}
       />
     </div>

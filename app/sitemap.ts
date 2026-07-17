@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { getAllPosts } from "./lib/blog";
 
-const BASE = "https://dailycheckmate.com";
+const BASE = "https://chesspuzzles.online";
 
 const GAME_ROUTES = [
   "/chess",

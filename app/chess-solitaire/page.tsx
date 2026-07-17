@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Chess Solitaire | Capture All Pieces | Chess Puzzles",
     description: "Capture every piece on a full 8x8 chess board in one continuous sequence.",
-    url: "https://dailycheckmate.com/chess-solitaire",
+    url: "https://chesspuzzles.online/chess-solitaire",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function ChessSolitairePage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/chess-solitaire"
+        url="https://chesspuzzles.online/chess-solitaire"
         steps={t.howToPlay.chessSolitaire}
       />
     </div>

@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Check Puzzle | Give Check Without Losing Your Piece | Chess Puzzles",
     description: "Find the move that puts the king in check while keeping your piece safe.",
-    url: "https://dailycheckmate.com/check",
+    url: "https://chesspuzzles.online/check",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function CheckPage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/check"
+        url="https://chesspuzzles.online/check"
         steps={t.howToPlay.check}
       />
     </div>

@@ -10,7 +10,7 @@ export const metadata = {
   openGraph: {
     title: "Survival Chess | How Long Can You Last? | Chess Puzzles",
     description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game.",
-    url: "https://dailycheckmate.com/survival",
+    url: "https://chesspuzzles.online/survival",
   },
 };
 
@@ -26,7 +26,7 @@ export default function SurvivalPage() {
       <GameSeo
         name="Survival Chess"
         description="Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game."
-        url="https://dailycheckmate.com/survival"
+        url="https://chesspuzzles.online/survival"
       />
     </div>
   );

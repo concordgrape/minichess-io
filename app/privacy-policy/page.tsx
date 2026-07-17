@@ -3,7 +3,7 @@ import Breadcrumbs from "@/app/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How Chess Puzzles (dailycheckmate.com) collects, uses, and safeguards user information.",
+  description: "How Chess Puzzles (chesspuzzles.online) collects, uses, and safeguards user information.",
   alternates: { canonical: "/privacy-policy" },
   robots: { index: true, follow: true },
 };
@@ -40,15 +40,15 @@ export default function PrivacyPolicy() {
   return (
     <div style={{ maxWidth: 720 }}>
       <Breadcrumbs items={[
-        { name: "Home", url: "https://dailycheckmate.com" },
-        { name: "Privacy Policy", url: "https://dailycheckmate.com/privacy-policy" },
+        { name: "Home", url: "https://chesspuzzles.online" },
+        { name: "Privacy Policy", url: "https://chesspuzzles.online/privacy-policy" },
       ]} />
       <h1 className="fw-bold mb-1">Privacy Policy</h1>
       <p className="text-muted small mb-4">Last updated: 07/14/2026</p>
 
       <p className="text-muted mb-4" style={{ lineHeight: 1.7 }}>
         This Privacy Policy details how Chess Puzzles, operating the website
-        dailycheckmate.com, collects, uses, and safeguards user information.
+        chesspuzzles.online, collects, uses, and safeguards user information.
       </p>
 
       <Section title="Information Collection">
@@ -80,7 +80,7 @@ export default function PrivacyPolicy() {
 
       <Section title="Use of Information">
         Any data collected is used solely to improve user experience, maintain
-        game functionality, operate leaderboards, and run dailycheckmate.com.
+        game functionality, operate leaderboards, and run chesspuzzles.online.
         We do not collect personally identifiable information beyond what is
         needed for your account, unless you contact us directly.
       </Section>
@@ -212,18 +212,18 @@ export default function PrivacyPolicy() {
 
       <Section title="Updates to Privacy Policy">
         This Privacy Policy may be periodically updated. Continued use of
-        dailycheckmate.com following any changes constitutes acceptance of the
+        chesspuzzles.online following any changes constitutes acceptance of the
         revised policy.
       </Section>
 
       <Section title="Contact Information">
         For any inquiries or concerns regarding this Privacy Policy or the use
-        of dailycheckmate.com, please contact us at{" "}
+        of chesspuzzles.online, please contact us at{" "}
         <a href="mailto:hi@skyroth.com">hi@skyroth.com</a>.
       </Section>
 
       <p className="border-top pt-3 mt-4 small text-muted">
-        By using dailycheckmate.com, you agree to adhere to the terms outlined
+        By using chesspuzzles.online, you agree to adhere to the terms outlined
         in this Privacy Policy.
       </p>
     </div>

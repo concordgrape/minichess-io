@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Rook Endgame Puzzle | Chess Puzzles",
     description: "Use king and rook to cut off the enemy king and force checkmate. Free daily chess endgame puzzle.",
-    url: "https://dailycheckmate.com/rook-endgame",
+    url: "https://chesspuzzles.online/rook-endgame",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function RookEndgamePage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/rook-endgame"
+        url="https://chesspuzzles.online/rook-endgame"
         steps={t.howToPlay.rookEndgame}
       />
     </div>

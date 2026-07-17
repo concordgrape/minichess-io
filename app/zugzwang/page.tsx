@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Zugzwang Puzzle | Chess Puzzles",
     description: "Find the quiet waiting move that forces your opponent into a losing position. Free daily chess endgame puzzle.",
-    url: "https://dailycheckmate.com/zugzwang",
+    url: "https://chesspuzzles.online/zugzwang",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function ZugzwangPage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/zugzwang"
+        url="https://chesspuzzles.online/zugzwang"
         steps={t.howToPlay.zugzwang}
       />
     </div>

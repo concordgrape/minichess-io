@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dailycheckmate.com"),
+  metadataBase: new URL("https://chesspuzzles.online"),
   alternates: { canonical: "./" },
   icons: {
     icon: [
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     title: "Chess Puzzles",
     description:
       "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
-    url: "https://dailycheckmate.com",
+    url: "https://chesspuzzles.online",
   },
   twitter: {
     card: "summary",
@@ -76,7 +76,7 @@ export default async function RootLayout({
           "@context": "https://schema.org",
           "@type": "WebApplication",
           name: "Chess Puzzles",
-          url: "https://dailycheckmate.com",
+          url: "https://chesspuzzles.online",
           applicationCategory: "GameApplication",
           operatingSystem: "Web",
           description: "Free daily chess puzzles — mate-in-1, mate-in-2, endgame puzzles, and more.",
@@ -86,12 +86,12 @@ export default async function RootLayout({
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "Chess Puzzles",
-          url: "https://dailycheckmate.com",
+          url: "https://chesspuzzles.online",
           publisher: {
             "@type": "Organization",
             name: "Chess Puzzles",
-            url: "https://dailycheckmate.com",
-            logo: { "@type": "ImageObject", url: "https://dailycheckmate.com/og-img.png" },
+            url: "https://chesspuzzles.online",
+            logo: { "@type": "ImageObject", url: "https://chesspuzzles.online/og-img.png" },
           },
         }} />
         <Analytics />

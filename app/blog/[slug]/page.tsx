@@ -33,11 +33,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      url: `https://dailycheckmate.com/blog/${slug}`,
+      url: `https://chesspuzzles.online/blog/${slug}`,
       type: "article",
       publishedTime: post.date,
       authors: [post.author],
-      images: [{ url: "https://dailycheckmate.com/og-img.png", width: 1200, height: 630, alt: "Chess Puzzles" }],
+      images: [{ url: "https://chesspuzzles.online/og-img.png", width: 1200, height: 630, alt: "Chess Puzzles" }],
     },
   };
 }
@@ -55,9 +55,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   return (
     <div style={{ maxWidth: 680 }}>
       <Breadcrumbs items={[
-        { name: "Home", url: "https://dailycheckmate.com" },
-        { name: "Blog", url: "https://dailycheckmate.com/blog" },
-        { name: post.title, url: `https://dailycheckmate.com/blog/${slug}` },
+        { name: "Home", url: "https://chesspuzzles.online" },
+        { name: "Blog", url: "https://chesspuzzles.online/blog" },
+        { name: post.title, url: `https://chesspuzzles.online/blog/${slug}` },
       ]} />
       {faq.length > 0 && (
         <JsonLd data={{
@@ -77,9 +77,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         description: post.excerpt,
         datePublished: post.date,
         author: { "@type": "Person", name: post.author },
-        publisher: { "@type": "Organization", name: "Chess Puzzles", url: "https://dailycheckmate.com" },
-        url: `https://dailycheckmate.com/blog/${slug}`,
-        image: "https://dailycheckmate.com/og-img.png",
+        publisher: { "@type": "Organization", name: "Chess Puzzles", url: "https://chesspuzzles.online" },
+        url: `https://chesspuzzles.online/blog/${slug}`,
+        image: "https://chesspuzzles.online/og-img.png",
       }} />
       <Link href="/blog" className="text-muted small text-decoration-none d-inline-flex align-items-center gap-1 mb-4">
         ← {t.blog.backToAll}

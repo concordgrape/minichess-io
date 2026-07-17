@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: "Top Players | Chess Puzzles",
     description: "See who's leading the all-time rankings across every chess puzzle on Chess Puzzles.",
-    url: "https://dailycheckmate.com/top-players",
+    url: "https://chesspuzzles.online/top-players",
   },
 };
 
@@ -64,8 +64,8 @@ export default async function TopPlayersPage() {
   return (
     <div>
       <Breadcrumbs items={[
-        { name: "Home", url: "https://dailycheckmate.com" },
-        { name: "Top Players", url: "https://dailycheckmate.com/top-players" },
+        { name: "Home", url: "https://chesspuzzles.online" },
+        { name: "Top Players", url: "https://chesspuzzles.online/top-players" },
       ]} />
       <h1 className="h4 mb-1">Top Players</h1>
       <p className="text-muted mb-1">

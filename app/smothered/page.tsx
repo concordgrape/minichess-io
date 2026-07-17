@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Smothered Mate Puzzle | Daily Chess Tactics | Chess Puzzles",
     description: "Deliver a smothered mate: use a knight to checkmate a king trapped by its own pieces.",
-    url: "https://dailycheckmate.com/smothered",
+    url: "https://chesspuzzles.online/smothered",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function SmotheredPage() {
       <GameSeo
         name={title}
         description={subtitle}
-        url="https://dailycheckmate.com/smothered"
+        url="https://chesspuzzles.online/smothered"
         steps={t.howToPlay.smothered}
       />
     </div>

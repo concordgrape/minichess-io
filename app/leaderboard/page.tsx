@@ -15,8 +15,8 @@ export default async function LeaderboardPage() {
   return (
     <div>
       <Breadcrumbs items={[
-        { name: "Home", url: "https://dailycheckmate.com" },
-        { name: "Leaderboard", url: "https://dailycheckmate.com/leaderboard" },
+        { name: "Home", url: "https://chesspuzzles.online" },
+        { name: "Leaderboard", url: "https://chesspuzzles.online/leaderboard" },
       ]} />
       <h1 className="h4 mb-1">Leaderboard</h1>
       <p className="text-muted mb-4">Top 10 players per puzzle game, updated every hour.</p>

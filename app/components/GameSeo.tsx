@@ -13,7 +13,7 @@ export default function GameSeo({ name, description, url, steps }: GameSeoProps)
   return (
     <>
       <Breadcrumbs items={[
-        { name: "Home", url: "https://dailycheckmate.com" },
+        { name: "Home", url: "https://chesspuzzles.online" },
         { name, url },
       ]} />
       <JsonLd data={{
@@ -26,7 +26,7 @@ export default function GameSeo({ name, description, url, steps }: GameSeoProps)
         applicationCategory: "Game",
         genre: "Puzzle",
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-        publisher: { "@type": "Organization", name: "Chess Puzzles", url: "https://dailycheckmate.com" },
+        publisher: { "@type": "Organization", name: "Chess Puzzles", url: "https://chesspuzzles.online" },
       }} />
       {steps && steps.length > 0 && (
         <JsonLd data={{

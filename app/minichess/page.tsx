@@ -11,7 +11,7 @@ export const metadata = {
   openGraph: {
     title: "Mini Chess | 5x5 Chess Puzzle Game | Chess Puzzles",
     description: "Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics.",
-    url: "https://dailycheckmate.com/minichess",
+    url: "https://chesspuzzles.online/minichess",
   },
 };
 
@@ -29,7 +29,7 @@ export default async function MiniChessPage() {
       <GameSeo
         name="Mini Chess"
         description="Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics."
-        url="https://dailycheckmate.com/minichess"
+        url="https://chesspuzzles.online/minichess"
       />
     </div>
   );
