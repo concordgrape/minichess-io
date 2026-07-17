@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Open_Sans } from "next/font/google";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
@@ -10,6 +10,13 @@ import { Analytics } from "@vercel/analytics/next"
 import JsonLd from "./components/JsonLd"
 
 const openSans = Open_Sans({ subsets: ["latin"] });
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f5f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#161616" },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dailycheckmate.com"),
@@ -68,6 +75,18 @@ export default async function RootLayout({
           operatingSystem: "Web",
           description: "Free daily chess puzzles — mate-in-1, mate-in-2, endgame puzzles, and more.",
           offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        }} />
+        <JsonLd data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Chess Puzzles",
+          url: "https://dailycheckmate.com",
+          publisher: {
+            "@type": "Organization",
+            name: "Chess Puzzles",
+            url: "https://dailycheckmate.com",
+            logo: { "@type": "ImageObject", url: "https://dailycheckmate.com/og-img.png" },
+          },
         }} />
         <Analytics />
         <LocaleProvider>

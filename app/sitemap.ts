@@ -21,6 +21,14 @@ const GAME_ROUTES = [
   "/queen-vs-pawn",
 ];
 
+// Game pages with custom artwork — listed as sitemap images for Google Images
+const GAME_IMAGES: Record<string, string> = {
+  "/chess":     `${BASE}/images/chess.png`,
+  "/mate-in-1": `${BASE}/images/mate_in_1.webp`,
+  "/mate-in-2": `${BASE}/images/mate_in_2.webp`,
+  "/mate-in-3": `${BASE}/images/mate_in_3.webp`,
+};
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts();
 
@@ -28,7 +36,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const today = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: BASE, lastModified: today, changeFrequency: "daily", priority: 1.0 },
+    {
+      url: BASE,
+      lastModified: today,
+      changeFrequency: "daily",
+      priority: 1.0,
+      images: Object.values(GAME_IMAGES),
+    },
     { url: `${BASE}/leaderboard`, changeFrequency: "hourly", priority: 0.6 },
     { url: `${BASE}/top-players`, changeFrequency: "daily", priority: 0.6 },
     { url: `${BASE}/blog`, changeFrequency: "weekly", priority: 0.7 },
@@ -38,6 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: today,
       changeFrequency: "daily" as const,
       priority: 0.8,
+      ...(GAME_IMAGES[r] ? { images: [GAME_IMAGES[r]] } : {}),
     })),
   ];
 
