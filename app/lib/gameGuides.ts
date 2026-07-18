@@ -1,3 +1,31 @@
+/** Display names for game routes, used by the blog → game CTA. */
+export const GAME_NAMES: Record<string, string> = {
+  "takes":           "Takes",
+  "check":           "Check",
+  "smothered":       "Smothered Mate",
+  "chess-solitaire": "Chess Solitaire",
+  "solitaire":       "Chain Capture",
+  "king-and-pawn":   "King and Pawn",
+  "rook-endgame":    "Rook Endgame",
+  "zugzwang":        "Zugzwang",
+  "queen-vs-pawn":   "Queen vs Pawn",
+  "mate-in-1":       "Mate in 1",
+  "mate-in-2":       "Mate in 2",
+  "mate-in-3":       "Mate in 3",
+  "minichess":       "Mini Chess",
+  "survival":        "Survival",
+};
+
+/** Reverse lookup: blog slug → the game it teaches. */
+export function gameForBlogSlug(slug: string): { href: string; name: string } | null {
+  for (const [gameId, guide] of Object.entries(GAME_GUIDES)) {
+    if (guide.href === `/blog/${slug}`) {
+      return { href: `/${gameId}`, name: GAME_NAMES[gameId] ?? gameId };
+    }
+  }
+  return null;
+}
+
 /** Blog guide for each game, shown under the board and used for internal linking. */
 export const GAME_GUIDES: Record<string, { href: string; title: string }> = {
   "takes":           { href: "/blog/takes", title: "How to Solve the Takes Puzzle" },

@@ -5,11 +5,12 @@ import { getPostBySlug, getAllPosts } from "@/app/lib/blog";
 import { getLocale, LOCALE_COOKIE } from "@/app/i18n/index";
 import JsonLd from "@/app/components/JsonLd";
 import Breadcrumbs from "@/app/components/Breadcrumbs";
+import { gameForBlogSlug } from "@/app/lib/gameGuides";
 
 /** Extract FAQ pairs from question-style H2 headings and the paragraph that follows. */
 function extractFaq(contentHtml: string): { question: string; answer: string }[] {
   const faq: { question: string; answer: string }[] = [];
-  const re = /<h2>([^<]*\?)<\/h2>(?:<\/p>)?\s*<p>([\s\S]*?)<\/p>/g;
+  const re = /<h2>([^<]*[?？])<\/h2>(?:<\/p>)?\s*<p>([\s\S]*?)<\/p>/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(contentHtml)) !== null) {
     faq.push({ question: m[1].trim(), answer: m[2].replace(/<[^>]+>/g, "").trim() });
@@ -51,6 +52,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   const t = await getLocale();
   const faq = extractFaq(post.contentHtml);
+  const game = gameForBlogSlug(slug);
 
   return (
     <div style={{ maxWidth: 680 }}>
@@ -72,7 +74,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       )}
       <JsonLd data={{
         "@context": "https://schema.org",
-        "@type": "Article",
+        "@type": "BlogPosting",
         headline: post.title,
         description: post.excerpt,
         datePublished: post.date,
@@ -109,6 +111,15 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         className="blog-content"
         dangerouslySetInnerHTML={{ __html: post.contentHtml }}
       />
+
+      {game && (
+        <div className="mt-4 p-3 border rounded-0 d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <span className="fw-semibold">Ready to try it yourself?</span>
+          <Link href={game.href} className="btn btn-success rounded-0">
+            Play {game.name} →
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
