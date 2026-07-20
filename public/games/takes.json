@@ -1,54 +1,54 @@
 {
-  "id": 1336,
+  "id": 1337,
   "difficulty": "hard",
   "pieces": [
     {
       "id": "k0",
       "type": "k",
       "row": 2,
-      "col": 1
-    },
-    {
-      "id": "n1",
-      "type": "n",
-      "row": 2,
       "col": 3
     },
     {
-      "id": "p2",
-      "type": "p",
-      "row": 0,
-      "col": 3
-    },
-    {
-      "id": "q3",
-      "type": "q",
-      "row": 3,
-      "col": 0
-    },
-    {
-      "id": "p4",
+      "id": "p1",
       "type": "p",
       "row": 0,
       "col": 2
     },
     {
-      "id": "p5",
+      "id": "q2",
+      "type": "q",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "b3",
+      "type": "b",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "p4",
       "type": "p",
-      "row": 0,
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "n5",
+      "type": "n",
+      "row": 3,
       "col": 1
     },
     {
       "id": "n6",
       "type": "n",
       "row": 1,
-      "col": 2
+      "col": 3
     },
     {
-      "id": "p7",
-      "type": "p",
-      "row": 1,
-      "col": 0
+      "id": "b7",
+      "type": "b",
+      "row": 3,
+      "col": 2
     }
   ]
 }
