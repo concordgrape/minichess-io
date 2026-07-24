@@ -1,36 +1,60 @@
 {
-  "id": 1339,
-  "difficulty": "easy",
+  "id": 1340,
+  "difficulty": "hard",
   "pieces": [
     {
-      "type": "R",
+      "type": "B",
       "color": "b",
       "row": 5,
-      "col": 6
+      "col": 7
     },
     {
-      "type": "R",
+      "type": "B",
       "color": "b",
-      "row": 2,
+      "row": 5,
       "col": 5
     },
     {
-      "type": "Q",
-      "color": "b",
-      "row": 1,
+      "type": "B",
+      "color": "w",
+      "row": 2,
       "col": 4
+    },
+    {
+      "type": "N",
+      "color": "b",
+      "row": 7,
+      "col": 7
     },
     {
       "type": "N",
       "color": "w",
-      "row": 2,
+      "row": 6,
       "col": 6
     },
     {
-      "type": "N",
+      "type": "B",
+      "color": "w",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "type": "B",
       "color": "b",
-      "row": 2,
-      "col": 4
+      "row": 4,
+      "col": 2
+    },
+    {
+      "type": "R",
+      "color": "b",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "type": "R",
+      "color": "w",
+      "row": 3,
+      "col": 3
     }
   ]
 }
