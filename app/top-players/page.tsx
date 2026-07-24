@@ -9,6 +9,7 @@ export const metadata = {
     title: "Top Players | Chess Puzzles",
     description: "See who's leading the all-time rankings across every chess puzzle on Chess Puzzles.",
     url: "https://chesspuzzles.online/top-players",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

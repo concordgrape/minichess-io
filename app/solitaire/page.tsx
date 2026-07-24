@@ -12,6 +12,7 @@ export const metadata = {
     title: "Chain Capture | Chess Puzzle Game | Chess Puzzles",
     description: "Capture every piece on the board in one unbroken chain. Trains calculation and piece mobility.",
     url: "https://chesspuzzles.online/solitaire",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

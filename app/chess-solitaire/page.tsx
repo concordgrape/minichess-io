@@ -12,6 +12,7 @@ export const metadata = {
     title: "Chess Solitaire | Capture All Pieces | Chess Puzzles",
     description: "Capture every piece on a full 8x8 chess board in one continuous sequence.",
     url: "https://chesspuzzles.online/chess-solitaire",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

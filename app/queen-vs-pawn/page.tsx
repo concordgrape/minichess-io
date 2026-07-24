@@ -12,6 +12,7 @@ export const metadata = {
     title: "Queen vs Pawn Puzzle | Chess Puzzles",
     description: "Stop a passed pawn from promoting with just your queen. Tests precise queen technique.",
     url: "https://chesspuzzles.online/queen-vs-pawn",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

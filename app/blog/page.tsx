@@ -13,6 +13,7 @@ export const metadata = {
     title: "Chess Blog | Chess Puzzles",
     description: "Chess tips, puzzle guides, endgame techniques, and strategy articles to help you improve.",
     url: "https://chesspuzzles.online/blog",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

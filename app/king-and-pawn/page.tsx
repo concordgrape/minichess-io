@@ -12,6 +12,7 @@ export const metadata = {
     title: "King and Pawn Endgame Puzzle | Chess Puzzles",
     description: "Escort the pawn to promotion and deliver checkmate. Free daily chess endgame puzzle.",
     url: "https://chesspuzzles.online/king-and-pawn",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

@@ -12,6 +12,7 @@ export const metadata = {
     title: "Smothered Mate Puzzle | Daily Chess Tactics | Chess Puzzles",
     description: "Deliver a smothered mate: use a knight to checkmate a king trapped by its own pieces.",
     url: "https://chesspuzzles.online/smothered",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

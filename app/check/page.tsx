@@ -12,6 +12,7 @@ export const metadata = {
     title: "Check Puzzle | Give Check Without Losing Your Piece | Chess Puzzles",
     description: "Find the move that puts the king in check while keeping your piece safe.",
     url: "https://chesspuzzles.online/check",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

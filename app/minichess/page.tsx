@@ -12,6 +12,7 @@ export const metadata = {
     title: "Mini Chess | 5x5 Chess Puzzle Game | Chess Puzzles",
     description: "Play mini chess on a 5x5 board. A compact, fast-paced version of chess that sharpens your tactics.",
     url: "https://chesspuzzles.online/minichess",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

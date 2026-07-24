@@ -26,6 +26,7 @@ export const metadata: Metadata = {
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
   title: {
     default: "Chess Puzzles",
@@ -50,12 +51,14 @@ export const metadata: Metadata = {
     description:
       "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more — a new challenge every day.",
     url: "https://chesspuzzles.online",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
   twitter: {
     card: "summary",
     title: "Chess Puzzles",
     description:
       "Play free daily chess puzzles online. Mate-in-1, mate-in-2, endgame puzzles, and more.",
+    images: ["/og-img.png"],
   },
   robots: { index: true, follow: true },
 };

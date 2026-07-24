@@ -11,6 +11,12 @@ export interface BoardPiece {
   draggable?: boolean;
 }
 
+/** Human-readable alt text from a "/piece-{name}-{color}.svg" URL, e.g. "white knight". */
+function pieceAlt(imageUrl: string, code: string): string {
+  const m = imageUrl.match(/piece-([a-z]+)-(white|black)\.svg/i);
+  return m ? `${m[2]} ${m[1]}` : code;
+}
+
 export interface SquareStyle {
   row: number;
   col: number;
@@ -143,7 +149,7 @@ export default function Board({
               {piece && (
                 <Image
                   src={piece.imageUrl}
-                  alt={piece.code}
+                  alt={pieceAlt(piece.imageUrl, piece.code)}
                   width={squareSize - 8}
                   height={squareSize - 8}
                   draggable={canDrag}

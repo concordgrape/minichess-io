@@ -12,6 +12,7 @@ export const metadata = {
     title: "Zugzwang Puzzle | Chess Puzzles",
     description: "Find the quiet waiting move that forces your opponent into a losing position. Free daily chess endgame puzzle.",
     url: "https://chesspuzzles.online/zugzwang",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

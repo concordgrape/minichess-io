@@ -11,6 +11,7 @@ export const metadata = {
     title: "Survival Chess | How Long Can You Last? | Chess Puzzles",
     description: "Survive as long as possible against waves of chess pieces. A fast-paced chess endurance game.",
     url: "https://chesspuzzles.online/survival",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

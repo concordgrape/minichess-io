@@ -12,6 +12,7 @@ export const metadata = {
     title: "Rook Endgame Puzzle | Chess Puzzles",
     description: "Use king and rook to cut off the enemy king and force checkmate. Free daily chess endgame puzzle.",
     url: "https://chesspuzzles.online/rook-endgame",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 

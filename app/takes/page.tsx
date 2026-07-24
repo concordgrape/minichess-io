@@ -12,6 +12,7 @@ export const metadata = {
     title: "Takes | Capture All Pieces Chess Puzzle | Chess Puzzles",
     description: "Capture every piece on the board in the right order. A daily chess puzzle where sequence is everything.",
     url: "https://chesspuzzles.online/takes",
+    images: [{ url: "/og-img.png", width: 1044, height: 1046, alt: "Chess Puzzles" }],
   },
 };
 
