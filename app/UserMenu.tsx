@@ -58,7 +58,7 @@ export default function UserMenu({ user, dark, onToggleDark }: { user: User; dar
   return (
     <div style={{ position: "relative" }} ref={ref}>
       <button
-        className="btn btn-outline-secondary rounded-0 d-flex align-items-center gap-2"
+        className="retro-btn retro-btn--neutral d-flex align-items-center gap-2"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
       >

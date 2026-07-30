@@ -144,8 +144,8 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
                 <UserMenu user={user} dark={dark} onToggleDark={() => setDark((d) => !d)} />
               ) : (
                 <>
-                  <button className="btn rounded-0" style={{ color: "#fff", backgroundColor: "#5cb85c", borderColor: "#4cae4c" }} onClick={() => openAuth("signup")}>{en.nav.signUp}</button>
-                  <button className="btn btn-info text-white rounded-0" onClick={() => openAuth("login")}>{en.nav.logIn}</button>
+                  <button className="retro-btn retro-btn--green" onClick={() => openAuth("signup")}>{en.nav.signUp}</button>
+                  <button className="retro-btn retro-btn--blue" onClick={() => openAuth("login")}>{en.nav.logIn}</button>
                 </>
               )}
               <button

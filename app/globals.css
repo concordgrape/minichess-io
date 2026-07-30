@@ -42,12 +42,6 @@ body {
   color: #0d6efd;
 }
 
-.sidebar-link::before {
-  content: "»";
-  color: currentColor;
-  flex-shrink: 0;
-}
-
 .sidebar-link:hover {
   text-decoration: underline;
 }
@@ -58,6 +52,66 @@ body {
 .sidebar-link.sidebar-link--features { color: #7a45c4; }   /* features */
 .sidebar-link.sidebar-link--community { color: #2e8a51; }  /* community */
 .sidebar-link.sidebar-link--chat { color: #c43e5b; }       /* chat */
+
+/* ── Retro tile buttons (ported from the wordgames-net Boggle UI) ──
+   Colored fill, darker border, hard offset shadow. Lifts on hover and
+   presses into its shadow on click with a springy transition. */
+.retro-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.85rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #fff;
+  border: 2px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--retro-shadow, rgba(0, 0, 0, 0.3));
+  transition:
+    transform 0.28s cubic-bezier(0.34, 1.8, 0.5, 1),
+    box-shadow 0.28s cubic-bezier(0.34, 1.8, 0.5, 1),
+    background-color 0.15s ease;
+}
+.retro-btn:hover {
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 3px 5px 0 var(--retro-shadow, rgba(0, 0, 0, 0.3));
+}
+.retro-btn:active {
+  transform: translate(3px, 3px) scale(0.96);
+  box-shadow: 0 0 0 var(--retro-shadow, rgba(0, 0, 0, 0.3));
+  transition: transform 0.09s ease, box-shadow 0.09s ease;
+}
+.retro-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Green (sign up) */
+.retro-btn--green {
+  background-color: #5cb85c;
+  border-color: #3a8a3a;
+  --retro-shadow: rgba(38, 84, 38, 0.7);
+}
+.retro-btn--green:hover { background-color: #57b057; }
+
+/* Blue (log in) — a slightly darker blue than the old cyan info button */
+.retro-btn--blue {
+  background-color: #2f7fc4;
+  border-color: #1f5f96;
+  --retro-shadow: rgba(23, 66, 105, 0.7);
+}
+.retro-btn--blue:hover { background-color: #2b78bb; }
+
+/* Neutral (signed-in user menu) */
+.retro-btn--neutral {
+  background-color: #6c757d;
+  border-color: #4d545a;
+  --retro-shadow: rgba(40, 44, 48, 0.55);
+}
+.retro-btn--neutral:hover { background-color: #656d74; }
 
 @media (max-width: 991.98px) {
   .sidebar-link,
