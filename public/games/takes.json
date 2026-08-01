@@ -1,5 +1,5 @@
 {
-  "id": 1347,
+  "id": 1349,
   "difficulty": "medium",
   "pieces": [
     {
@@ -9,34 +9,34 @@
       "col": 2
     },
     {
-      "id": "p1",
-      "type": "p",
+      "id": "q1",
+      "type": "q",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "b2",
+      "type": "b",
       "row": 2,
       "col": 2
     },
     {
-      "id": "r2",
-      "type": "r",
-      "row": 3,
-      "col": 1
-    },
-    {
       "id": "q3",
       "type": "q",
-      "row": 3,
-      "col": 0
+      "row": 2,
+      "col": 3
     },
     {
-      "id": "n4",
-      "type": "n",
+      "id": "r4",
+      "type": "r",
       "row": 0,
       "col": 2
     },
     {
       "id": "r5",
       "type": "r",
-      "row": 2,
-      "col": 1
+      "row": 1,
+      "col": 3
     }
   ]
 }
