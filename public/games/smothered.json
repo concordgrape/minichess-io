@@ -1,16 +1,22 @@
 {
-  "id": 1350,
+  "id": 1351,
   "difficulty": "medium",
   "board": [
     [
       "k",
-      "p",
-      "K",
+      null,
+      null,
+      "K"
+    ],
+    [
+      "r",
+      "r",
+      null,
       null
     ],
     [
       null,
-      "r",
+      null,
       null,
       "N"
     ],
@@ -18,13 +24,7 @@
       null,
       null,
       null,
-      null
-    ],
-    [
-      null,
-      "Q",
-      null,
-      null
+      "Q"
     ]
   ]
 }
