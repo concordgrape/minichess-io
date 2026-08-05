@@ -1,34 +1,34 @@
 {
-  "id": 1351,
-  "difficulty": "easy",
+  "id": 1352,
+  "difficulty": "hard",
   "board": [
     [
       null,
       null,
-      null,
+      "r",
       null
     ],
     [
       null,
       "q",
-      null,
+      "q",
       null
     ],
     [
+      null,
       "b",
-      null,
-      null,
+      "r",
       null
     ],
     [
+      "n",
       null,
-      "p",
       null,
       null
     ]
   ],
   "start": {
-    "row": 1,
-    "col": 1
+    "row": 0,
+    "col": 2
   }
 }
