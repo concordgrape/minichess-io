@@ -1,18 +1,18 @@
 {
-  "id": 1356,
+  "id": 1357,
   "difficulty": "easy",
   "pieces": [
     {
       "id": "k0",
       "type": "k",
-      "row": 2,
+      "row": 0,
       "col": 2
     },
     {
-      "id": "p1",
-      "type": "p",
-      "row": 1,
-      "col": 1
+      "id": "r1",
+      "type": "r",
+      "row": 0,
+      "col": 3
     },
     {
       "id": "p2",
@@ -23,7 +23,7 @@
     {
       "id": "n3",
       "type": "n",
-      "row": 0,
+      "row": 1,
       "col": 2
     }
   ]
