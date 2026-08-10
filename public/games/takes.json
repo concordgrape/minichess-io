@@ -1,5 +1,5 @@
 {
-  "id": 1357,
+  "id": 1358,
   "difficulty": "easy",
   "pieces": [
     {
@@ -9,10 +9,10 @@
       "col": 2
     },
     {
-      "id": "r1",
-      "type": "r",
-      "row": 0,
-      "col": 3
+      "id": "p1",
+      "type": "p",
+      "row": 2,
+      "col": 2
     },
     {
       "id": "p2",
@@ -21,10 +21,10 @@
       "col": 3
     },
     {
-      "id": "n3",
-      "type": "n",
-      "row": 1,
-      "col": 2
+      "id": "q3",
+      "type": "q",
+      "row": 0,
+      "col": 3
     }
   ]
 }
