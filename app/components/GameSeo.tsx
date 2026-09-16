@@ -12,7 +12,7 @@ interface GameSeoProps {
 export default function GameSeo({ name, description, url, steps }: GameSeoProps) {
   return (
     <>
-      <Breadcrumbs items={[
+      <Breadcrumbs schemaOnly items={[
         { name: "Home", url: "https://chesspuzzles.online" },
         { name, url },
       ]} />
