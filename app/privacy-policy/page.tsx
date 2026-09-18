@@ -171,6 +171,16 @@ export default function PrivacyPolicy() {
         </p>
       </Section>
 
+      <Section title="Advertising">
+        <p className="mb-3">
+          This Site is affiliated with Freestar for the purposes of placing advertising on the Site,
+          and Freestar will collect and use certain data for advertising purposes.
+          To learn more about Freestar's data usage, click here:{" "}
+          <a href="https://freestar.com/privacy-policy/" target="_blank" rel="noopener noreferrer">
+            https://freestar.com/privacy-policy/
+          </a>.
+        </p>
+      </Section>
       <Section title="Analytics & Hosting">
         <p className="mb-3">
           Chess Puzzles is hosted on <strong>Vercel</strong>. As part of serving
