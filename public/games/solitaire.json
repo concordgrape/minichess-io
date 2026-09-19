@@ -1,5 +1,5 @@
 {
-  "id": 1397,
+  "id": 1398,
   "difficulty": "medium",
   "board": [
     [
@@ -10,25 +10,25 @@
     ],
     [
       null,
+      "r",
       null,
+      null
+    ],
+    [
+      null,
+      "q",
       "b",
       null
     ],
     [
+      null,
       null,
       "p",
-      null,
-      "q"
-    ],
-    [
-      "b",
-      null,
-      "b",
-      null
+      "p"
     ]
   ],
   "start": {
-    "row": 2,
-    "col": 1
+    "row": 3,
+    "col": 3
   }
 }
