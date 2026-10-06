@@ -10,6 +10,8 @@ export default function Footer() {
       <span>{locale.footer.copyright(new Date().getFullYear())}</span>
       <span className="mx-2">·</span>
       <Link href="/privacy-policy" className="text-muted">{locale.footer.privacy}</Link>
+      {/* Freestar/Sourcepoint resurfacing link; the CMP shows it only where required. */}
+      <button id="pmLink" className="ms-2 small">Privacy Manager</button>
     </footer>
   );
 }
