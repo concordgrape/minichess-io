@@ -257,3 +257,7 @@ button.sidebar-link {
   font-style: italic;
 }
 .blog-content a { color: #2563eb; }
+
+/* Freestar/Sourcepoint privacy link: visibility: hidden is required; the CMP reveals it. */
+#pmLink { visibility: hidden; text-decoration: none; cursor: pointer; background: transparent; border: none; }
+#pmLink:hover { visibility: visible; color: grey; }

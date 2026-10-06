@@ -13,7 +13,7 @@ export default function AdSlot({ placement = "incontent300x250", debug = false }
     const fs = (window.freestar ??= { queue: [] });
     fs.queue.push(() => window.freestar?.newAdSlots?.({ placementName, slotId }));
     return () => {
-      window.freestar?.queue.push(() => window.freestar?.deleteAdSlots?.(placementName));
+      window.freestar?.queue.push(() => window.freestar?.deleteAdSlots?.(slotId));
     };
   }, [placementName, slotId]);
 
