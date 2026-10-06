@@ -5,6 +5,7 @@ import { Chess, type Square, type Move, type PieceSymbol, type Color } from "che
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, pawnPoints } from "../lib/scores";
 import { useGameSession } from "../lib/useGameSession";
@@ -175,6 +176,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
                 <li>Use checks to win a tempo and round up the pawn.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -312,6 +314,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
               </div>
             )}
           </div>
+          <AdSlot key="ad" />
           {history.length > 0 && (
             <div className="small mt-2">
               <div className="fw-semibold mb-1">Moves</div>
