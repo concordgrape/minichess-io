@@ -8,3 +8,10 @@ export const AD_PLACEMENTS = {
 } as const;
 
 export type AdPlacement = keyof typeof AD_PLACEMENTS;
+
+// Dynamic units that persist across SPA navigation (see FreestarNavigation).
+export const FREESTAR_UNITS = {
+  stickyFooter: "chesspuzzles-online_sticky_footer",
+  pushdown: "chesspuzzles-online_sticky_pushdown",
+  video: "freestarvideoadcontainer_slider",
+} as const;

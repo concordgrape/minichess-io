@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
+import { AD_ROUTES } from "./app/lib/freestar/routes";
 
-// Add each game route that renders <FreestarHead />.
-const AD_ROUTES = ["/queen-vs-pawn"];
 const FREESTAR_FILES = ["./app/lib/freestar/*.js"];
 
 const nextConfig: NextConfig = {
