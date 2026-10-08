@@ -314,7 +314,6 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
               </div>
             )}
           </div>
-          <AdSlot key="ad" />
           {history.length > 0 && (
             <div className="small mt-2">
               <div className="fw-semibold mb-1">Moves</div>
@@ -332,6 +331,7 @@ export default function PawnHuntGame({ puzzle: initialPuzzle = null, winIn = 2 }
               </table>
             </div>
           )}
+          <AdSlot key="ad" />
         </div>
       </div>
 

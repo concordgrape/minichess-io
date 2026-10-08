@@ -6,6 +6,7 @@ import { totalScore } from "./lib/scores";
 import UserMenu from "./UserMenu";
 import { useAuth } from "./AuthProvider";
 import Footer from "./components/Footer";
+import FreestarNavigation from "./components/ads/FreestarNavigation";
 import { useLocale } from "@/app/i18n/LocaleProvider";
 import { type LocaleKey } from "@/app/i18n/index";
 
@@ -257,6 +258,7 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
           </div>
         </div>
       </div>
+      <FreestarNavigation />
       <Footer />
 
     </>
