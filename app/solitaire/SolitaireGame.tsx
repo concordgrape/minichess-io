@@ -10,6 +10,7 @@ import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { useTimeLimit } from "../lib/useTimeLimit";
@@ -210,6 +211,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
                 <li>The King is just another piece to capture.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -410,6 +412,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
               </div>
             </div>
           )}
+          <AdSlot key="ad" />
         </div>
       </div>
 

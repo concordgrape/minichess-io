@@ -17,7 +17,6 @@ export default function FreestarNavigation() {
     // Only act once pubfig has loaded; otherwise this is a first load on an ad page.
     if (typeof window.freestar?.deleteStickyFooter !== "function") return;
     const recall = isAdRoute(pathname);
-    console.debug("[freestar-nav]", pathname, { recall }); // TEMP: test logging
     window.freestar.queue?.push(() => {
       const fs = window.freestar;
       fs?.deleteStickyFooter?.(FREESTAR_UNITS.stickyFooter);

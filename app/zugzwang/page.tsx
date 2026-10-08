@@ -2,6 +2,7 @@ import MateGame from "../mate/MateGame";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import HowToPlay from "@/app/components/HowToPlay";
 import GameSeo from "@/app/components/GameSeo";
+import FreestarHead from "@/app/components/ads/FreestarHead";
 import { getLocale } from "@/app/i18n";
 
 export const metadata = {
@@ -21,6 +22,7 @@ export default async function ZugzwangPage() {
   const { title, subtitle } = t.gamePages.zugzwang;
   return (
     <div>
+      <FreestarHead />
       <h1 className="h4 mb-1">{title}</h1>
       <p className="text-muted mb-4">{subtitle}</p>
       <GameStartOverlay gameId="zugzwang">

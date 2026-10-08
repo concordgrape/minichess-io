@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Chess, type Square, type Move, type PieceSymbol, type Color } from "chess.js";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
+import AdSlot from "../components/ads/AdSlot";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { BOT_DIFFICULTIES, DEFAULT_DIFFICULTY } from "../lib/botDifficulties";
 
@@ -216,6 +217,7 @@ export default function ChessBoard() {
           </tbody>
         </table>
         </div>
+        <AdSlot />
       </div>
     </div>
   );

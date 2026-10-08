@@ -5,6 +5,7 @@ import { Chess, type Square, type Move, type PieceSymbol, type Color } from "che
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, matePoints } from "../lib/scores";
 import { useGameSession } from "../lib/useGameSession";
@@ -188,6 +189,7 @@ export default function MateGame({
                 <li>Stalemate counts as a loss.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -351,6 +353,7 @@ export default function MateGame({
               </table>
             </div>
           )}
+          <AdSlot key="ad" />
         </div>
       </div>
 

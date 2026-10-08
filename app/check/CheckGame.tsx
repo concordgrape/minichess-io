@@ -12,6 +12,7 @@ import {
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { useTimeLimit } from "../lib/useTimeLimit";
@@ -236,6 +237,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
                 <li>Stalemate counts as a loss.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -396,6 +398,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
               </table>
             </div>
           )}
+          <AdSlot key="ad" />
         </div>
       </div>
 

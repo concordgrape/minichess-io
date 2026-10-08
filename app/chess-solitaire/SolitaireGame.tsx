@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { useTimeLimit } from "../lib/useTimeLimit";
@@ -248,6 +249,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
                 <li>Leave only one piece to win.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -396,6 +398,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: Props) {
               </div>
             )}
           </div>
+          <AdSlot key="ad" />
         </div>
       </div>
 

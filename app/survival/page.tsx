@@ -2,6 +2,7 @@ import SurvivalGame from "./SurvivalGame";
 // import GameLeaderboard from "@/app/components/GameLeaderboard";
 import GameStartOverlay from "@/app/components/GameStartOverlay";
 import GameSeo from "@/app/components/GameSeo";
+import FreestarHead from "@/app/components/ads/FreestarHead";
 
 export const metadata = {
   title: "Survival Chess | How Long Can You Last?",
@@ -18,6 +19,7 @@ export const metadata = {
 export default function SurvivalPage() {
   return (
     <div>
+      <FreestarHead />
       <h1 className="h4 mb-1">Survival</h1>
       <p className="text-muted mb-4">Capture pawns with your knight for as long as you can.</p>
       <GameStartOverlay gameId="survival">

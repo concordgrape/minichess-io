@@ -3,6 +3,7 @@ import path from "path";
 import MiniChessGame from "./MiniChessGame";
 import type { DailyPosition } from "./types";
 import GameSeo from "@/app/components/GameSeo";
+import FreestarHead from "@/app/components/ads/FreestarHead";
 
 export const metadata = {
   title: "Mini Chess | 5x5 Chess Puzzle Game",
@@ -24,6 +25,7 @@ export default async function MiniChessPage() {
   const position: DailyPosition = JSON.parse(file);
   return (
     <div>
+      <FreestarHead />
       <h1 className="h4 mb-1">Mini Chess</h1>
       <p className="text-muted mb-4">Play the daily 5×5 mini chess position against the engine.</p>
       <MiniChessGame position={position} />

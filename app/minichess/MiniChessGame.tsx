@@ -9,6 +9,7 @@ import {
 } from "./logic";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { BOT_DIFFICULTIES, DEFAULT_DIFFICULTY } from "../lib/botDifficulties";
 
@@ -277,7 +278,7 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
         </div>
 
         {/* Move history & info */}
-        <div style={{ minWidth: 200, maxWidth: 260 }}>
+        <div style={{ minWidth: 200, maxWidth: 300 }}>
           <div className="d-flex align-items-center gap-2 mb-3">
             <label className="text-muted small mb-0">Difficulty:</label>
             <select
@@ -356,6 +357,7 @@ export default function MiniChessGame({ position }: { position: DailyPosition })
             <div className="fw-semibold mb-1">Material</div>
             <MaterialCount board={board} />
           </div>
+          <AdSlot />
         </div>
       </div>
     </div>

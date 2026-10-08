@@ -8,6 +8,7 @@ import { useGamePhase } from "../lib/GameStartContext";
 // import { useGameSession } from "../lib/useGameSession";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 
 const PIECE_IMAGE = "/piece-knight-white.svg";
 
@@ -203,6 +204,7 @@ export default function SurvivalGame() {
             <li>No captures left = game over.</li>
           </ul>
         </div>
+        <AdSlot />
       </div>
     </div>
   );
