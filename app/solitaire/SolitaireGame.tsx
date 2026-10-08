@@ -184,14 +184,14 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div style={{ width: sq * 4 }}>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
             <GuideLink gameId="solitaire" />
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <div className="game-side">
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="solitaire" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -262,7 +262,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
 
   return (
     <div>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
         {/* Board + status */}
         <div style={{ width: sq * 4 }}>
           <BoardOverlay>
@@ -327,7 +327,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
         </div>
 
         {/* Sidebar */}
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="game-side">
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="solitaire"

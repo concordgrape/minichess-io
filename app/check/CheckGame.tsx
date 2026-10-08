@@ -213,14 +213,14 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
             <GuideLink gameId="check" />
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <div className="game-side">
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="check" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -280,7 +280,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
 
   return (
     <div>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
         <div>
           <BoardOverlay>
 <Board
@@ -328,7 +328,7 @@ export default function CheckGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           <GuideLink gameId="check" />
         </div>
 
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="game-side">
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="check"

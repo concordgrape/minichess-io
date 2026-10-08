@@ -260,3 +260,7 @@ button.sidebar-link {
 
 /* Freestar/Sourcepoint privacy link: visibility: hidden is required; the CMP reveals it. */
 #pmLink { visibility: hidden; }
+
+/* Right-hand panel beside a game board: fills the row, wraps under the board when narrower than the 300px ad. */
+.game-side { flex: 1; min-width: 0; width: 100%; }
+@media (min-width: 768px) { .game-side { flex: 1 1 300px; min-width: 300px; width: auto; } }

@@ -121,14 +121,14 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
             <GuideLink gameId="takes" />
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <div className="game-side">
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="takes" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => { const p = data as unknown as Puzzle; setPuzzle(p); resetToFresh(p); }} />
@@ -170,7 +170,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
 
   return (
     <div>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
         <div style={{ width: sq * 4 }}>
           <BoardOverlay>
 <Board
@@ -210,7 +210,7 @@ export default function TakesGame({ puzzle: initialPuzzle = null }: { puzzle?: P
           <GuideLink gameId="takes" />
         </div>
 
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="game-side">
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="takes"

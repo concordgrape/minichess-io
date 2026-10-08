@@ -168,14 +168,14 @@ export default function MateGame({
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
             <GuideLink gameId={slug} />
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <div className="game-side">
             <div className="mb-3">
               <PuzzleSelectDropdown gameId={slug} currentId={-1} getStatus={getStatus} invalidateLbRef={invalidateLb}
                 onPuzzleLoaded={(data) => { const p = data as unknown as MatePuzzle; setPuzzle(p); load(p); }} />
@@ -238,7 +238,7 @@ export default function MateGame({
 
   return (
     <div>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
         <div>
           <BoardOverlay>
 <Board
@@ -283,7 +283,7 @@ export default function MateGame({
           <GuideLink gameId={slug} />
         </div>
 
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="game-side">
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId={slug}

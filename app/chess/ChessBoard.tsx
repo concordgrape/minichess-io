@@ -154,7 +154,7 @@ export default function ChessBoard() {
   if (checkedKingPos) squareStyles.push({ ...checkedKingPos, bg: "#ff6b6b" });
 
   return (
-    <div className="d-flex gap-4 flex-wrap" ref={rootRef}>
+    <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={rootRef}>
       <div>
         <Board
           size={8}
@@ -188,7 +188,7 @@ export default function ChessBoard() {
       </div>
 
       {/* Right panel: difficulty + move history */}
-      <div style={{ minWidth: 200 }}>
+      <div className="game-side">
         <div className="d-flex align-items-center gap-2 mb-2">
           <label className="text-muted small mb-0">Difficulty:</label>
           <select
