@@ -5,6 +5,7 @@ import { Chess, type Square, type Move, type PieceSymbol, type Color } from "che
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import { saveScore, matePoints } from "../lib/scores";
 import { useGameSession } from "../lib/useGameSession";
@@ -167,14 +168,14 @@ export default function MateGame({
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={8} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
             <GuideLink gameId={slug} />
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <div className="game-side">
             <div className="mb-3">
               <PuzzleSelectDropdown gameId={slug} currentId={-1} getStatus={getStatus} invalidateLbRef={invalidateLb}
                 onPuzzleLoaded={(data) => { const p = data as unknown as MatePuzzle; setPuzzle(p); load(p); }} />
@@ -188,6 +189,7 @@ export default function MateGame({
                 <li>Stalemate counts as a loss.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -236,7 +238,7 @@ export default function MateGame({
 
   return (
     <div>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
         <div>
           <BoardOverlay>
 <Board
@@ -281,7 +283,7 @@ export default function MateGame({
           <GuideLink gameId={slug} />
         </div>
 
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="game-side">
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId={slug}
@@ -351,6 +353,7 @@ export default function MateGame({
               </table>
             </div>
           )}
+          <AdSlot key="ad" />
         </div>
       </div>
 

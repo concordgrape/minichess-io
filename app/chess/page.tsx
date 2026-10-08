@@ -1,5 +1,6 @@
 import ChessBoard from "./ChessBoard";
 import GameSeo from "@/app/components/GameSeo";
+import FreestarHead from "@/app/components/ads/FreestarHead";
 
 export const metadata = {
   title: "Play Chess Online Free",
@@ -16,6 +17,7 @@ export const metadata = {
 export default function ChessPage() {
   return (
     <div>
+      <FreestarHead />
       <ChessBoard />
       <GameSeo
         name="Play Chess Online"

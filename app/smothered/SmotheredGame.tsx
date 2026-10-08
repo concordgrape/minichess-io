@@ -14,6 +14,7 @@ import {
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { useTimeLimit } from "../lib/useTimeLimit";
@@ -247,14 +248,14 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
             <GuideLink gameId="smothered" />
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <div className="game-side">
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="smothered" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -272,6 +273,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
                 <li>Stalemate counts as a loss.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -340,7 +342,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
 
   return (
     <div>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
         {/* Board + status bar */}
         <div>
           <BoardOverlay>
@@ -410,7 +412,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
         </div>
 
         {/* Sidebar */}
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="game-side">
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="smothered"
@@ -491,6 +493,7 @@ export default function SmotheredGame({ puzzle: initialPuzzle = null }: { puzzle
               </table>
             </div>
           )}
+          <AdSlot key="ad" />
         </div>
       </div>
 

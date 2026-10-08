@@ -10,6 +10,7 @@ import { useResponsiveSquare } from "../lib/useResponsiveSquare";
 import Board, { type BoardPiece, type SquareStyle } from "../components/Board";
 import BoardOverlay from "../components/BoardOverlay";
 import GuideLink from "../components/GuideLink";
+import AdSlot from "../components/ads/AdSlot";
 import PuzzleSelectDropdown from "../components/PuzzleSelectDropdown";
 import { usePuzzleProgress } from "../lib/usePuzzleProgress";
 import { useTimeLimit } from "../lib/useTimeLimit";
@@ -183,14 +184,14 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
   if (!puzzle) {
     return (
       <div>
-        <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+        <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
           <div style={{ width: sq * 4 }}>
             <BoardOverlay ready={false}>
               <Board size={4} squareSize={sq} pieces={[]} squareStyles={[]} onSquareClick={() => {}} onDrop={() => {}} interactive={false} />
             </BoardOverlay>
             <GuideLink gameId="solitaire" />
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+          <div className="game-side">
             <div className="mb-3">
               <PuzzleSelectDropdown gameId="solitaire" currentId={-1} getStatus={getStatus}
                 onPuzzleLoaded={(data) => {
@@ -210,6 +211,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
                 <li>The King is just another piece to capture.</li>
               </ul>
             </div>
+            <AdSlot key="ad" />
           </div>
         </div>
       </div>
@@ -260,7 +262,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
 
   return (
     <div>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start" ref={boardRef}>
+      <div className="d-flex flex-column flex-md-row flex-md-wrap gap-4 align-items-center align-items-md-start" ref={boardRef}>
         {/* Board + status */}
         <div style={{ width: sq * 4 }}>
           <BoardOverlay>
@@ -325,7 +327,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
         </div>
 
         {/* Sidebar */}
-        <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
+        <div className="game-side">
           <div className="mb-3">
             <PuzzleSelectDropdown
               gameId="solitaire"
@@ -410,6 +412,7 @@ export default function SolitaireGame({ puzzle: initialPuzzle = null }: { puzzle
               </div>
             </div>
           )}
+          <AdSlot key="ad" />
         </div>
       </div>
 
