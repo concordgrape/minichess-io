@@ -26,6 +26,9 @@ export default function FreestarHead() {
       {/* Bootstrap */}
       <Script id="f65548e4d" data-cfasync="false" strategy="afterInteractive"
         dangerouslySetInnerHTML={{ __html: read("bootstrap.js") }} />
+      {/* Flag Freestar asked for; must be set before pubfig loads. The spelling is theirs. */}
+      <Script id="k3v9d2a7e" data-cfasync="false" strategy="afterInteractive"
+        dangerouslySetInnerHTML={{ __html: "window.freestarReactCompontentLoaded=true" }} />
       <Script src="https://a.pub.network/chesspuzzles-online/pubfig.min.js" data-cfasync="false" strategy="afterInteractive" />
       {/* AdShield: Adblock recovery tool to monetize blocked traffic */}
       <Script id="bdlrzq" data-cfasync="false" strategy="afterInteractive"
