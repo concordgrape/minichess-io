@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { isAdRoute } from "../../lib/freestar/routes";
+import { isNoAdRoute } from "../../lib/freestar/routes";
 import { FREESTAR_UNITS } from "../../lib/freestar/placements";
 
-// Mounted once in Shell. On client-side navigation, tears down Freestar units that
-// persist across routes and recalls them only on ad routes (Freestar's SPA advice).
+// Mounted once in Shell. On client-side navigation, tears down the Freestar units that
+// persist across routes and recalls them, except on no-ad routes (Freestar's SPA advice).
 export default function FreestarNavigation() {
   const pathname = usePathname();
   const previous = useRef(pathname);
@@ -14,9 +14,9 @@ export default function FreestarNavigation() {
   useEffect(() => {
     if (previous.current === pathname) return;
     previous.current = pathname;
-    // Only act once pubfig has loaded; otherwise this is a first load on an ad page.
+    // Only act once pubfig has loaded; otherwise there is nothing to tear down yet.
     if (typeof window.freestar?.deleteStickyFooter !== "function") return;
-    const recall = isAdRoute(pathname);
+    const recall = !isNoAdRoute(pathname);
     window.freestar.queue?.push(() => {
       const fs = window.freestar;
       fs?.deleteStickyFooter?.(FREESTAR_UNITS.stickyFooter);
