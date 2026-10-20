@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://chesspuzzles.online"),
   alternates: {
-    canonical: "./",
+    canonical: ".",
     types: { "application/rss+xml": "/feed.xml" },
   },
   icons: {

@@ -44,3 +44,6 @@ yarn-error.log*
 next-env.d.ts
 functions/serviceAccountKey.json
 functions/node_modules
+
+# Freestar set up guide PDF
+Ad-Tag-set-up-guide-chesspuzzles.online.pdf

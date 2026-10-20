@@ -14,7 +14,7 @@ const PRECONNECT = [
   "https://api.btloader.com/",
 ];
 
-// Render once per page that runs ads. Order matters: bootstrap defines
+// Render once, in the root layout. Order matters: bootstrap defines
 // freestar.queue before pubfig loads.
 export default function FreestarHead() {
   return (
