@@ -242,6 +242,9 @@ export default function Shell({ children, sidebarPosts = [] }: { children: React
         <SidebarLinks onNavigate={() => setMenuOpen(false)} sidebarPosts={sidebarPosts} />
       </div>
 
+      {/* Mount point for the leaderboard ad; ad pages portal into it (see LeaderboardAd). */}
+      <div id="top-ad-mount" style={{ maxWidth: 1100, margin: "0 auto" }} />
+
       {/* Main layout */}
       <div className="container-fluid px-0">
         <div style={{ maxWidth: 1100, margin: "16px auto" }}>
